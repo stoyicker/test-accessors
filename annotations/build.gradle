@@ -1,0 +1,33 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+}
+
+task sourcesJar(type: Jar) {
+    group = JavaBasePlugin.DOCUMENTATION_GROUP
+    description = 'Assembles a sources JAR'
+    from sourceSets.main.allSource
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            artifactId 'test-accessors-annotations'
+            groupId 'com.github.stoyicker.test-accessors'
+            version = {
+                def stdout = new ByteArrayOutputStream()
+                exec {
+                    commandLine 'git', 'describe', '--tags'
+                    standardOutput = stdout
+                }
+                return stdout.toString().trim()
+            }()
+
+            from components.java
+        }
+    }
+}
+
+artifacts {
+    archives sourcesJar
+}

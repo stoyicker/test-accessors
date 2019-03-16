@@ -1,0 +1,1 @@
+include ':annotations', ':processors-base', ':processor-java', ':processor-kotlin'
