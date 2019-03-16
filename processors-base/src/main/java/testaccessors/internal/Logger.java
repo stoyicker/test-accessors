@@ -59,5 +59,5 @@ abstract class Logger {
     }
 
     private static final String SUFFIX_SKIP_VERIFICATION =
-            "\nTo ignore this and/or other verification messages, use the option " + OPTION_KEY_LOG_LEVEL;
+            "\nTo hide this and/or other verification messages, use the option " + OPTION_KEY_LOG_LEVEL;
 }
