@@ -21,7 +21,11 @@ final class RequiresAccessorAnnotationVerifier extends AnnotationVerifier<Requir
     boolean verify(final Element element, final RequiresAccessor annotation) {
         final Set<Modifier> modifierSet = element.getModifiers();
         if (modifierSet.contains(Modifier.PUBLIC) && !modifierSet.contains(Modifier.FINAL)) {
-            warn("Elements that are public and non-final are guaranteed to be accessible from anywhere at anytime, so you don't want to generate accessors for them.", element);
+            warn("Fields that are public and non-final are guaranteed to be accessible from anywhere at anytime, so you don't want to generate accessors for them.", element);
+            return false;
+        }
+        if (modifierSet.contains(Modifier.STATIC)) {
+            error("Static fields are not member variables and are properties of the Class object instead.\nThese fields cannot be accessed through reflection and therefore this tool cannot generate accessors for them.", element);
             return false;
         }
         return true;
