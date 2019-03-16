@@ -3,5 +3,5 @@ plugins {
 }
 
 dependencies {
-    apiElements project(':annotations')
+    implementation project(':annotations')
 }
