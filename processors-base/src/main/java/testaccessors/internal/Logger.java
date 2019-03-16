@@ -4,7 +4,6 @@ import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
 import javax.tools.Diagnostic;
 
-import static testaccessors.internal.AnnotationProcessor.OPTION_DEFAULT_LOG_LEVEL;
 import static testaccessors.internal.AnnotationProcessor.OPTION_KEY_LOG_LEVEL;
 
 abstract class Logger {
@@ -47,10 +46,10 @@ abstract class Logger {
     }
 
     enum LogLevel {
-        LEVEL_NONE("none"),
-        LEVEL_ERROR("error"),
-        LEVEL_WARN("warn"),
-        LEVEL_NOTE("note");
+        LEVEL_NONE("nothing"),
+        LEVEL_ERROR("errors"),
+        LEVEL_WARN("warnings"),
+        LEVEL_NOTE("all");
 
         final String key;
 
