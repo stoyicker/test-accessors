@@ -66,10 +66,6 @@ unspecified, the name of the field will be used.
 AccessorType.TYPE_SETTER for setter) for your annotated field. By default, both getter and setter will be generated.
 #### Processor
 You can pass the following processor-wide options as compiler arguments:
-* testaccessors.requiredPatternInClasspath -> Allows you to specify a regex that classes in your classpath will be 
-checked against every time an accessor is invoked. This allows you to ensure that accessors are not used in tests by 
-using a regex that matches packages that are found in test-specific dependencies. By default, this uses a regex that 
-matches both TestNG and JUnit.
 * testaccessors.logLevel -> Allows you to specify the verbosity of the tool with regards to potential misuses of it. 
 Needs to be one of "nothing", "errors", "warnings" and "all". The default and fallback if malformed is "all".
 ## Disclaimer: when should I use this?

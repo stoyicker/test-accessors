@@ -1,1 +1,1 @@
-include ':annotations', ':processors-base', ':processor-java', ':processor-kotlin'
+include ':annotations', ':processors-interfaces', ':processors-base', ':processor-java', ':processor-kotlin'

@@ -6,7 +6,7 @@ import javax.tools.Diagnostic;
 
 import static testaccessors.internal.AnnotationProcessor.OPTION_KEY_LOG_LEVEL;
 
-abstract class Logger {
+final class Logger {
     private final Messager messager;
     private final LogLevel logLevel;
 
@@ -42,19 +42,6 @@ abstract class Logger {
     final void note(CharSequence message, Element culprit) {
         if (logLevel.ordinal() >= LogLevel.LEVEL_NOTE.ordinal()) {
             messager.printMessage(Diagnostic.Kind.NOTE, message + SUFFIX_SKIP_VERIFICATION, culprit);
-        }
-    }
-
-    enum LogLevel {
-        LEVEL_NONE("nothing"),
-        LEVEL_ERROR("errors"),
-        LEVEL_WARN("warnings"),
-        LEVEL_NOTE("all");
-
-        final String key;
-
-        LogLevel(final String key) {
-            this.key = key;
         }
     }
 

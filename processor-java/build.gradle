@@ -3,7 +3,12 @@ plugins {
     id 'maven-publish'
 }
 
-dependencies {
+repositories {
+    jcenter()
+}
+dependencies {    
+    implementation project(':annotations')
+    implementation project(':processors-interfaces')
     implementation project(':processors-base')
     implementation 'com.squareup:javapoet:1.11.1'
 }

@@ -3,5 +3,6 @@ plugins {
 }
 
 dependencies {
-    implementation project(':annotations')
+    compileOnly project(':annotations')
+    compileOnly project(':processors-interfaces')
 }
