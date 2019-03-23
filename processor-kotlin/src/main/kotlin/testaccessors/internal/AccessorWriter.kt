@@ -14,7 +14,7 @@ import javax.annotation.processing.Filer
 import javax.annotation.processing.Messager
 import javax.lang.model.element.Element
 
-class AccessorWriter(messager: Messager, logLevel: LogLevel) : AbstractAccessorWriter() {
+internal class AccessorWriter(messager: Messager, logLevel: LogLevel) : AbstractAccessorWriter() {
 	private val logger = lazyOf(Logger(messager, logLevel))
 
 	public override fun writeAccessorClass(annotatedElements: Set<Element>, filer: Filer) {
