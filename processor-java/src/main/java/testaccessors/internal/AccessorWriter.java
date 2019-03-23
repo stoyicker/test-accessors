@@ -4,7 +4,6 @@ import com.squareup.javapoet.*;
 import testaccessors.RequiresAccessor;
 
 import javax.annotation.processing.Filer;
-import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 import java.io.IOException;
@@ -14,12 +13,6 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 final class AccessorWriter extends AbstractAccessorWriter {
-    private final Logger logger;
-
-    AccessorWriter(final Messager messager, final LogLevel logLevel) {
-        logger = new Logger(messager, logLevel);
-    }
-
     @Override
     public void writeAccessorClass(final Set<Element> annotatedElements, final Filer filer) {
         final ClassName enclosingType = (ClassName) TypeName.get(annotatedElements.iterator().next().getEnclosingElement().asType());
@@ -85,7 +78,7 @@ final class AccessorWriter extends AbstractAccessorWriter {
         try {
             JavaFile.builder(enclosingType.packageName(), classSpecBuilder.build()).build().writeTo(filer);
         } catch (final IOException e) {
-            logger.error(Arrays.toString(e.getStackTrace()));
+            throw new RuntimeException(e);
         }
     }
 

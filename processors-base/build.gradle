@@ -4,5 +4,6 @@ plugins {
 
 dependencies {
     compileOnly project(':annotations')
-    compileOnly project(':processors-interfaces')
+    apiElements project(':processors-interfaces')
+    implementation project(':processors-interfaces')
 }

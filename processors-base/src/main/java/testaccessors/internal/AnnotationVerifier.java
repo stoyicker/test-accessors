@@ -6,8 +6,8 @@ import javax.lang.model.element.Element;
 abstract class AnnotationVerifier<Annotation extends java.lang.annotation.Annotation> {
     final Logger logger;
 
-    AnnotationVerifier(final Messager messager, final LogLevel logLevel) {
-        logger = new Logger(messager, logLevel);
+    AnnotationVerifier(final Messager messager) {
+        logger = new Logger(messager);
     }
 
     abstract Class<Annotation> annotationClass();

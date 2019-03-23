@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * Signal that this field should have accessors generated for it.
  */
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.CLASS)
 @Target(ElementType.FIELD)
 public @interface RequiresAccessor {
     /**

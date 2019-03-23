@@ -8,15 +8,10 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.TypeSpec
 import testaccessors.RequiresAccessor
-import java.io.IOException
-import java.util.Arrays
 import javax.annotation.processing.Filer
-import javax.annotation.processing.Messager
 import javax.lang.model.element.Element
 
-internal class AccessorWriter(messager: Messager, logLevel: LogLevel) : AbstractAccessorWriter() {
-	private val logger = lazyOf(Logger(messager, logLevel))
-
+internal class AccessorWriter : AbstractAccessorWriter() {
 	public override fun writeAccessorClass(annotatedElements: Set<Element>, filer: Filer) {
 		val enclosingClass = ClassName("", annotatedElements.iterator().next().enclosingElement.asType().toString())
 		val classAndFileName = nameForGeneratedClassFrom(enclosingClass.simpleNames)
@@ -56,23 +51,18 @@ internal class AccessorWriter(messager: Messager, logLevel: LogLevel) : Abstract
 								.build()
 					}
 		}).forEach { typeSpecBuilder.addFunction(it) }
-		try {
-			FileSpec.builder(enclosingClass.packageName, classAndFileName)
-					.addAnnotation(AnnotationSpec.builder(JvmName::class)
-							.addMember("name", classAndFileName)
-							.useSiteTarget(AnnotationSpec.UseSiteTarget.FILE)
-							.build())
-					.addType(typeSpecBuilder.build())
-					.build()
-					.writeTo(filer)
-		} catch (e: IOException) {
-			logger.value.error(Arrays.toString(e.stackTrace))
-		}
+		FileSpec.builder(enclosingClass.packageName, classAndFileName)
+				.addAnnotation(AnnotationSpec.builder(JvmName::class)
+						.addMember("name", classAndFileName)
+						.useSiteTarget(AnnotationSpec.UseSiteTarget.FILE)
+						.build())
+				.addType(typeSpecBuilder.build())
+				.build()
+				.writeTo(filer)
 	}
 
 	private fun FileSpec.writeTo(filer: Filer) {
-		val fileName = if (packageName.isEmpty()) name
-		else "$packageName.$name"
+		val fileName = if (packageName.isEmpty()) name else "$packageName.$name"
 		val fileObject = filer.createSourceFile(fileName)
 		try {
 			fileObject.openWriter().use {

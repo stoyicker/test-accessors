@@ -8,8 +8,8 @@ import javax.lang.model.element.Modifier;
 import java.util.Set;
 
 final class RequiresAccessorAnnotationVerifier extends AnnotationVerifier<RequiresAccessor> {
-    RequiresAccessorAnnotationVerifier(final Messager messager, final LogLevel logLevel) {
-        super(messager, logLevel);
+    RequiresAccessorAnnotationVerifier(final Messager messager) {
+        super(messager);
     }
 
     @Override

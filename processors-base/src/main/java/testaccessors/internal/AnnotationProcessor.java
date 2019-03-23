@@ -21,7 +21,7 @@ public abstract class AnnotationProcessor extends AbstractProcessor {
     }
 
     @Override
-    public synchronized final void init(ProcessingEnvironment processingEnvironment) {
+    public synchronized final void init(final ProcessingEnvironment processingEnvironment) {
         super.init(processingEnvironment);
         filer = processingEnvironment.getFiler();
         messager = processingEnvironment.getMessager();
@@ -35,7 +35,7 @@ public abstract class AnnotationProcessor extends AbstractProcessor {
 
     @Override
     public final Set<String> getSupportedOptions() {
-        return Collections.singleton(OPTION_KEY_LOG_LEVEL);
+        return Collections.emptySet();
     }
 
     @Override
@@ -46,14 +46,4 @@ public abstract class AnnotationProcessor extends AbstractProcessor {
     final Class<? extends Annotation> getAnnotationClass() {
         return annotation;
     }
-
-    final LogLevel optionLogLevel() {
-        try {
-            return LogLevel.valueOf(options.getOrDefault(OPTION_KEY_LOG_LEVEL, OPTION_DEFAULT_LOG_LEVEL.key));
-        } catch (final IllegalArgumentException ignored) {
-            return OPTION_DEFAULT_LOG_LEVEL;
-        }
-    }
-    static final String OPTION_KEY_LOG_LEVEL = "testaccessors.logLevel";
-    private static final LogLevel OPTION_DEFAULT_LOG_LEVEL = LogLevel.LEVEL_NOTE;
 }
