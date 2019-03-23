@@ -12,7 +12,7 @@ task sourcesJar(type: Jar) {
 publishing {
     publications {
         maven(MavenPublication) {
-            artifactId 'test-accessors-annotations'
+            artifactId 'annotations'
             groupId 'com.github.stoyicker.test-accessors'
             version = {
                 def stdout = new ByteArrayOutputStream()

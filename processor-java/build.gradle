@@ -22,7 +22,7 @@ task sourcesJar(type: Jar) {
 publishing {
     publications {
         maven(MavenPublication) {
-            artifactId 'test-accessors-processor-java'
+            artifactId 'processor-java'
             groupId 'com.github.stoyicker.test-accessors'
             version = {
                 def stdout = new ByteArrayOutputStream()
