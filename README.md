@@ -10,52 +10,56 @@ repositories {
 }
 dependencies {
     // 1. Add the annotations to the sourceset you want them in
-    // For example, for your unit tests
-    testCompileOnly "com.github.stoyicker.test-accessors:annotations:<version>"
-    // Or for Android instrumented tests
-    androidTestCompileOnly "com.github.stoyicker.test-accessors:annotations:<version>"
-    // 2. Add the processor you want to use to each of the classpaths corresponding to those you put the annotations in
-    // If you use Java
-    testApt "com.github.stoyicker.test-accessors:processor-java:<version>"
-    androidTestApt "com.github.stoyicker.test-accessors:processor-java:<version>"
-    // If you use Kotlin
-    kaptTest "com.github.stoyicker.test-accessors:processor-kotlin:<version>"
-    kaptAndroidTest "com.github.stoyicker.test-accessors:processor-kotlin:<version>"
+    compileOnly "com.github.stoyicker.test-accessors:annotations:<version>"
+    // 2. Add the processor you want
+    // If on Java..
+    apt "com.github.stoyicker.test-accessors:processor-java:<version>"
+    // or, if on Kotlin
+    kapt "com.github.stoyicker.test-accessors:processor-kotlin:<version>"
+    // In the case of mixed projects, you'll be able to use the generated code from both Kotlin and Java just fine,
+    // so choose whichever one you like the most
 }
 ```
 Annotate your field:
 ```java
 package org.my.example;
 
-public class MyClass {
+public class MyJavaClass {
     @RequiresAccessor
     private final String myField;
 }
 ```
-Once annotation processing runs, there will be a class called org.my.example.GeneratedMyClassAccesors in the generated 
-directory of your specified source set with two methods with the following signature:
+Once annotation processing runs, there will be a class called org.my.example.GeneratedMyClassAccessors in the generated 
+directory of your source set with two methods with the following signature:
 ```java
-// Getter
-public String myField(MyClass instance);
-
-// Setter
-public void myField(MyClass instance, String newValue);
+public final class MyJavaClass {
+    // Getter
+    public static String myField(MyClass instance);
+    
+    // Setter
+    public static void myField(MyClass instance, String newValue);
+}
 ```
 If you are using Kotlin, you can take advantage of the Kotlin artifact instead for a more idiomatic usage via extension
 functions. For example,
 ```kotlin
 package org.my.example
 
-class MyClass {
+class MyKotlinClass {
     @RequiresAccessor
-    private val String = "hola"
+    private val myField = "hola"
 }
 ```
-will generate the following extension methods for MyClass in the specified source set:
+will generate an implementation under the following API in the current source set:
 ```kotlin
-fun MyClass.myField(): String
+@Generated
+object MyKotlinClassTestAccessors {
+  @JvmStatic
+  fun MyClass.myField(): String
 
-fun MyClass.myField(newValue: String): Unit
+  @JvmStatic
+  fun MyClass.myField(newValue: String): Unit
+}
 ```
 ## Options
 #### Annotation
@@ -78,3 +82,9 @@ tests as the generated code uses the Java reflection API underneath (and just li
 it has its use cases, but you should normally avoid it if at all possible).
 ## License
 https://creativecommons.org/licenses/by/4.0/legalcode
+
+# Known issues
+*Some of my fields with Kotlin stdlib types are getting accessors generated with Java stdlib types instead:* This is
+unfortunate, but it is not really possible to address in a proper way at the moment. See square/kotlinpoet#236 for more 
+information. In any case, due to the goal of this project you should not run into problems, and if you do or come up 
+with a way to address it correctly, feel encouraged to open an issue!

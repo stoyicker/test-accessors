@@ -15,11 +15,12 @@ import java.util.function.Consumer;
 
 public final class RequiresAccessorProcessor extends AnnotationProcessor {
     private final AnnotationVerifier verifier = new RequiresAccessorAnnotationVerifier(messager);
-    private final AbstractAccessorWriter writer = new AccessorWriter(types, elements);
+    private final AbstractAccessorWriter writer;
     private final Map<ClassName, Set<Element>> filesToGenerate = new HashMap<>();
 
-    RequiresAccessorProcessor() {
+    RequiresAccessorProcessor(final AbstractAccessorWriter writer) {
         super(RequiresAccessor.class);
+        this.writer = writer;
     }
 
     @Override

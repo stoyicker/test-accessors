@@ -6,7 +6,6 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 abstract class AbstractAccessorWriter {
     final Types typeUtils;
@@ -18,10 +17,7 @@ abstract class AbstractAccessorWriter {
     }
 
     final String nameForGeneratedClassFrom(final List<String> enclosingClassSimpleNames) {
-        return enclosingClassSimpleNames.stream()
-                // FIXME There has to be a better way to remove generic types
-                .map(s -> s.replaceAll("\\<*\\>", ""))
-                .collect(Collectors.joining(".")) + "TestAccessors";
+        return enclosingClassSimpleNames.get(enclosingClassSimpleNames.size() - 1) + "TestAccessors";
     }
 
     final RuntimeException illegalAccessorRequestedException(final Element element) {

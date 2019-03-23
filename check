@@ -1,0 +1,4 @@
+./gradlew clean :sample:assemble :sample:test &&
+./gradlew clean :processor-base:assemble &&
+./gradlew clean :processor-java:assemble &&
+./gradlew clean :processor-kotlin:assemble

@@ -9,15 +9,13 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.lang.annotation.Annotation;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Set;
 
 public abstract class AnnotationProcessor extends AbstractProcessor {
     Filer filer;
-    Types types;
-    Elements elements;
+    Types typeUtils;
+    Elements elementUtils;
     Messager messager;
-    private Map<String, String> options;
     private final Class<? extends Annotation> annotation;
 
     AnnotationProcessor(final Class<? extends Annotation> annotation) {
@@ -28,10 +26,9 @@ public abstract class AnnotationProcessor extends AbstractProcessor {
     public synchronized final void init(final ProcessingEnvironment processingEnvironment) {
         super.init(processingEnvironment);
         filer = processingEnvironment.getFiler();
-        types = processingEnvironment.getTypeUtils();
-        elements = processingEnvironment.getElementUtils();
+        typeUtils = processingEnvironment.getTypeUtils();
+        elementUtils = processingEnvironment.getElementUtils();
         messager = processingEnvironment.getMessager();
-        options = processingEnvironment.getOptions();
     }
 
     @Override

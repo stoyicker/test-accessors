@@ -1,16 +1,16 @@
 package sample.kotlin
 
-import testaccessors.RequiresAccessor
+//import testaccessors.RequiresAccessor
 
-internal class KotlinClass<A, B, C> {
-	@RequiresAccessor(requires = [RequiresAccessor.AccessorType.TYPE_SETTER])
-	private val aField = null
-	class StaticInnerClass<T, J : Set<List<T>>, Q> {
-		@RequiresAccessor(name = "middleField")
-		private val anotherField = emptySet<Q>()
-		inner class InnerClass<A> {
-			@RequiresAccessor
-			private val yetAnotherField = Unit
-		}
-	}
-}
+//class KotlinClass<A, B, C, D, E, F, G> {
+//	@RequiresAccessor
+//	private val aField: String? = null
+//	class StaticInnerClass<T, J : Set<List<T>>, Q> {
+//		@RequiresAccessor(name = "middleField")
+//		private val anotherField = emptySet<Q>()
+//		inner class InnerClass<A> {
+//			@RequiresAccessor
+//			private val yetAnotherField = Unit
+//		}
+//	}
+//}

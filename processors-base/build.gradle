@@ -1,9 +1,0 @@
-plugins { 
-    id 'java'
-}
-
-dependencies {
-    compileOnly project(':annotations')
-    apiElements project(':processors-interfaces')
-    implementation project(':processors-interfaces')
-}
