@@ -6,6 +6,8 @@ import testaccessors.RequiresAccessor;
 import javax.annotation.processing.Filer;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
+import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Set;
@@ -13,6 +15,10 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 final class AccessorWriter extends AbstractAccessorWriter {
+    AccessorWriter(final Types typeUtils, final Elements elementUtils) {
+        super(typeUtils, elementUtils);
+    }
+
     @Override
     public void writeAccessorClass(final Set<Element> annotatedElements, final Filer filer) {
         final ClassName enclosingType = (ClassName) TypeName.get(annotatedElements.iterator().next().getEnclosingElement().asType());

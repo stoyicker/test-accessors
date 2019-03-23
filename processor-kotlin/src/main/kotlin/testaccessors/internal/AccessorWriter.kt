@@ -10,10 +10,16 @@ import com.squareup.kotlinpoet.TypeSpec
 import testaccessors.RequiresAccessor
 import javax.annotation.processing.Filer
 import javax.lang.model.element.Element
+import javax.lang.model.util.Elements
+import javax.lang.model.util.Types
 
-internal class AccessorWriter : AbstractAccessorWriter() {
+internal class AccessorWriter(types: Types, elementUtils: Elements) : AbstractAccessorWriter(types, elementUtils) {
 	public override fun writeAccessorClass(annotatedElements: Set<Element>, filer: Filer) {
-		val enclosingClass = ClassName("", annotatedElements.iterator().next().enclosingElement.asType().toString())
+		val enclosingClassElement = annotatedElements.iterator().next().enclosingElement
+		val enclosingClassPackage = elementUtils.getPackageOf(enclosingClassElement)
+		val enclosingClassType = enclosingClassElement.asType()
+		val enclosingClassRawType = typeUtils.erasure(enclosingClassType)
+		val enclosingClass = ClassName(enclosingClassPackage.qualifiedName.toString(), enclosingClassRawType.toString())
 		val classAndFileName = nameForGeneratedClassFrom(enclosingClass.simpleNames)
 		val typeSpecBuilder = TypeSpec.objectBuilder(classAndFileName)
 				.addAnnotation(JvmStatic::class)

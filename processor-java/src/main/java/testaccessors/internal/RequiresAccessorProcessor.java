@@ -15,7 +15,7 @@ import java.util.function.Consumer;
 
 public final class RequiresAccessorProcessor extends AnnotationProcessor {
     private final AnnotationVerifier verifier = new RequiresAccessorAnnotationVerifier(messager);
-    private final AbstractAccessorWriter writer = new AccessorWriter();
+    private final AbstractAccessorWriter writer = new AccessorWriter(types, elements);
     private final Map<ClassName, Set<Element>> filesToGenerate = new HashMap<>();
 
     RequiresAccessorProcessor() {
