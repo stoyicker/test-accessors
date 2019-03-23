@@ -19,8 +19,8 @@ dependencies {
     testApt "com.github.stoyicker.test-accessors:processor-java:<version>"
     androidTestApt "com.github.stoyicker.test-accessors:processor-java:<version>"
     // If you use Kotlin
-    testApt "com.github.stoyicker.test-accessors:processor-kotlin:<version>"
-    androidTestApt "com.github.stoyicker.test-accessors:processor-kotlin:<version>"
+    testKapt "com.github.stoyicker.test-accessors:processor-kotlin:<version>"
+    androidTestKapt "com.github.stoyicker.test-accessors:processor-kotlin:<version>"
 }
 ```
 Annotate your field:
