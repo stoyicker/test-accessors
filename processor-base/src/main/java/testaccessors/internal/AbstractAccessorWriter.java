@@ -17,7 +17,7 @@ abstract class AbstractAccessorWriter {
     }
 
     final String nameForGeneratedClassFrom(final List<String> enclosingClassSimpleNames) {
-        return enclosingClassSimpleNames.get(enclosingClassSimpleNames.size() - 1) + "TestAccessors";
+        return String.join("", enclosingClassSimpleNames) + "TestAccessors";
     }
 
     final RuntimeException illegalAccessorRequestedException(final Element element) {
