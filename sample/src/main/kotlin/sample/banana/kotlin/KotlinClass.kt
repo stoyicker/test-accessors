@@ -1,8 +1,8 @@
-package sample.kotlin
+package sample.banana.kotlin
 
 import testaccessors.RequiresAccessor
 
-class KotlinClass<A, B, C, D, E, F, G> {
+class RootClass<A, B, C, D, E, F, G> {
 	@RequiresAccessor
 	private val aField: String? = null
 	private val anotherTopLevelField: String? = null

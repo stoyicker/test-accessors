@@ -5,13 +5,17 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.ParameterSpec
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.TypeVariableName
 import com.squareup.kotlinpoet.asTypeName
 import testaccessors.RequiresAccessor
 import javax.annotation.Generated
 import javax.annotation.processing.Filer
 import javax.lang.model.element.Element
-import javax.lang.model.element.ElementKind
+import javax.lang.model.element.PackageElement
+import javax.lang.model.type.DeclaredType
+import javax.lang.model.type.TypeMirror
 import javax.lang.model.util.Elements
 import javax.lang.model.util.Types
 import javax.tools.StandardLocation
@@ -19,14 +23,10 @@ import javax.tools.StandardLocation
 internal class AccessorWriter(types: Types, elementUtils: Elements) : AbstractAccessorWriter(types, elementUtils) {
 	public override fun writeAccessorClass(annotatedElements: Set<Element>, filer: Filer) {
 		val enclosingClassElement = annotatedElements.iterator().next().enclosingElement
-		val enclosingClassPackage = elementUtils.getPackageOf(enclosingClassElement)
-		val classNames = extractParentClasses(enclosingClassElement.enclosingElement).reversedArray() +
+		val location = extractLocation(enclosingClassElement.enclosingElement) +
 				enclosingClassElement.simpleName.toString()
-		val enclosingClassErased = ClassName(
-				enclosingClassPackage.qualifiedName.toString(),
-				classNames.first(),
-				*classNames.sliceArray(1..classNames.lastIndex))
-		val classAndFileName = nameForGeneratedClassFrom(enclosingClassErased.simpleNames)
+		val classAndFileName = nameForGeneratedClassFrom(
+				ClassName(location[0], location[1], *location.sliceArray(2..location.lastIndex)).simpleNames)
 		val typeSpecBuilder = TypeSpec.objectBuilder(classAndFileName)
 				.addAnnotation(Generated::class)
 		annotatedElements.flatMap(object : (Element) -> Iterable<FunSpec> {
@@ -46,20 +46,32 @@ internal class AccessorWriter(types: Types, elementUtils: Elements) : AbstractAc
 			private fun generateSetterFunSpec(element: Element) = generateCommonFunSpec(element)
 					.addParameter(ParameterSpec.builder(
 							PARAMETER_NAME_NEW_VALUE,
-							ClassName.bestGuess("kotlin.Any?"))
+							// FIXME Hopefully KotlinPoet adds a better way of getting the nullable version of a ClassName
+							ClassName.bestGuess("kotlin.Any").copy(true))
 							.build())
 					.addStatement("${element.simpleName} = $PARAMETER_NAME_NEW_VALUE")
 					.build()
 
 			private fun generateCommonFunSpec(element: Element) = element.getAnnotation(RequiresAccessor::class.java)
 					.run {
-						val enclosingElementErasure = typeUtils.erasure(enclosingClassElement.asType())
 						FunSpec.builder(if (name.isEmpty()) element.simpleName.toString() else name)
 								.addAnnotation(JvmStatic::class)
-								.receiver(enclosingElementErasure.asTypeName())
+								.receiver(generateReceiver(element.enclosingElement.asType()))
+					}
+
+			private fun generateReceiver(typeMirror: TypeMirror) =
+					(typeMirror as DeclaredType).typeArguments.run {
+						if (isEmpty()) {
+							typeMirror.asTypeName()
+						} else {
+							ClassName.bestGuess(typeUtils.erasure(typeMirror).toString())
+									.parameterizedBy(*map {
+										TypeVariableName.invoke("*")
+									}.toTypedArray())
+						}
 					}
 		}).forEach { typeSpecBuilder.addFunction(it) }
-		FileSpec.builder(enclosingClassPackage.simpleName.toString(), classAndFileName)
+		FileSpec.builder(elementUtils.getPackageOf(enclosingClassElement).qualifiedName.toString(), classAndFileName)
 				.addAnnotation(AnnotationSpec.builder(JvmName::class)
 						.addMember(""""$classAndFileName"""")
 						.useSiteTarget(AnnotationSpec.UseSiteTarget.FILE)
@@ -70,31 +82,23 @@ internal class AccessorWriter(types: Types, elementUtils: Elements) : AbstractAc
 				.writeTo(filer)
 	}
 
-	private fun isTopLevel(element: Element?): Boolean = element?.run {
-		when (enclosingElement) {
-			null -> true
-			else -> enclosingElement.kind == ElementKind.PACKAGE
-		}
-	} ?: true
+	private fun extractLocation(element: Element): Array<String> =
+			when (element.enclosingElement) {
+				null -> emptyArray()
+				else -> extractLocation(element.enclosingElement)
+			} + arrayOf(if (element is PackageElement) element.qualifiedName.toString() else element.simpleName.toString())
+}
 
-	private fun extractParentClasses(element: Element?): Array<String> = element?.let {
-		arrayOf(it.simpleName.toString()) + when (isTopLevel(it.enclosingElement)) {
-			true -> if (it.enclosingElement == null) emptyArray() else arrayOf(it.enclosingElement.simpleName.toString())
-			false -> extractParentClasses(it.enclosingElement)
+// FIXME KotlinPoet will hopefully add support for Filer at some point in the future
+private fun FileSpec.writeTo(filer: Filer) {
+	val fileObject = filer.createResource(
+			StandardLocation.SOURCE_OUTPUT, packageName, "$name.kt")
+	try {
+		fileObject.openWriter().use {
+			writeTo(it)
 		}
-	} ?: emptyArray()
-
-	// FIXME KotlinPoet will hopefully add support for Filer at some point in the future
-	private fun FileSpec.writeTo(filer: Filer) {
-		val fileObject = filer.createResource(
-				StandardLocation.SOURCE_OUTPUT, packageName, "$name.kt")
-		try {
-			fileObject.openWriter().use {
-				writeTo(it)
-			}
-		} catch (e: Exception) {
-			fileObject.delete()
-			throw e
-		}
+	} catch (e: Exception) {
+		fileObject.delete()
+		throw e
 	}
 }
