@@ -20,6 +20,8 @@ import javax.lang.model.util.Elements
 import javax.lang.model.util.Types
 import javax.tools.StandardLocation
 
+// TODO If the enclosing class does not have the static modifier (meaning it is inner) then enclosing classes
+// should get wildcard types as well, otherwise things will not work out
 internal class AccessorWriter(types: Types, elementUtils: Elements) : AbstractAccessorWriter(types, elementUtils) {
 	public override fun writeAccessorClass(annotatedElements: Set<Element>, filer: Filer) {
 		val enclosingClassElement = annotatedElements.iterator().next().enclosingElement
