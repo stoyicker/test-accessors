@@ -37,7 +37,7 @@ public final class MyJavaClass {
     public static String myField(MyClass instance);
     
     // Setter
-    public static void myField(MyClass instance, String newValue);
+    public static void myField(MyClass instance, Object newValue);
 }
 ```
 If you are using Kotlin, you can take advantage of the Kotlin artifact instead for a more idiomatic usage via extension
@@ -58,7 +58,7 @@ object MyKotlinClassTestAccessors {
   fun MyClass.myField(): String
 
   @JvmStatic
-  fun MyClass.myField(newValue: String): Unit
+  fun MyClass.myField(newValue: Any?): Unit
 }
 ```
 ## Options
@@ -82,9 +82,3 @@ tests as the generated code uses the Java reflection API underneath (and just li
 it has its use cases, but you should normally avoid it if at all possible).
 ## License
 https://creativecommons.org/licenses/by/4.0/legalcode
-
-# Known issues
-*Some of my fields with Kotlin stdlib types are getting accessors generated with Java stdlib types instead:* This is
-unfortunate, but it is not really possible to address in a proper way at the moment. See square/kotlinpoet#236 for more 
-information. In any case, due to the goal of this project you should not run into problems, and if you do or come up 
-with a way to address it correctly, feel encouraged to open an issue!

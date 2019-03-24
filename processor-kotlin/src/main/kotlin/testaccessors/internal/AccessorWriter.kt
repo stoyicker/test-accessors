@@ -6,15 +6,12 @@ import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.TypeSpec
-import com.squareup.kotlinpoet.TypeVariableName
 import com.squareup.kotlinpoet.asTypeName
 import testaccessors.RequiresAccessor
 import javax.annotation.Generated
 import javax.annotation.processing.Filer
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
-import javax.lang.model.element.Modifier
-import javax.lang.model.type.DeclaredType
 import javax.lang.model.util.Elements
 import javax.lang.model.util.Types
 import javax.tools.StandardLocation
@@ -49,30 +46,17 @@ internal class AccessorWriter(types: Types, elementUtils: Elements) : AbstractAc
 			private fun generateSetterFunSpec(element: Element) = generateCommonFunSpec(element)
 					.addParameter(ParameterSpec.builder(
 							PARAMETER_NAME_NEW_VALUE,
-							element.asType().asTypeName())
+							ClassName.bestGuess("kotlin.Any?"))
 							.build())
 					.addStatement("${element.simpleName} = $PARAMETER_NAME_NEW_VALUE")
 					.build()
 
 			private fun generateCommonFunSpec(element: Element) = element.getAnnotation(RequiresAccessor::class.java)
 					.run {
-						val typeVariables = mutableSetOf<TypeVariableName>()
-						typeVariables += (enclosingClassElement.asType() as DeclaredType).typeArguments.map {
-							TypeVariableName(it.asTypeName().toString())
-						}
-						var enclosingElement = enclosingClassElement.enclosingElement
-						while (enclosingElement != null &&
-								!enclosingElement.modifiers.contains(Modifier.STATIC) &&
-								enclosingElement.kind != ElementKind.PACKAGE) {
-							typeVariables += (enclosingElement.asType() as DeclaredType).typeArguments.map {
-								TypeVariableName(it.asTypeName().toString())
-							}
-							enclosingElement = enclosingElement.enclosingElement
-						}
+						val enclosingElementErasure = typeUtils.erasure(enclosingClassElement.asType())
 						FunSpec.builder(if (name.isEmpty()) element.simpleName.toString() else name)
 								.addAnnotation(JvmStatic::class)
-								.addTypeVariables(typeVariables)
-								.receiver(enclosingClassElement.asType().asTypeName())
+								.receiver(enclosingElementErasure.asTypeName())
 					}
 		}).forEach { typeSpecBuilder.addFunction(it) }
 		FileSpec.builder(enclosingClassPackage.simpleName.toString(), classAndFileName)
