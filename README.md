@@ -9,12 +9,12 @@ repositories {
   }
 }
 dependencies {
-    // 1. Add the annotations to the sourceset you want them in
-    compileOnly "com.github.stoyicker.test-accessors:annotations:<version>"
+    // 1. Add the annotation
+    implementation "com.github.stoyicker.test-accessors:annotations:<version>"
     // 2. Add the processor you want
-    // If on Java..
+    // If on Java
     apt "com.github.stoyicker.test-accessors:processor-java:<version>"
-    // or, if on Kotlin
+    // If on Kotlin
     kapt "com.github.stoyicker.test-accessors:processor-kotlin:<version>"
     // In the case of mixed projects, you'll be able to use the generated code from both Kotlin and Java just fine,
     // so choose whichever one you like the most
@@ -34,10 +34,10 @@ directory of your source set with two methods with the following signature:
 ```java
 public final class MyJavaClass {
     // Getter
-    public static String myField(MyClass instance);
+    public static <T> T myField(final MyClass instance);
     
     // Setter
-    public static void myField(MyClass instance, Object newValue);
+    public static <T> void myField(final MyClass instance, final T newValue);
 }
 ```
 If you are using Kotlin, you can take advantage of the Kotlin artifact instead for a more idiomatic usage via extension
@@ -55,10 +55,10 @@ will generate an implementation under the following API in the current source se
 @Generated
 object MyKotlinClassTestAccessors {
   @JvmStatic
-  fun MyClass.myField(): String
+  fun <T> MyClass.myField(): T
 
   @JvmStatic
-  fun MyClass.myField(newValue: Any?): Unit
+  fun <T> MyClass.myField(newValue: T?): Unit
 }
 ```
 ## Options
