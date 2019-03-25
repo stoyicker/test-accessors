@@ -24,7 +24,7 @@ Annotate your field:
 ```java
 package org.my.example;
 
-public class MyJavaClass {
+public final class MyJavaClass {
     @RequiresAccessor
     private final String myField;
 }
