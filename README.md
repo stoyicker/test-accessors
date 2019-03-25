@@ -68,10 +68,6 @@ The annotation has some parameters you can use to alter its behavior:
 unspecified, the name of the field will be used.
 * requires -> Allows you to specify which type of accessor you want (use AccessorType.TYPE_GETTER for getter and/or
 AccessorType.TYPE_SETTER for setter) for your annotated field. By default, both getter and setter will be generated.
-#### Processor
-You can pass the following processor-wide options as compiler arguments:
-* testaccessors.logLevel -> Allows you to specify the verbosity of the tool with regards to potential misuses of it. 
-Needs to be one of "nothing", "errors" and "warnings". The default and fallback if malformed is "warnings".
 ## Disclaimer: when should I use this?
 When dealing with code that is to be tested, you normally want to write it in a way that respects certain good 
 principles to allow and facilitate testing it. However, due to circumstances of life, such as legacy code, 
