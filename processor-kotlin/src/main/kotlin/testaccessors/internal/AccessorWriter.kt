@@ -49,7 +49,7 @@ internal class AccessorWriter(types: Types, elementUtils: Elements) : AbstractAc
 			private fun generateSetterFunSpec(element: Element) = generateCommonFunSpec(element)
 					.addParameter(ParameterSpec.builder(
 							PARAMETER_NAME_NEW_VALUE,
-							ClassName.bestGuess("kotlin.Any").copy(true))
+							ClassName.bestGuess(Any::class.qualifiedName!!).copy(true))
 							.build())
 					.addStatement("${element.simpleName} = $PARAMETER_NAME_NEW_VALUE")
 					.build()
