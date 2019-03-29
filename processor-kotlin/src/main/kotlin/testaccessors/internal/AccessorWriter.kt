@@ -13,15 +13,13 @@ import testaccessors.RequiresAccessor
 import javax.annotation.Generated
 import javax.annotation.processing.Filer
 import javax.lang.model.element.Element
+import javax.lang.model.element.Modifier
 import javax.lang.model.element.PackageElement
 import javax.lang.model.type.DeclaredType
-import javax.lang.model.type.TypeMirror
 import javax.lang.model.util.Elements
 import javax.lang.model.util.Types
 import javax.tools.StandardLocation
 
-// TODO If the enclosing class does not have the static modifier (meaning it is inner) then enclosing classes
-// should get wildcard types as well, otherwise things will not work out
 internal class AccessorWriter(types: Types, elementUtils: Elements) : AbstractAccessorWriter(types, elementUtils) {
 	public override fun writeAccessorClass(annotatedElements: Set<Element>, filer: Filer) {
 		val enclosingClassElement = annotatedElements.iterator().next().enclosingElement
@@ -58,20 +56,35 @@ internal class AccessorWriter(types: Types, elementUtils: Elements) : AbstractAc
 					.run {
 						FunSpec.builder(if (name.isEmpty()) element.simpleName.toString() else name)
 								.addAnnotation(JvmStatic::class)
-								.receiver(generateReceiver(element.enclosingElement.asType()))
+								.receiver(generateReceiver(element.enclosingElement))
 					}
 
-			private fun generateReceiver(typeMirror: TypeMirror) =
-					(typeMirror as DeclaredType).typeArguments.run {
-						if (isEmpty()) {
-							typeMirror.asTypeName()
-						} else {
-							ClassName.bestGuess(typeUtils.erasure(typeMirror).toString())
-									.parameterizedBy(*map {
-										TypeVariableName.invoke("*")
-									}.toTypedArray())
-						}
+			private fun generateReceiver(element: Element) = if (Modifier.STATIC in element.modifiers) {
+				var current = element.enclosingElement
+				var declaredCurrent: DeclaredType
+				val classList = mutableListOf<String>()
+				while (current != null && current !is PackageElement) {
+					declaredCurrent = element.asType() as DeclaredType
+					classList.add(typeUtils.erasure(element.asType()).toString() + if (declaredCurrent.typeArguments.isEmpty()) {
+						""
+					} else {
+						"<" + declaredCurrent.typeArguments.joinToString(separator = ", ") { "*" } + ">"
+					})
+					current = current.enclosingElement
+				}
+				ClassName.bestGuess(classList.joinToString(separator = "."))
+			} else {
+				(element.asType() as DeclaredType).run {
+					if (typeArguments.isEmpty()) {
+						asTypeName()
+					} else {
+						ClassName.bestGuess(typeUtils.erasure(this).toString())
+								.parameterizedBy(*typeArguments.map {
+									TypeVariableName.invoke("*")
+								}.toTypedArray())
 					}
+				}
+			}
 		}).forEach { typeSpecBuilder.addFunction(it) }
 		FileSpec.builder(elementUtils.getPackageOf(enclosingClassElement).qualifiedName.toString(), classAndFileName)
 				.addAnnotation(AnnotationSpec.builder(JvmName::class)
