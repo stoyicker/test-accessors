@@ -37,7 +37,7 @@ public final class MyJavaClass {
     public static <T> T myField(final MyClass instance);
     
     // Setter
-    public static <T> void myField(final MyClass instance, final T newValue);
+    public static void myField(final MyClass instance, final Object newValue);
 }
 ```
 If you are using Kotlin, you can take advantage of the Kotlin artifact instead for a more idiomatic usage via extension
@@ -58,7 +58,7 @@ object MyKotlinClassTestAccessors {
   fun <T> MyClass.myField(): T
 
   @JvmStatic
-  fun <T> MyClass.myField(newValue: T?): Unit
+  fun <T> MyClass.myField(newValue: Any?): Unit
 }
 ```
 ## Options
