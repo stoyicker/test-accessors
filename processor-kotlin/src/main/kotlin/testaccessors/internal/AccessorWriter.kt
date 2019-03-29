@@ -42,13 +42,13 @@ internal class AccessorWriter(types: Types, elementUtils: Elements) : AbstractAc
 					}
 
 			private fun generateGetterFunSpec(element: Element) = generateCommonFunSpec(element)
-					.addStatement("return " + element.simpleName)
+					.addTypeVariable(TypeVariableName("T"))
+					.addStatement("return " + element.simpleName + " as T")
 					.build()
 
 			private fun generateSetterFunSpec(element: Element) = generateCommonFunSpec(element)
 					.addParameter(ParameterSpec.builder(
 							PARAMETER_NAME_NEW_VALUE,
-							// FIXME Hopefully KotlinPoet adds a better way of getting the nullable version of a ClassName
 							ClassName.bestGuess("kotlin.Any").copy(true))
 							.build())
 					.addStatement("${element.simpleName} = $PARAMETER_NAME_NEW_VALUE")
