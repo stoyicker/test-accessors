@@ -66,10 +66,10 @@ internal class AccessorWriter(types: Types, elementUtils: Elements) : AbstractAc
 				receiver(element.enclosingElement.asType().asTypeName())
 				val enclosingElements: (Element) -> List<Element> = { receiver ->
 					mutableListOf<Element>().apply {
-						var element: Element? = receiver.enclosingElement
-						while (element != null && element.kind != ElementKind.PACKAGE) {
-							add(element)
-							element = element.enclosingElement
+						var eachEnclosing: Element? = receiver.enclosingElement
+						while (eachEnclosing != null && eachEnclosing.kind != ElementKind.PACKAGE) {
+							add(eachEnclosing)
+							eachEnclosing = eachEnclosing.enclosingElement
 						}
 					}
 				}
