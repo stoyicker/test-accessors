@@ -5,7 +5,7 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.ParameterSpec
-import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import com.squareup.kotlinpoet.ParameterizedTypeName
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.TypeVariableName
 import com.squareup.kotlinpoet.asTypeName
@@ -13,9 +13,9 @@ import testaccessors.RequiresAccessor
 import javax.annotation.Generated
 import javax.annotation.processing.Filer
 import javax.lang.model.element.Element
+import javax.lang.model.element.ElementKind
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.PackageElement
-import javax.lang.model.type.DeclaredType
 import javax.lang.model.util.Elements
 import javax.lang.model.util.Types
 import javax.tools.StandardLocation
@@ -40,14 +40,17 @@ internal class AccessorWriter(types: Types, elementUtils: Elements) : AbstractAc
 					}
 
 			private fun generateGetterFunSpec(element: Element) = generateCommonFunSpec(element)
-					.addTypeVariable(TypeVariableName("T"))
-					.addStatement("return " + element.simpleName + " as T")
+// 					FIXME Use this instead when KotlinPoet correctly reports Kotlin types instead of their Java counterparts
+//					.addStatement("return ${element.simpleName} as ${element.asType().asTypeName()}")
+					.addStatement("return ${element.simpleName}")
 					.build()
 
 			private fun generateSetterFunSpec(element: Element) = generateCommonFunSpec(element)
 					.addParameter(ParameterSpec.builder(
 							PARAMETER_NAME_NEW_VALUE,
 							ClassName.bestGuess(Any::class.qualifiedName!!).copy(true))
+// 							FIXME Use this instead when KotlinPoet correctly reports Kotlin types instead of their Java counterparts
+//							element.asType().asTypeName())
 							.build())
 					.addStatement("${element.simpleName} = $PARAMETER_NAME_NEW_VALUE")
 					.build()
@@ -56,35 +59,34 @@ internal class AccessorWriter(types: Types, elementUtils: Elements) : AbstractAc
 					.run {
 						FunSpec.builder(if (name.isEmpty()) element.simpleName.toString() else name)
 								.addAnnotation(JvmStatic::class)
-								.receiver(generateReceiver(element.enclosingElement))
+								.addReceiver(element)
 					}
 
-			private fun generateReceiver(element: Element) = if (Modifier.STATIC in element.modifiers) {
-				var current = element.enclosingElement
-				var declaredCurrent: DeclaredType
-				val classList = mutableListOf<String>()
-				while (current != null && current !is PackageElement) {
-					declaredCurrent = element.asType() as DeclaredType
-					classList.add(typeUtils.erasure(element.asType()).toString() + if (declaredCurrent.typeArguments.isEmpty()) {
-						""
-					} else {
-						"<" + declaredCurrent.typeArguments.joinToString(separator = ", ") { "*" } + ">"
-					})
-					current = current.enclosingElement
-				}
-				ClassName.bestGuess(classList.joinToString(separator = "."))
-			} else {
-				(element.asType() as DeclaredType).run {
-					if (typeArguments.isEmpty()) {
-						asTypeName()
-					} else {
-						ClassName.bestGuess(typeUtils.erasure(this).toString())
-								.parameterizedBy(*typeArguments.map {
-									TypeVariableName.invoke("*")
-								}.toTypedArray())
+			private fun FunSpec.Builder.addReceiver(element: Element) = apply {
+				receiver(element.enclosingElement.asType().asTypeName())
+				val enclosingElements: (Element) -> List<Element> = { receiver ->
+					mutableListOf<Element>().apply {
+						var element: Element? = receiver.enclosingElement
+						while (element != null && element.kind != ElementKind.PACKAGE) {
+							add(element)
+							element = element.enclosingElement
+						}
 					}
 				}
+				val enclosingElementList = enclosingElements(element)
+				addTypeVariables(enclosingElementList
+						.filter {
+							enclosingElementList.first() === it ||
+									(Modifier.STATIC !in it.modifiers &&
+											it.enclosingElement.kind != ElementKind.PACKAGE)
+						}
+						.map { it.asType().asTypeName() }
+						.filter { it is ParameterizedTypeName }
+						.flatMap { (it as ParameterizedTypeName).typeArguments }
+						.distinct()
+						.map { TypeVariableName(it.toString()) })
 			}
+
 		}).forEach { typeSpecBuilder.addFunction(it) }
 		FileSpec.builder(elementUtils.getPackageOf(enclosingClassElement).qualifiedName.toString(), classAndFileName)
 				.addAnnotation(AnnotationSpec.builder(JvmName::class)
@@ -112,6 +114,7 @@ private fun FileSpec.writeTo(filer: Filer) {
 		fileObject.openWriter().use {
 			writeTo(it)
 		}
+
 	} catch (e: Exception) {
 		fileObject.delete()
 		throw e
