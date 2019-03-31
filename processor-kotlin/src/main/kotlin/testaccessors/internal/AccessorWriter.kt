@@ -77,8 +77,7 @@ internal class AccessorWriter(types: Types, elementUtils: Elements) : AbstractAc
 				addTypeVariables(enclosingElementList
 						.filter {
 							enclosingElementList.first() === it ||
-									(Modifier.STATIC !in it.modifiers &&
-											it.enclosingElement.kind != ElementKind.PACKAGE)
+									(Modifier.STATIC !in it.modifiers && it.enclosingElement.kind != ElementKind.PACKAGE)
 						}
 						.map { it.asType().asTypeName() }
 						.filter { it is ParameterizedTypeName }
