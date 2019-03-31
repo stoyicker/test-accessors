@@ -84,7 +84,13 @@ internal class AccessorWriter(types: Types, elementUtils: Elements) : AbstractAc
 						.filter { it is ParameterizedTypeName }
 						.flatMap { (it as ParameterizedTypeName).typeArguments }
 						.distinct()
-						.map { TypeVariableName(it.toString()) })
+						.map {
+							TypeVariableName(it.toString()).copy(
+//								FIXME Use this instead when KotlinPoet correctly reports Kotlin types instead of their Java counterparts
+//								nullable = it.isNullable,
+//								bounds = (it as TypeVariableName).bounds)
+									nullable = it.isNullable)
+						})
 			}
 
 		}).forEach { typeSpecBuilder.addFunction(it) }
