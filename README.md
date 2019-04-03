@@ -14,7 +14,7 @@ dependencies {
     // 2. Add the processor you want
     // If on Java
     apt "com.github.stoyicker.test-accessors:processor-java:<version>"
-    // If on Kotlin
+    // If on Kotlin (or mixed Java/Kotlin)
     kapt "com.github.stoyicker.test-accessors:processor-kotlin:<version>"
     // In the case of mixed projects, you'll be able to use the generated code from both Kotlin and Java just fine,
     // so choose whichever one you like the most
