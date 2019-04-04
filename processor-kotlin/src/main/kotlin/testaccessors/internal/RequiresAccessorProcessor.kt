@@ -12,7 +12,7 @@ class RequiresAccessorProcessor : AnnotationProcessor(RequiresAccessor::class.ja
 	private val writer by lazy { AccessorWriter(elementUtils) }
 	private val filesToGenerate = HashMap<ClassName, MutableSet<Element>>()
 
-	override fun process(set: Set<TypeElement>, roundEnvironment: RoundEnvironment): Boolean {
+	override fun process(typeElements: Set<TypeElement>, roundEnvironment: RoundEnvironment): Boolean {
 		roundEnvironment.getElementsAnnotatedWith(annotationClass).stream()
 				.filter { verifier.verify(it) }
 				.forEach {
