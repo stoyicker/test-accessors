@@ -15,12 +15,10 @@ import javax.annotation.processing.Filer
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.Modifier
-import javax.lang.model.element.PackageElement
 import javax.lang.model.util.Elements
-import javax.lang.model.util.Types
 import javax.tools.StandardLocation
 
-internal class AccessorWriter(types: Types, elementUtils: Elements) : AbstractAccessorWriter(types, elementUtils) {
+internal class AccessorWriter(elementUtils: Elements) : AbstractAccessorWriter(elementUtils) {
 	public override fun writeAccessorClass(annotatedElements: Set<Element>, filer: Filer) {
 		val enclosingClassElement = annotatedElements.iterator().next().enclosingElement
 		val location = extractLocation(enclosingClassElement.enclosingElement) +
@@ -103,12 +101,6 @@ internal class AccessorWriter(types: Types, elementUtils: Elements) : AbstractAc
 				.build()
 				.writeTo(filer)
 	}
-
-	private fun extractLocation(element: Element): Array<String> =
-			when (element.enclosingElement) {
-				null -> emptyArray()
-				else -> extractLocation(element.enclosingElement)
-			} + arrayOf(if (element is PackageElement) element.qualifiedName.toString() else element.simpleName.toString())
 }
 
 // FIXME KotlinPoet will hopefully add support for Filer at some point in the future

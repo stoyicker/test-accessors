@@ -7,9 +7,9 @@ import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.element.Element
 import javax.lang.model.element.TypeElement
 
-class RequiresAccessorProcessor: AnnotationProcessor(RequiresAccessor::class.java) {
+class RequiresAccessorProcessor : AnnotationProcessor(RequiresAccessor::class.java) {
 	private val verifier by lazy { RequiresAccessorAnnotationVerifier(messager) }
-	private val writer by lazy { AccessorWriter(typeUtils, elementUtils) }
+	private val writer by lazy { AccessorWriter(elementUtils) }
 	private val filesToGenerate = HashMap<ClassName, MutableSet<Element>>()
 
 	override fun process(set: Set<TypeElement>, roundEnvironment: RoundEnvironment): Boolean {
@@ -23,7 +23,8 @@ class RequiresAccessorProcessor: AnnotationProcessor(RequiresAccessor::class.jav
 					}
 				}
 		if (roundEnvironment.processingOver()) {
-			filesToGenerate.values.parallelStream()
+			filesToGenerate.values
+					.parallelStream()
 					.forEach { elements -> writer.writeAccessorClass(elements, filer) }
 		}
 		return true
