@@ -48,7 +48,7 @@ internal class AccessorWriter(elementUtils: Elements) : AbstractAccessorWriter(e
 // 							FIXME Use this instead when KotlinPoet correctly reports Kotlin types instead of their Java counterparts
 //							element.asType().asTypeName())
 							.build())
-					.addStatement("${element.simpleName} = $PARAMETER_NAME_NEW_VALUE")
+//					.addStatement("${element.simpleName} = $PARAMETER_NAME_NEW_VALUE")
 					.build()
 
 			private fun generateCommonFunSpec(element: Element) = element.getAnnotation(RequiresAccessor::class.java)
