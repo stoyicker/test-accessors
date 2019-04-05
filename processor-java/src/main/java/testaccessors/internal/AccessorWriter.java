@@ -1,17 +1,27 @@
 package testaccessors.internal;
 
-import com.squareup.javapoet.*;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
+import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.TypeVariableName;
 import testaccessors.RequiresAccessor;
 
-import javax.annotation.Generated;
 import javax.annotation.processing.Filer;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.util.Elements;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 final class AccessorWriter extends AbstractAccessorWriter {
@@ -31,8 +41,7 @@ final class AccessorWriter extends AbstractAccessorWriter {
         final String classAndFileName = nameForGeneratedClassFrom(ClassName.get(location[0], location[1], subLocation)
                 .simpleNames());
         final TypeSpec.Builder typeSpecBuilder = TypeSpec.classBuilder(classAndFileName)
-                .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-                .addAnnotation(Generated.class);
+                .addModifiers(Modifier.PUBLIC, Modifier.FINAL);
         annotatedElements.stream()
                 .flatMap(new Function<Element, Stream<MethodSpec>>() {
                     @Override
@@ -76,14 +85,42 @@ final class AccessorWriter extends AbstractAccessorWriter {
 
                     private MethodSpec.Builder generateCommonMethodSpec(final Element element) {
                         final RequiresAccessor annotation = element.getAnnotation(RequiresAccessor.class);
-                        return MethodSpec.methodBuilder(
+                        return addReceiver(MethodSpec.methodBuilder(
                                 annotation.name().isEmpty() ? element.getSimpleName().toString() : annotation.name())
-                                .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-                                .addParameter(ParameterSpec.builder(
-                                        TypeName.get(element.getEnclosingElement().asType()),
-                                        PARAMETER_NAME_RECEIVER,
-                                        Modifier.FINAL)
-                                        .build());
+                                .addModifiers(Modifier.PUBLIC, Modifier.STATIC), element);
+                    }
+
+                    private MethodSpec.Builder addReceiver(final MethodSpec.Builder builder, final Element element) {
+                        builder.addParameter(ParameterSpec.builder(
+                                TypeName.get(element.getEnclosingElement().asType()),
+                                PARAMETER_NAME_RECEIVER,
+                                Modifier.FINAL)
+                                .build());
+                        final List<Element> enclosingElementList = enclosingElementsOf(element);
+                        builder.addTypeVariables(
+                        enclosingElementList.stream()
+                                .filter(it -> enclosingElementList.get(0) == it ||
+                                (!it.getModifiers().contains(Modifier.STATIC)
+                                        && it.getEnclosingElement().getKind() != ElementKind.PACKAGE))
+                        .map(it -> TypeName.get(it.asType()))
+                        .filter(it -> it instanceof ParameterizedTypeName)
+                        .flatMap(it -> ((ParameterizedTypeName) it).typeArguments.stream())
+                        .distinct()
+                        .map(it -> TypeVariableName.get(
+                                it.toString(),
+                                (((TypeVariableName) it).bounds.toArray(new TypeName[0]))))
+                        .collect(Collectors.toList()));
+                        return builder;
+                    }
+
+                    private List<Element> enclosingElementsOf(final Element element) {
+                        Element eachEnclosing = element.getEnclosingElement();
+                        final List<Element> ret = new LinkedList<>();
+                        while (eachEnclosing != null && eachEnclosing.getKind() != ElementKind.PACKAGE) {
+                            ret.add(eachEnclosing);
+                            eachEnclosing = eachEnclosing.getEnclosingElement();
+                        }
+                        return ret;
                     }
                 })
                 .forEach(typeSpecBuilder::addMethod);
