@@ -10,7 +10,6 @@ import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.TypeVariableName
 import com.squareup.kotlinpoet.asTypeName
 import testaccessors.RequiresAccessor
-import javax.annotation.Generated
 import javax.annotation.processing.Filer
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
@@ -26,7 +25,6 @@ internal class AccessorWriter(elementUtils: Elements) : AbstractAccessorWriter(e
 		val classAndFileName = nameForGeneratedClassFrom(
 				ClassName(location[0], location[1], *location.sliceArray(2..location.lastIndex)).simpleNames)
 		val typeSpecBuilder = TypeSpec.objectBuilder(classAndFileName)
-				.addAnnotation(Generated::class)
 		annotatedElements.flatMap(object : (Element) -> Iterable<FunSpec> {
 			override fun invoke(element: Element) =
 					element.getAnnotation(RequiresAccessor::class.java).requires.map {
@@ -62,16 +60,16 @@ internal class AccessorWriter(elementUtils: Elements) : AbstractAccessorWriter(e
 
 			private fun FunSpec.Builder.addReceiver(element: Element) = apply {
 				receiver(element.enclosingElement.asType().asTypeName())
-				val enclosingElements: (Element) -> List<Element> = { receiver ->
+				val enclosingElementsOf: (Element) -> List<Element> = {
 					mutableListOf<Element>().apply {
-						var eachEnclosing: Element? = receiver.enclosingElement
+						var eachEnclosing: Element? = it.enclosingElement
 						while (eachEnclosing != null && eachEnclosing.kind != ElementKind.PACKAGE) {
 							add(eachEnclosing)
 							eachEnclosing = eachEnclosing.enclosingElement
 						}
 					}
 				}
-				val enclosingElementList = enclosingElements(element)
+				val enclosingElementList = enclosingElementsOf(element)
 				addTypeVariables(enclosingElementList
 						.filter {
 							enclosingElementList.first() === it ||
