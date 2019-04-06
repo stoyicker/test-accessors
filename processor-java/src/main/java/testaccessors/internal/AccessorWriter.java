@@ -19,6 +19,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -32,8 +33,8 @@ import java.util.stream.Stream;
 final class AccessorWriter extends AbstractAccessorWriter {
   private static final String PARAMETER_NAME_RECEIVER = "receiver";
 
-  AccessorWriter(final Elements elementUtils, final CharSequence requiredPatternInClasspath) {
-    super(elementUtils, requiredPatternInClasspath);
+  AccessorWriter(final Elements elementUtils, final Types typeUtils, final CharSequence requiredPatternInClasspath) {
+    super(elementUtils, typeUtils, requiredPatternInClasspath);
   }
 
   @Override
@@ -73,8 +74,17 @@ final class AccessorWriter extends AbstractAccessorWriter {
           }
 
           private MethodSpec generateGetterMethodSpec(final Element element) {
+            final TypeName elementType = TypeName.get(element.asType());
             return generateCommonMethodSpec(element)
-                .addStatement("return " + PARAMETER_NAME_RECEIVER + "." + element.getSimpleName())
+                .addStatement(
+                    "return ($T) $T.class.getDeclaredField($S).get($S)",
+                    elementType,
+                    typeUtils.erasure(element.getEnclosingElement().asType()),
+                    element.getSimpleName(),
+                    PARAMETER_NAME_RECEIVER)
+                .addExceptions(Arrays.asList(
+                    ClassName.get(NoSuchFieldException.class),
+                    ClassName.get(IllegalAccessException.class)))
                 .returns(TypeName.get(element.asType()))
                 .build();
           }

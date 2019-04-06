@@ -13,11 +13,11 @@ public final class First<A, B, C, D, E, F, G> {
 
   public static class Second {
     class Third<B> {
-      @RequiresAccessor(requires = {RequiresAccessor.AccessorType.TYPE_SETTER})
+      @RequiresAccessor(requires = RequiresAccessor.AccessorType.TYPE_SETTER)
       private final Void yetAnotherField = null;
 
       class Fourth {
-        @RequiresAccessor(requires = {RequiresAccessor.AccessorType.TYPE_SETTER})
+        @RequiresAccessor(requires = RequiresAccessor.AccessorType.TYPE_SETTER)
         private final B yetAnotherField = null;
 
         class Fifth<A> {
