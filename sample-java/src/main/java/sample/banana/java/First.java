@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-public final class JavaClass<A, B, C, D, E, F, G> {
+public final class First<A, B, C, D, E, F, G> {
   @RequiresAccessor
   private final String aField = null;
   private final String anotherTopLevelField = null;
