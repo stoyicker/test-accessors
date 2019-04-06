@@ -1,5 +1,6 @@
 package testaccessors.internal;
 
+import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.JavaFile;
@@ -11,6 +12,7 @@ import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 import testaccessors.RequiresAccessor;
 
+import javax.annotation.Generated;
 import javax.annotation.processing.Filer;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
@@ -44,7 +46,10 @@ final class AccessorWriter extends AbstractAccessorWriter {
         final String classAndFileName = nameForGeneratedClassFrom(ClassName.get(location[0], location[1], subLocation)
                 .simpleNames());
         final TypeSpec.Builder typeSpecBuilder = TypeSpec.classBuilder(classAndFileName)
-                .addModifiers(Modifier.PUBLIC, Modifier.FINAL);
+                .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+                .addAnnotation(AnnotationSpec.builder(Generated.class)
+                        .addMember("value", "$S", AccessorWriter.class.getCanonicalName())
+                        .build());
         annotatedElements.stream()
                 .flatMap(new Function<Element, Stream<MethodSpec>>() {
                     @Override
@@ -145,7 +150,10 @@ final class AccessorWriter extends AbstractAccessorWriter {
         try {
             JavaFile.builder(
                     elementUtils.getPackageOf(enclosingClassElement).getQualifiedName().toString(),
-                    typeSpecBuilder.build()).build().writeTo(filer);
+                    typeSpecBuilder.build())
+                    .indent("  ")
+                    .build()
+                    .writeTo(filer);
         } catch (final IOException e) {
             throw new RuntimeException(e);
         }

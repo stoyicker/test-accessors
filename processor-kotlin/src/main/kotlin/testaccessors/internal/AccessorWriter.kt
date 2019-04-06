@@ -12,12 +12,12 @@ import com.squareup.kotlinpoet.TypeVariableName
 import com.squareup.kotlinpoet.asTypeName
 import testaccessors.RequiresAccessor
 import java.util.regex.Pattern
+import javax.annotation.Generated
 import javax.annotation.processing.Filer
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.Modifier
 import javax.lang.model.util.Elements
-import javax.tools.StandardLocation
 
 internal class AccessorWriter(elementUtils: Elements, requiredPatternInClasspath: CharSequence?)
 	: AbstractAccessorWriter(elementUtils, requiredPatternInClasspath) {
@@ -113,25 +113,14 @@ internal class AccessorWriter(elementUtils: Elements, requiredPatternInClasspath
 						.addMember(""""$classAndFileName"""")
 						.useSiteTarget(AnnotationSpec.UseSiteTarget.FILE)
 						.build())
+				.addAnnotation(AnnotationSpec.builder(Generated::class)
+						.useSiteTarget(AnnotationSpec.UseSiteTarget.FILE)
+						.addMember(""""${AccessorWriter::class.qualifiedName}"""")
+						.build())
 				.addType(typeSpecBuilder.build())
 				.indent("  ")
 				.build()
 				.writeTo(filer)
-	}
-}
-
-// FIXME KotlinPoet will hopefully add support for Filer at some point in the future
-private fun FileSpec.writeTo(filer: Filer) {
-	val fileObject = filer.createResource(
-			StandardLocation.SOURCE_OUTPUT, packageName, "$name.kt")
-	try {
-		fileObject.openWriter().use {
-			writeTo(it)
-		}
-
-	} catch (e: Exception) {
-		fileObject.delete()
-		throw e
 	}
 }
 
