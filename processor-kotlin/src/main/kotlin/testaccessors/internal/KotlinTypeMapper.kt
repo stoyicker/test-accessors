@@ -14,19 +14,16 @@ import kotlin.reflect.jvm.internal.impl.name.FqName
 fun TypeName.kotlinize(): TypeName =
 		when (this) {
 			is TypeVariableName -> TypeVariableName(extractKotlinTypeFromMapIfExists(this, toString()).toString())
-					.copy(nullable = isNullable, bounds = bounds.map { it.kotlinize() })
+					.copy(bounds = bounds.map { it.kotlinize() })
 			is ParameterizedTypeName -> (rawType.kotlinize() as ClassName)
 					.parameterizedBy(*typeArguments.map { it.kotlinize() }.toTypedArray())
 			else -> extractKotlinTypeFromMapIfExists(this, toString())
-		}
+		}.copy(nullable = isNullable)
 
 private fun extractKotlinTypeFromMapIfExists(fallback: TypeName, name: String) =
-	JavaToKotlinClassMap.INSTANCE
-		.mapJavaToKotlin(FqName(name))
-		?.asSingleFqName()
-		?.asString().run {
+		JavaToKotlinClassMap.INSTANCE.mapJavaToKotlin(FqName(name)).run {
 			when (this) {
 				null -> fallback
-				else -> ClassName.bestGuess(this)
+				else -> ClassName.bestGuess(asSingleFqName().asString())
 			}
 		}

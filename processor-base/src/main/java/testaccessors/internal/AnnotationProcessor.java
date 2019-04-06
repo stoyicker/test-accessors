@@ -6,6 +6,7 @@ import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.Map;
@@ -19,6 +20,7 @@ public abstract class AnnotationProcessor extends AbstractProcessor {
   private final Class<? extends Annotation> annotation;
   Filer filer;
   Elements elementUtils;
+  Types typeUtils;
   Messager messager;
   private Map<String, String> options;
 
@@ -31,6 +33,7 @@ public abstract class AnnotationProcessor extends AbstractProcessor {
     super.init(processingEnvironment);
     filer = processingEnvironment.getFiler();
     elementUtils = processingEnvironment.getElementUtils();
+    typeUtils = processingEnvironment.getTypeUtils();
     messager = processingEnvironment.getMessager();
     options = processingEnvironment.getOptions();
   }

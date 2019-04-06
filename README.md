@@ -58,7 +58,7 @@ object MyKotlinClassTestAccessors {
   fun MyClass.myField(): String
 
   @JvmStatic
-  fun MyClass.myField(newValue: String?): Unit
+  fun MyClass.myField(newValue: String): Unit
 }
 ```
 ## Options

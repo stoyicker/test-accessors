@@ -9,7 +9,7 @@ import javax.lang.model.element.TypeElement
 
 class RequiresAccessorProcessor : AnnotationProcessor(RequiresAccessor::class.java) {
 	private val verifier by lazy { RequiresAccessorAnnotationVerifier(messager) }
-	private val writer by lazy { AccessorWriter(elementUtils, optionRequiredPatternInClasspath()) }
+	private val writer by lazy { AccessorWriter(elementUtils, typeUtils, optionRequiredPatternInClasspath()) }
 	private val filesToGenerate = HashMap<ClassName, MutableSet<Element>>()
 
 	override fun process(typeElements: Set<TypeElement>, roundEnvironment: RoundEnvironment): Boolean {

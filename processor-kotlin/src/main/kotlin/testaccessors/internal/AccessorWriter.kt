@@ -18,9 +18,10 @@ import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
 import javax.lang.model.element.Modifier
 import javax.lang.model.util.Elements
+import javax.lang.model.util.Types
 
-internal class AccessorWriter(elementUtils: Elements, requiredPatternInClasspath: CharSequence?)
-	: AbstractAccessorWriter(elementUtils, requiredPatternInClasspath) {
+internal class AccessorWriter(elementUtils: Elements, typeUtils: Types, requiredPatternInClasspath: CharSequence?)
+	: AbstractAccessorWriter(elementUtils, typeUtils, requiredPatternInClasspath) {
 	public override fun writeAccessorClass(annotatedElements: Set<Element>, filer: Filer) {
 		val enclosingClassElement = annotatedElements.iterator().next().enclosingElement
 		val location = extractLocation(enclosingClassElement.enclosingElement) +
@@ -39,7 +40,11 @@ internal class AccessorWriter(elementUtils: Elements, requiredPatternInClasspath
 
 			private fun generateGetterFunSpec(element: Element) = element.asType().asTypeName().kotlinize().run {
 				generateCommonFunSpec(element)
-						.addStatement("return ${element.simpleName} as %T", this)
+						.addStatement(
+								"return %T::class.java.getDeclaredField(%S)[this] as %T",
+								typeUtils.erasure(element.enclosingElement.asType()),
+								element.simpleName,
+								this)
 						.returns(this)
 						.build()
 			}
@@ -98,9 +103,9 @@ internal class AccessorWriter(elementUtils: Elements, requiredPatternInClasspath
 						.flatMap { (it as ParameterizedTypeName).typeArguments }
 						.distinct()
 						.map {
-							TypeVariableName(it.toString()).copy(
+							TypeVariableName(it.toString(), variance = (it as TypeVariableName).variance).copy(
 								nullable = it.isNullable,
-								bounds = (it as TypeVariableName).bounds.map { it.kotlinize() })
+								bounds = it.bounds.map { bound -> bound.kotlinize() })
 						})
 			}
 
