@@ -20,7 +20,7 @@ public @interface RequiresAccessor {
     /**
      * Optional array of accessors type that need to be generated. By default, both getter and setter will be generated.
      */
-    AccessorType[] requires() default {AccessorType.TYPE_GETTER, AccessorType.TYPE_SETTER};
+    AccessorType[] requires() default { AccessorType.TYPE_GETTER, AccessorType.TYPE_SETTER };
 
     enum AccessorType {
         TYPE_GETTER,

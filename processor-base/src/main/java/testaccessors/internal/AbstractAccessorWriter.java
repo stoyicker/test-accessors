@@ -9,9 +9,11 @@ import java.util.Set;
 
 abstract class AbstractAccessorWriter {
     final Elements elementUtils;
+    final CharSequence requiredPatternInClasspath;
 
-    AbstractAccessorWriter(final Elements elementUtils) {
+    AbstractAccessorWriter(final Elements elementUtils, final CharSequence requiredPatternInClasspath) {
         this.elementUtils = elementUtils;
+        this.requiredPatternInClasspath = requiredPatternInClasspath;
     }
 
     final String nameForGeneratedClassFrom(final List<String> enclosingClassSimpleNames) {
@@ -31,4 +33,5 @@ abstract class AbstractAccessorWriter {
     abstract void writeAccessorClass(final Set<Element> annotatedElements, final Filer filer);
 
     static final String PARAMETER_NAME_NEW_VALUE = "newValue";
+    static final String ERROR_MESSAGE_ILLEGAL_ACCESS = "Accessing this method from this source set is not allowed";
 }

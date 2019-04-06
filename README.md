@@ -34,10 +34,10 @@ directory of your source set with two methods with the following signature:
 ```java
 public final class MyJavaClass {
     // Getter
-    public static <T> T myField(final MyClass instance);
+    public static String myField(final MyClass instance);
     
     // Setter
-    public static void myField(final MyClass instance, final Object newValue);
+    public static void myField(final MyClass instance, final String newValue);
 }
 ```
 If you are using Kotlin, you can take advantage of the Kotlin artifact instead for a more idiomatic usage via extension
@@ -55,19 +55,24 @@ will generate an implementation under the following API in the current source se
 @Generated
 object MyKotlinClassTestAccessors {
   @JvmStatic
-  fun <T> MyClass.myField(): T
+  fun MyClass.myField(): String
 
   @JvmStatic
-  fun <T> MyClass.myField(newValue: Any?): Unit
+  fun MyClass.myField(newValue: String?): Unit
 }
 ```
 ## Options
-#### Annotation
+#### Annotation level
 The annotation has some parameters you can use to alter its behavior:
 * name -> Allows you to change the name of the methods that will be generated for the field you are annotating. If 
 unspecified, the name of the field will be used.
 * requires -> Allows you to specify which type of accessor you want (use AccessorType.TYPE_GETTER for getter and/or
-AccessorType.TYPE_SETTER for setter) for your annotated field. By default, both getter and setter will be generated.
+AccessorType.TYPE_SETTER for setter) for your annotated field. If unspecified, both getter and setter will be generated.
+#### Processor level
+* testaccessors.requiredPatternInClasspath -> Allows you to specify a regex that artifact names in the corresponding 
+classpath will be checked against every time a generated method runs. This allows you to ensure that generated methods 
+are not used where they should not (such as outside of tests) by causing an unchecked exception to be thrown at runtime 
+if the regex does not match at all. If unspecified or invalid, it becomes a regex that matches both TestNG and JUnit.
 ## Disclaimer: when should I use this?
 When dealing with code that is to be tested, you normally want to write it in a way that respects certain good 
 principles to allow and facilitate testing it. However, due to circumstances of life, such as legacy code, 

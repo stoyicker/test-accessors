@@ -8,12 +8,16 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.util.Elements;
 import java.lang.annotation.Annotation;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 public abstract class AnnotationProcessor extends AbstractProcessor {
     Filer filer;
     Elements elementUtils;
     Messager messager;
+    private Map<String, String> options;
     private final Class<? extends Annotation> annotation;
 
     AnnotationProcessor(final Class<? extends Annotation> annotation) {
@@ -26,6 +30,7 @@ public abstract class AnnotationProcessor extends AbstractProcessor {
         filer = processingEnvironment.getFiler();
         elementUtils = processingEnvironment.getElementUtils();
         messager = processingEnvironment.getMessager();
+        options = processingEnvironment.getOptions();
     }
 
     @Override
@@ -35,7 +40,7 @@ public abstract class AnnotationProcessor extends AbstractProcessor {
 
     @Override
     public final Set<String> getSupportedOptions() {
-        return Collections.emptySet();
+        return Collections.singleton(OPTION_KEY_REQUIRED_PATTERN_IN_CLASSPATH);
     }
 
     @Override
@@ -46,4 +51,19 @@ public abstract class AnnotationProcessor extends AbstractProcessor {
     final Class<? extends Annotation> getAnnotationClass() {
         return annotation;
     }
+
+    final CharSequence optionRequiredPatternInClasspath() {
+        String candidate = options.getOrDefault(
+                OPTION_KEY_REQUIRED_PATTERN_IN_CLASSPATH, OPTION_DEFAULT_REQUIRED_PATTERN_IN_CLASSPATH);
+
+        try {
+            Pattern.compile(candidate);
+        } catch (final PatternSyntaxException ignored) {
+            candidate = OPTION_DEFAULT_REQUIRED_PATTERN_IN_CLASSPATH;
+        }
+        return candidate;
+    }
+
+    private static final String OPTION_KEY_REQUIRED_PATTERN_IN_CLASSPATH = "testaccessors.requiredPatternInClasspath";
+    private static final String OPTION_DEFAULT_REQUIRED_PATTERN_IN_CLASSPATH = "junit|testng";
 }

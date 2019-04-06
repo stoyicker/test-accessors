@@ -1,6 +1,7 @@
 package testaccessors.internal;
 
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
@@ -11,6 +12,7 @@ import com.squareup.javapoet.TypeVariableName;
 import testaccessors.RequiresAccessor;
 
 import javax.annotation.processing.Filer;
+import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
@@ -21,12 +23,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 final class AccessorWriter extends AbstractAccessorWriter {
-    AccessorWriter(final Elements elementUtils) {
-        super(elementUtils);
+    AccessorWriter(final Elements elementUtils, final CharSequence requiredPatternInClasspath) {
+        super(elementUtils, requiredPatternInClasspath);
     }
 
     @Override
@@ -82,10 +85,27 @@ final class AccessorWriter extends AbstractAccessorWriter {
                     }
 
                     private MethodSpec.Builder generateCommonMethodSpec(final Element element) {
-                        final RequiresAccessor annotation = element.getAnnotation(RequiresAccessor.class);
-                        return addReceiver(MethodSpec.methodBuilder(
-                                annotation.name().isEmpty() ? element.getSimpleName().toString() : annotation.name())
+                        String name = element.getAnnotation(RequiresAccessor.class).name();
+                        if (!SourceVersion.isName(name)) {
+                            name = element.getSimpleName().toString();
+                        }
+                        final MethodSpec.Builder ret = addReceiver(MethodSpec.methodBuilder(name)
                                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC), element);
+                        if (requiredPatternInClasspath != null && requiredPatternInClasspath.length() != 0) {
+                            ret.addCode(CodeBlock.builder()
+                                    .beginControlFlow(
+                                            "if (!$T.compile($S).matcher($T.getProperty($S)).find())",
+                                            Pattern.class, requiredPatternInClasspath,
+                                            System.class,
+                                            "java.class.path")
+                                    .addStatement(
+                                            "throw new $T($S)",
+                                            IllegalAccessError.class,
+                                            ERROR_MESSAGE_ILLEGAL_ACCESS)
+                                    .endControlFlow()
+                                    .build());
+                        }
+                        return ret;
                     }
 
                     private MethodSpec.Builder addReceiver(final MethodSpec.Builder builder, final Element element) {
@@ -96,18 +116,18 @@ final class AccessorWriter extends AbstractAccessorWriter {
                                 .build());
                         final List<Element> enclosingElementList = enclosingElementsOf(element);
                         builder.addTypeVariables(
-                        enclosingElementList.stream()
-                                .filter(it -> enclosingElementList.get(0) == it ||
-                                (!it.getModifiers().contains(Modifier.STATIC)
-                                        && it.getEnclosingElement().getKind() != ElementKind.PACKAGE))
-                        .map(it -> TypeName.get(it.asType()))
-                        .filter(it -> it instanceof ParameterizedTypeName)
-                        .flatMap(it -> ((ParameterizedTypeName) it).typeArguments.stream())
-                        .distinct()
-                        .map(it -> TypeVariableName.get(
-                                it.toString(),
-                                (((TypeVariableName) it).bounds.toArray(new TypeName[0]))))
-                        .collect(Collectors.toList()));
+                                enclosingElementList.stream()
+                                        .filter(it -> enclosingElementList.get(0) == it ||
+                                                (!it.getModifiers().contains(Modifier.STATIC)
+                                                        && it.getEnclosingElement().getKind() != ElementKind.PACKAGE))
+                                        .map(it -> TypeName.get(it.asType()))
+                                        .filter(it -> it instanceof ParameterizedTypeName)
+                                        .flatMap(it -> ((ParameterizedTypeName) it).typeArguments.stream())
+                                        .distinct()
+                                        .map(it -> TypeVariableName.get(
+                                                it.toString(),
+                                                (((TypeVariableName) it).bounds.toArray(new TypeName[0]))))
+                                        .collect(Collectors.toList()));
                         return builder;
                     }
 
