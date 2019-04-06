@@ -31,7 +31,6 @@ internal class AccessorWriter(elementUtils: Elements) : AbstractAccessorWriter(e
 						when (it) {
 							RequiresAccessor.AccessorType.TYPE_GETTER -> generateGetterFunSpec(element)
 							RequiresAccessor.AccessorType.TYPE_SETTER -> generateSetterFunSpec(element)
-							else -> throw illegalAccessorRequestedException(element)
 						}
 					}
 

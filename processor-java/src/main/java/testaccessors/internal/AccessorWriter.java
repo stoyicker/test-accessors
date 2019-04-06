@@ -57,8 +57,6 @@ final class AccessorWriter extends AbstractAccessorWriter {
                                 case TYPE_SETTER:
                                     methodSpecs[i] = generateSetterMethodSpec(element);
                                     break;
-                                default:
-                                    throw illegalAccessorRequestedException(element);
                             }
                         }
                         return Arrays.stream(methodSpecs);
