@@ -30,7 +30,7 @@ public final class JavaClass<A, B, C, D, E, F, G> {
     class Sixth {
       class Seventh<T, J extends Set<List<T>>, Q> {
         @RequiresAccessor(name = "middleFieldThatHasBeenRenamed")
-        private final Set<Q> anotherField = Collections.emptySet();
+        private final Set<J> anotherField = Collections.emptySet();
       }
     }
   }

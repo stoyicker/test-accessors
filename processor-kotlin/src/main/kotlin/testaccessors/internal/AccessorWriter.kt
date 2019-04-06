@@ -37,18 +37,17 @@ internal class AccessorWriter(elementUtils: Elements, requiredPatternInClasspath
 						}
 					}
 
-			private fun generateGetterFunSpec(element: Element) = generateCommonFunSpec(element)
-// 					FIXME Use this instead when KotlinPoet correctly reports Kotlin types instead of their Java counterparts
-//					.addStatement("return ${element.simpleName} as ${element.asType().asTypeName()}")
-					.addStatement("return ${element.simpleName}")
-					.build()
+			private fun generateGetterFunSpec(element: Element) = element.asType().asTypeName().kotlinize().run {
+				generateCommonFunSpec(element)
+						.addStatement("return ${element.simpleName} as %T", this)
+						.returns(this)
+						.build()
+			}
 
 			private fun generateSetterFunSpec(element: Element) = generateCommonFunSpec(element)
 					.addParameter(ParameterSpec.builder(
 							PARAMETER_NAME_NEW_VALUE,
-							ClassName.bestGuess(Any::class.qualifiedName!!).copy(true))
-// 							FIXME Use this instead when KotlinPoet correctly reports Kotlin types instead of their Java counterparts
-//							element.asType().asTypeName())
+							element.asType().asTypeName().kotlinize())
 							.build())
 					.addStatement("${element.simpleName} = $PARAMETER_NAME_NEW_VALUE")
 					.build()
@@ -100,10 +99,8 @@ internal class AccessorWriter(elementUtils: Elements, requiredPatternInClasspath
 						.distinct()
 						.map {
 							TypeVariableName(it.toString()).copy(
-//								FIXME Use this instead when KotlinPoet correctly reports Kotlin types instead of their Java counterparts
-//								nullable = it.isNullable,
-//								bounds = (it as TypeVariableName).bounds)
-									nullable = it.isNullable)
+								nullable = it.isNullable,
+								bounds = (it as TypeVariableName).bounds.map { it.kotlinize() })
 						})
 			}
 
