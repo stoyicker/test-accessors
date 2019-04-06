@@ -1,7 +1,7 @@
-plugins { 
-    id 'java'
+plugins {
+  id 'java'
 }
 
 dependencies {
-    implementation project(':annotations')
+  implementation project(':annotations')
 }
