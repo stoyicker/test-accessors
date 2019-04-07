@@ -18,7 +18,6 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
-import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import java.io.IOException;
@@ -92,21 +91,20 @@ final class AccessorWriter extends AbstractAccessorWriter {
           }
 
           private MethodSpec generateSetterMethodSpec(final Element element) {
-            final TypeMirror elementType = element.asType();
             return generateCommonMethodSpec(element)
                 .addParameter(ParameterSpec.builder(
-                    TypeName.get(elementType),
+                    TypeName.get(element.asType()),
                     PARAMETER_NAME_NEW_VALUE,
                     Modifier.FINAL)
                     .build())
                 .addStatement(
                     "final $T field = $T.class.getDeclaredField($S)",
                     Field.class,
-                    typeUtils.erasure(elementType),
+                    typeUtils.erasure(element.getEnclosingElement().asType()),
                     element.getSimpleName())
                 .addStatement("final $T wasAccessible = field.isAccessible()", boolean.class)
                 .addStatement("field.setAccessible(true)")
-                .addStatement("field.set($S, $S)", PARAMETER_NAME_RECEIVER, PARAMETER_NAME_NEW_VALUE)
+                .addStatement("field.set($L, $L)", PARAMETER_NAME_RECEIVER, PARAMETER_NAME_NEW_VALUE)
                 .addStatement("field.setAccessible(wasAccessible)")
                 .addExceptions(Arrays.asList(
                     ClassName.get(NoSuchFieldException.class),
