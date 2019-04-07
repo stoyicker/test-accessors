@@ -1,0 +1,68 @@
+buildscript {
+  repositories {
+    google()
+    jcenter()
+  }
+  dependencies {
+    classpath 'com.android.tools.build:gradle:3.3.2'
+    classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.21'
+  }
+}
+
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+
+android {
+  buildToolsVersion '28.0.3'
+  compileSdkVersion 28
+  signingConfigs {
+    dummy1 {
+      storeFile new File('dummy1.keystore')
+      storePassword('dummy1')
+      keyAlias('dummy1')
+      keyPassword('dummy1')
+    }
+  }
+  buildTypes {
+    debug {
+      minifyEnabled false
+    }
+    release {
+      minifyEnabled true
+      proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard/rules.pro'
+      signingConfig signingConfigs.dummy1
+    }
+  }
+  defaultConfig {
+    applicationId 'com.github.stoyicker.testaccessors.sampleandroid'
+    versionCode 1
+    versionName '1'
+    minSdkVersion 1
+    targetSdkVersion 28
+  }
+  flavorDimensions 'language'
+  productFlavors {
+    java {
+      dimension 'language'
+      applicationIdSuffix '.java'
+      versionNameSuffix '-java'
+    }
+  }
+}
+
+repositories {
+  google()
+  jcenter()
+}
+dependencies {
+  javaCompileOnly project(':annotations')
+  // Kapt takes over annotationProcessor everywhere, so jvAnnotationProcessor cannot be used here
+  kaptJava project(':processor-java')
+  testJavaImplementation 'junit:junit:4.12'
+
+//  ktImplementation 'org.jetbrains.kotlin:kotlin-stdlib:1.3.21'
+//  ktCompileOnly project(':annotations')
+//  kaptKt project(':processor-kotlin')
+//  testKtImplementation 'junit:junit:4.12'
+}
