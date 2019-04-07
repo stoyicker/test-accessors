@@ -50,10 +50,7 @@ final class AccessorWriter extends AbstractAccessorWriter {
     final String classAndFileName = nameForGeneratedClassFrom(ClassName.get(location[0], location[1], subLocation)
         .simpleNames());
     final TypeSpec.Builder typeSpecBuilder = TypeSpec.classBuilder(classAndFileName)
-        .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-        .addAnnotation(AnnotationSpec.builder(Generated.class)
-            .addMember("value", "$S", AccessorWriter.class.getCanonicalName())
-            .build());
+        .addModifiers(Modifier.PUBLIC, Modifier.FINAL);
     annotatedElements.stream()
         .flatMap(new Function<Element, Stream<MethodSpec>>() {
           @Override
