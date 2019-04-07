@@ -73,7 +73,7 @@ AccessorType.TYPE_SETTER for setter) for your annotated field. If unspecified, b
 classpath will be checked against every time a generated method runs. This allows you to ensure that generated methods 
 are not used where they should not (such as outside of tests) by causing an unchecked exception to be thrown at runtime 
 if the regex does not match at all. If unspecified or invalid, it becomes a regex that matches both TestNG and JUnit.
-## Disclaimer: when should I use this?
+## When should I use this?
 When dealing with code that is to be tested, you normally want to write it in a way that respects certain good 
 principles to allow and facilitate testing it. However, due to circumstances of life, such as legacy code, 
 API requirements, primitive types and whatnot, sometimes this is just not possible - at least not without sacrificing 
@@ -81,5 +81,7 @@ the quality of the code or refactorings that are too costly.
 I have written this tool for situations like these. However, bear in mind that abusing this tool will slow down your 
 tests as the generated code uses the Java reflection API underneath (and just like it, it is a tool that exists because 
 it has its use cases, but you should normally avoid it if at all possible).
+## Known issues
+* _My IntelliJ-based IDE does not find the generated Kotlin accessors_ -> Upvote [this issue](https://youtrack.jetbrains.com/issue/KT-15286)! (in the mean time you can just write the import statement manually)
 ## License
 https://creativecommons.org/licenses/by/4.0/legalcode
