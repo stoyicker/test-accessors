@@ -22,4 +22,19 @@ class FirstTest {
 		val actual = subject::class.java.getDeclaredField("aField")[subject]
 		assertSame(expected, actual)
 	}
+
+	@Test
+	fun getAField() {
+		val expected = "this is a mock value"
+		subject.javaClass.getDeclaredField("aField").apply {
+			val wasAccessible = isAccessible
+			isAccessible = true
+			set(subject, expected)
+			isAccessible = wasAccessible
+		}
+
+		val actual = subject.aField()
+
+		assertSame(expected, actual)
+	}
 }

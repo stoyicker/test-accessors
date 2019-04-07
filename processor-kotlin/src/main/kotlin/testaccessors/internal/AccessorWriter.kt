@@ -54,7 +54,15 @@ internal class AccessorWriter(elementUtils: Elements, typeUtils: Types, required
 							PARAMETER_NAME_NEW_VALUE,
 							element.asType().asTypeName().kotlinize())
 							.build())
-					.addStatement("${element.simpleName} = $PARAMETER_NAME_NEW_VALUE")
+					.beginControlFlow(
+							"%T::class.java.getDeclaredField(%S).apply",
+							typeUtils.erasure(element.enclosingElement.asType()),
+							element.simpleName)
+					.addStatement("val wasAccessible = isAccessible")
+					.addStatement("isAccessible = true")
+					.addStatement("set(this, %L)", PARAMETER_NAME_NEW_VALUE)
+					.addStatement("isAccessible = wasAccessible")
+					.endControlFlow()
 					.build()
 
 			private fun generateCommonFunSpec(element: Element) = element.getAnnotation(RequiresAccessor::class.java)
@@ -104,8 +112,8 @@ internal class AccessorWriter(elementUtils: Elements, typeUtils: Types, required
 						.distinct()
 						.map {
 							TypeVariableName(it.toString(), variance = (it as TypeVariableName).variance).copy(
-								nullable = it.isNullable,
-								bounds = it.bounds.map { bound -> bound.kotlinize() })
+									nullable = it.isNullable,
+									bounds = it.bounds.map { bound -> bound.kotlinize() })
 						})
 			}
 
