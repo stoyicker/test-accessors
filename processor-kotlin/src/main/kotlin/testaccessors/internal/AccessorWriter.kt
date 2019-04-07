@@ -12,7 +12,6 @@ import com.squareup.kotlinpoet.TypeVariableName
 import com.squareup.kotlinpoet.asTypeName
 import testaccessors.RequiresAccessor
 import java.util.regex.Pattern
-import javax.annotation.Generated
 import javax.annotation.processing.Filer
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind
@@ -40,11 +39,16 @@ internal class AccessorWriter(elementUtils: Elements, typeUtils: Types, required
 
 			private fun generateGetterFunSpec(element: Element) = element.asType().asTypeName().kotlinize().run {
 				generateCommonFunSpec(element)
-						.addStatement(
-								"return %T::class.java.getDeclaredField(%S)[this] as %T",
+						.beginControlFlow(
+								"%T::class.java.getDeclaredField(%S).apply",
 								typeUtils.erasure(element.enclosingElement.asType()),
-								element.simpleName,
-								this)
+								element.simpleName)
+						.addStatement("val wasAccessible = isAccessible")
+						.addStatement("isAccessible = true")
+						.addStatement("val ret = this[this@%L] as %T", funName(element), this)
+						.addStatement("isAccessible = wasAccessible")
+						.addStatement("return ret")
+						.endControlFlow()
 						.returns(this)
 						.build()
 			}
@@ -67,7 +71,7 @@ internal class AccessorWriter(elementUtils: Elements, typeUtils: Types, required
 
 			private fun generateCommonFunSpec(element: Element) = element.getAnnotation(RequiresAccessor::class.java)
 					.run {
-						FunSpec.builder(if (isName(name)) name else element.simpleName.toString())
+						FunSpec.builder(funName(element))
 								.addAnnotation(JvmStatic::class)
 								.addReceiver(element)
 								.apply {
@@ -88,6 +92,11 @@ internal class AccessorWriter(elementUtils: Elements, typeUtils: Types, required
 									}
 								}
 					}
+
+      private fun funName(element: Element) = element.getAnnotation(RequiresAccessor::class.java)
+          .run {
+            if (isName(name)) name else element.simpleName.toString()
+          }
 
 			private fun FunSpec.Builder.addReceiver(element: Element) = apply {
 				receiver(element.enclosingElement.asType().asTypeName())

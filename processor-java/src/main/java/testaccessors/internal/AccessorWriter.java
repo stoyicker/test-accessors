@@ -78,11 +78,18 @@ final class AccessorWriter extends AbstractAccessorWriter {
             final TypeName elementType = TypeName.get(element.asType());
             return generateCommonMethodSpec(element)
                 .addStatement(
-                    "return ($T) $T.class.getDeclaredField($S).get($S)",
-                    elementType,
+                    "final $T field = $T.class.getDeclaredField($S)",
+                    Field.class,
                     typeUtils.erasure(element.getEnclosingElement().asType()),
-                    element.getSimpleName(),
+                    element.getSimpleName())
+                .addStatement("final $T wasAccessible = field.isAccessible()", boolean.class)
+                .addStatement("field.setAccessible(true)")
+                .addStatement("final $T ret = ($T) field.get($L)",
+                    elementType,
+                    elementType,
                     PARAMETER_NAME_RECEIVER)
+                .addStatement("field.setAccessible(wasAccessible)")
+                .addStatement("return ret")
                 .addExceptions(Arrays.asList(
                     ClassName.get(NoSuchFieldException.class),
                     ClassName.get(IllegalAccessException.class)))
