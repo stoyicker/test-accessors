@@ -1,5 +1,5 @@
 # test-accessors
-### A codegen utility to generate test-only accessors for otherwise unaccessible fields in your Java classes.
+### An annotation processor that generates code for your tests to be able to access and modify private/final fields so you don't have to use anti-patterns such as @VisibleForTesting!
 ## Usage
 Add the dependencies to your project:
 ```groovy
