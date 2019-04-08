@@ -51,6 +51,8 @@ android {
   }
 }
 
+tasks.findByName('lint').enabled = false
+
 repositories {
   google()
   jcenter()
