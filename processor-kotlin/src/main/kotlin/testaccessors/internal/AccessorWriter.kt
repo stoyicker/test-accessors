@@ -64,7 +64,7 @@ internal class AccessorWriter(elementUtils: Elements, typeUtils: Types, required
 							element.simpleName)
 					.addStatement("val wasAccessible = isAccessible")
 					.addStatement("isAccessible = true")
-					.addStatement("set(this, %L)", PARAMETER_NAME_NEW_VALUE)
+					.addStatement("set(this@%L, %L)", funName(element), PARAMETER_NAME_NEW_VALUE)
 					.addStatement("isAccessible = wasAccessible")
 					.endControlFlow()
 					.build()
