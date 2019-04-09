@@ -8,6 +8,7 @@ repositories {
 }
 dependencies {
   implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.3.21'
+  // Probably only needed by KotlinTypeMapper only, hopefully removable once that gets removed too
   implementation 'org.jetbrains.kotlin:kotlin-reflect:1.3.21'
   implementation project(':annotations')
   implementation project(':processor-base')
