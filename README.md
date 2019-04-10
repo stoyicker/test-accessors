@@ -81,7 +81,5 @@ the quality of the code or refactorings that are too costly.
 I have written this tool for situations like these. However, bear in mind that abusing this tool will slow down your 
 tests as the generated code uses the Java reflection API underneath (and just like it, it is a tool that exists because 
 it has its use cases, but you should normally avoid it if at all possible).
-## Known issues
-* _My IntelliJ-based IDE does not find the generated Kotlin accessors_ -> Upvote [this issue](https://youtrack.jetbrains.com/issue/KT-15286)! (in the mean time you can just write the import statement manually)
 ## License
 https://creativecommons.org/licenses/by/4.0/legalcode

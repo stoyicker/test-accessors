@@ -3,7 +3,6 @@ package root
 import org.junit.Assert.assertSame
 import org.junit.Before
 import org.junit.Test
-import root.AndroidApplicationTestAccessors.aField
 
 class AndroidApplicationTest {
   private lateinit var subject: AndroidApplication
