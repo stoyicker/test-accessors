@@ -68,6 +68,10 @@ The annotation has some parameters you can use to alter its behavior:
 unspecified, the name of the field will be used.
 * requires -> Allows you to specify which type of accessor you want (use AccessorType.TYPE_GETTER for getter and/or
 AccessorType.TYPE_SETTER for setter) for your annotated field. If unspecified, both getter and setter will be generated.
+* customAnnotations -> Allows you to declare an array of annotation classes that will be added to the 
+methods specified by this annotation. The annotations deduced from this classes will be added with have
+all of their fields unset (implicitly set to default values), so make sure that all of them have defaults or the 
+generated code won't compile! If unspecified, no additional annotations will be copied into the generated methods.
 #### Processor level
 * testaccessors.requiredPatternInClasspath -> Allows you to specify a regex that artifact names in the corresponding 
 classpath will be checked against every time a generated method runs. This allows you to ensure that generated methods 

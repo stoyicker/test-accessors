@@ -1,6 +1,5 @@
 package testaccessors.internal;
 
-import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.JavaFile;
@@ -10,9 +9,10 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
+
+import androidx.annotation.RestrictTo;
 import testaccessors.RequiresAccessor;
 
-import javax.annotation.Generated;
 import javax.annotation.processing.Filer;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
@@ -20,7 +20,9 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -118,12 +120,20 @@ final class AccessorWriter extends AbstractAccessorWriter {
           }
 
           private MethodSpec.Builder generateCommonMethodSpec(final Element element) {
-            String name = element.getAnnotation(RequiresAccessor.class).name();
+            final RequiresAccessor requiresAccessor = element.getAnnotation(RequiresAccessor.class);
+            String name = requiresAccessor.name();
             if (!SourceVersion.isName(name)) {
               name = element.getSimpleName().toString();
             }
-            final MethodSpec.Builder ret = addReceiver(MethodSpec.methodBuilder(name)
-                .addModifiers(Modifier.PUBLIC, Modifier.STATIC), element);
+            final MethodSpec.Builder ret = addCustomTransitiveAnnotations(
+                addSupportRestrictTo(
+                    addAndroidXRestrictTo(
+                        addReceiver(MethodSpec.methodBuilder(name)
+                            .addModifiers(Modifier.PUBLIC, Modifier.STATIC), element),
+                        requiresAccessor.androidXRestrictTo()),
+                    requiresAccessor.supportRestrictTo()),
+                requiresAccessor.customAnnotations());
+            ;
             if (requiredPatternInClasspath != null && requiredPatternInClasspath.length() != 0) {
               ret.addCode(CodeBlock.builder()
                   .beginControlFlow(
@@ -139,6 +149,27 @@ final class AccessorWriter extends AbstractAccessorWriter {
                   .build());
             }
             return ret;
+          }
+
+          private MethodSpec.Builder addAndroidXRestrictTo(
+              final MethodSpec.Builder receiver, final RestrictTo annotation) {
+            // TODO Resolve Android-specific androidX annotation with options default
+            return receiver;
+          }
+
+          private MethodSpec.Builder addSupportRestrictTo(
+              final MethodSpec.Builder receiver,
+              final android.support.annotation.RestrictTo annotation) {
+            // TODO Resolve Android-specific support annotation with options default
+            return receiver;
+          }
+
+          private MethodSpec.Builder addCustomTransitiveAnnotations(
+              final MethodSpec.Builder receiver, final Class<? extends Annotation>[] annotations) {
+            for (final Class<? extends Annotation> annotation : annotations) {
+              receiver.addAnnotation(annotation);
+            }
+            return receiver;
           }
 
           private MethodSpec.Builder addReceiver(final MethodSpec.Builder builder, final Element element) {
