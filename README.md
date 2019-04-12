@@ -113,7 +113,7 @@ Kotlin:
 ```groovy
 kapt {
     arguments {
-        arg("testaccessors.requiredPatternInClasspath", 'yourRegex')
+        arg('testaccessors.requiredPatternInClasspath', 'yourRegex')
     }
 }
 ```
