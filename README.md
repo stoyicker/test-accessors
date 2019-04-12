@@ -13,7 +13,7 @@ dependencies {
     implementation "com.github.stoyicker.test-accessors:annotations:<version>"
     // 2. Add the processor you want
     // If on Java
-    apt "com.github.stoyicker.test-accessors:processor-java:<version>"
+    annotationProcessor "com.github.stoyicker.test-accessors:processor-java:<version>"
     // If on Kotlin (or mixed Java/Kotlin)
     kapt "com.github.stoyicker.test-accessors:processor-kotlin:<version>"
     // In the case of mixed projects, you'll be able to use the generated code from both Kotlin and Java just fine,
@@ -22,8 +22,6 @@ dependencies {
 ```
 Annotate your field:
 ```java
-package org.my.example;
-
 public final class MyJavaClass {
     @RequiresAccessor
     private final String myField;
@@ -52,38 +50,72 @@ class MyKotlinClass {
 ```
 will generate an implementation under the following API in the current source set:
 ```kotlin
-@Generated
-object MyKotlinClassTestAccessors {
-  @JvmStatic
-  fun MyClass.myField(): String
+@JvmStatic
+fun MyKotlinClass.myField(): String
 
-  @JvmStatic
-  fun MyClass.myField(newValue: String): Unit
-}
+@JvmStatic
+fun MyKotlinClass.myField(newValue: String): Unit
 ```
 ## Options
-#### Annotation level
+### Annotation level
 The annotation has some parameters you can use to alter its behavior:
-* name -> Allows you to change the name of the methods that will be generated for the field you are annotating. If 
-unspecified, the name of the field will be used.
-* requires -> Allows you to specify which type of accessor you want (use AccessorType.TYPE_GETTER for getter and/or
-AccessorType.TYPE_SETTER for setter) for your annotated field. If unspecified, both getter and setter will be generated.
-* customAnnotations -> Allows you to declare an array of annotation classes that will be added to the 
-methods specified by this annotation. The annotations deduced from this classes will be added with have
-all of their fields unset (implicitly set to default values), so make sure that all of them have defaults or the 
-generated code won't compile! If unspecified, no additional annotations will be copied into the generated methods.
-#### Processor level
-* testaccessors.requiredPatternInClasspath -> Allows you to specify a regex that artifact names in the corresponding 
-classpath will be checked against every time a generated method runs. This allows you to ensure that generated methods 
-are not used where they should not (such as outside of tests) by causing an unchecked exception to be thrown at runtime 
-if the regex does not match at all. If unspecified or invalid, it becomes a regex that matches both TestNG and JUnit.
-## When should I use this?
-When dealing with code that is to be tested, you normally want to write it in a way that respects certain good 
-principles to allow and facilitate testing it. However, due to circumstances of life, such as legacy code, 
-API requirements, primitive types and whatnot, sometimes this is just not possible - at least not without sacrificing 
-the quality of the code or refactorings that are too costly.
-I have written this tool for situations like these. However, bear in mind that abusing this tool will slow down your 
-tests as the generated code uses the Java reflection API underneath (and just like it, it is a tool that exists because 
-it has its use cases, but you should normally avoid it if at all possible).
+* name -> Allows you to change the name of the methods that will be generated for the field you are 
+annotating. If unspecified, the name of the field will be used.
+* requires -> Allows you to specify which type of accessor you want (use AccessorType.TYPE_GETTER 
+for getter and/ orAccessorType.TYPE_SETTER for setter) for your annotated field. If unspecified, 
+both getter and setter will be generated.
+* androidXRestrictTo -> Allows you to declare an instance of androidx.annotation.RestrictTo that 
+will be added to the method(s) generated due to this annotation. If unspecified or the scope array 
+that describes the restrictions is empty, no androidX RestrictTo annotation will be added to methods 
+generated due to this annotation occurrence (unless overriden by 
+testaccessors.defaultAndroidXRestrictTo, see below).
+* supportRestrictTo -> Allows you to declare an instance of android.support.annotation.RestrictTo 
+that will be added to the method(s) generated due to this annotation. If unspecified or the scope 
+array that describes the restrictions is empty, no support RestrictTo annotation will be added to 
+methods generated due to this annotation occurrence (unless overriden by
+testaccessors.defaultSupportRestrictTo, see below).
+### Processor level
+* testaccessors.requiredPatternInClasspath -> Allows you to specify a regex that artifact names in 
+the corresponding classpath will be checked against every time a generated method runs. This allows 
+you to ensure that generated methods are not used where they should not (such as outside of tests) 
+by causing an unchecked exception to be thrown at runtime if the regex does not match at all. If 
+unspecified or invalid, it becomes a regex that matches both TestNG and JUnit.
+* testaccessors.defaultAndroidXRestrictTo -> Allows you to specify a default 
+androidx.annotation.RestrictTo scope that will cause all occurrences of RequiresAccessors to change 
+their default value for androidXRestrictTo to an instance of RestrictTo with that scope. Must be a
+comma-separated String formed by one or more of "LIBRARY", "LIBRARY_GROUP", "GROUP_ID", "TESTS" and 
+"SUBCLASSES".
+* testaccessors.defaultSupportRestrictTo -> Allows you to specify a default 
+android.support.annotation.RestrictTo scope that will cause all occurrences of RequiresAccessors to 
+change their default value for supportRestrictTo to an instance of RestrictTo with that scope. Must 
+be a comma-separated String formed by one or more of "LIBRARY", "LIBRARY_GROUP", "GROUP_ID", "TESTS"
+and "SUBCLASSES".
+##### How do I pass arguments to the annotation processor?
+Frameworkless Java:
+```groovy
+compileJava{
+    options.compilerArgs.addAll(['-Atestaccessors.requiredPatternInClasspath=yourRegex'])
+}
+```
+Android with Java:
+```groovy
+android {
+  defaultConfig {
+    javaCompileOptions {
+      annotationProcessorOptions {
+        arguments = ['testaccessors.requiredPatternInClasspath': 'yourRegex']
+      }
+    }
+  }
+}
+```
+Kotlin:
+```groovy
+kapt {
+    arguments {
+        arg("testaccessors.requiredPatternInClasspath", 'yourRegex')
+    }
+}
+```
 ## License
 https://creativecommons.org/licenses/by/4.0/legalcode

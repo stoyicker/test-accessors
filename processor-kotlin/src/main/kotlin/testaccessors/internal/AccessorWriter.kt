@@ -11,6 +11,7 @@ import com.squareup.kotlinpoet.ParameterizedTypeName
 import com.squareup.kotlinpoet.TypeVariableName
 import com.squareup.kotlinpoet.asTypeName
 import testaccessors.RequiresAccessor
+import java.lang.RuntimeException
 import java.util.regex.Pattern
 import javax.annotation.processing.Filer
 import javax.lang.model.element.Element
@@ -19,9 +20,10 @@ import javax.lang.model.element.Modifier
 import javax.lang.model.util.Elements
 import javax.lang.model.util.Types
 import kotlin.reflect.KClass
+import android.support.annotation.RestrictTo as SupportRestrictTo
 
-internal class AccessorWriter(elementUtils: Elements, typeUtils: Types, requiredPatternInClasspath: CharSequence?)
-  : AbstractAccessorWriter(elementUtils, typeUtils, requiredPatternInClasspath) {
+internal class AccessorWriter(elementUtils: Elements, typeUtils: Types, options: Options)
+  : AbstractAccessorWriter(elementUtils, typeUtils, options) {
   public override fun writeAccessorClass(annotatedElements: Set<Element>, filer: Filer) {
     val enclosingClassElement = annotatedElements.iterator().next().enclosingElement
     val location = extractLocation(enclosingClassElement.enclosingElement) +
@@ -81,9 +83,9 @@ internal class AccessorWriter(elementUtils: Elements, typeUtils: Types, required
             FunSpec.builder(funName(element))
                 .addAndroidXRestrictTo(androidXRestrictTo)
                 .addSupportRestrictTo(supportRestrictTo)
-                .addCustomTransitiveAnnotations(customAnnotations)
                 .addReceiver(element)
                 .apply {
+                  val requiredPatternInClasspath = options.requiredPatternInClasspath()
                   if (!requiredPatternInClasspath.isNullOrEmpty()) {
                     addCode(CodeBlock.builder()
                         .beginControlFlow(
@@ -107,18 +109,46 @@ internal class AccessorWriter(elementUtils: Elements, typeUtils: Types, required
             if (isName(name)) name else element.simpleName.toString()
           }
 
-      private fun FunSpec.Builder.addAndroidXRestrictTo(annotation: RestrictTo) = apply {
-        // TODO Resolve Android-specific androidX annotation with options default
-      }
+      private fun FunSpec.Builder.addAndroidXRestrictTo(annotation: RestrictTo) =
+          annotation.value.let {
+            val prefix = "${RestrictTo::class.simpleName}.${RestrictTo.Scope::class.simpleName}."
+            addAnnotation(
+                RestrictTo::class,
+                "value",
+                (if (it.isEmpty())
+                  options.defaultAndroidXRestrictTo()
+                else
+                  it).map { "$prefix${it.name}" })
+            this
+          }
 
       private fun FunSpec.Builder.addSupportRestrictTo(
-          annotation: android.support.annotation.RestrictTo) = apply {
-        // TODO Resolve Android-specific support annotation with options default
-      }
+          annotation: SupportRestrictTo) =
+          annotation.value.let {
+            val prefix = "${SupportRestrictTo::class.simpleName}.${SupportRestrictTo.Scope::class.simpleName}"
+            addAnnotation(
+                SupportRestrictTo::class,
+                "value",
+                (if (it.isEmpty())
+                  options.defaultSupportRestrictTo()
+                else
+                  it).map { "$prefix${it.name}" })
+            this
+          }
 
-      private fun FunSpec.Builder.addCustomTransitiveAnnotations(
-          annotations: Array<KClass<out Annotation>>) = apply {
-        annotations.forEach { addAnnotation(it) }
+      private fun FunSpec.Builder.addAnnotation(
+          annotationClass: KClass<out Annotation>,
+          key: String,
+          value: Collection<String>) = apply {
+        value.takeIf { !it.isNullOrEmpty() }?.let {
+          addAnnotation(AnnotationSpec.builder(annotationClass)
+              .addMember(CodeBlock.builder()
+                  .add("$key = [")
+                  .add(it.joinToString(", "))
+                  .add("]")
+                  .build())
+              .build())
+        }
       }
 
       private fun FunSpec.Builder.addReceiver(element: Element) = apply {

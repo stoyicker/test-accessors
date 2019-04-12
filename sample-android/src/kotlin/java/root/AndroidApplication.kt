@@ -1,11 +1,12 @@
 package root
 
 import android.app.Application
+import androidx.annotation.RestrictTo
 
 import testaccessors.RequiresAccessor
 
 class AndroidApplication : Application() {
-  @RequiresAccessor
+  @RequiresAccessor(androidXRestrictTo = RestrictTo(RestrictTo.Scope.LIBRARY_GROUP))
   private val aField: String? = null
 
   override fun onCreate() {

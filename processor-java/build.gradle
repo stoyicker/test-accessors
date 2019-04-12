@@ -5,6 +5,7 @@ plugins {
 
 repositories {
   jcenter()
+  google()
 }
 dependencies {
   implementation project(':annotations')

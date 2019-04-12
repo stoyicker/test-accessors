@@ -13,13 +13,12 @@ abstract class AbstractAccessorWriter {
   static final String ERROR_MESSAGE_ILLEGAL_ACCESS = "Accessing this method from this source set is not allowed";
   final Elements elementUtils;
   final Types typeUtils;
-  final CharSequence requiredPatternInClasspath;
+  final Options options;
 
-  AbstractAccessorWriter(
-      final Elements elementUtils, final Types typeUtils, final CharSequence requiredPatternInClasspath) {
+  AbstractAccessorWriter(final Elements elementUtils, final Types typeUtils, final Options options) {
     this.elementUtils = elementUtils;
     this.typeUtils = typeUtils;
-    this.requiredPatternInClasspath = requiredPatternInClasspath;
+    this.options = options;
   }
 
   final String nameForGeneratedClassFrom(final List<String> enclosingClassSimpleNames) {

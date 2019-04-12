@@ -15,7 +15,7 @@ import java.util.function.Consumer;
 public final class RequiresAccessorProcessor extends AnnotationProcessor {
   private final AnnotationVerifier verifier = new RequiresAccessorAnnotationVerifier(messager);
   private final Lazy<AbstractAccessorWriter> writer =
-      new Lazy<>(() -> new AccessorWriter(elementUtils, typeUtils, optionRequiredPatternInClasspath()));
+      new Lazy<>(() -> new AccessorWriter(elementUtils, typeUtils, this));
   private final Map<ClassName, Set<Element>> filesToGenerate = new HashMap<>();
 
   public RequiresAccessorProcessor() {

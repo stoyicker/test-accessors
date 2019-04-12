@@ -1,5 +1,6 @@
 package testaccessors.internal;
 
+import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.JavaFile;
@@ -36,8 +37,8 @@ import java.util.stream.Stream;
 final class AccessorWriter extends AbstractAccessorWriter {
   private static final String PARAMETER_NAME_RECEIVER = "receiver";
 
-  AccessorWriter(final Elements elementUtils, final Types typeUtils, final CharSequence requiredPatternInClasspath) {
-    super(elementUtils, typeUtils, requiredPatternInClasspath);
+  AccessorWriter(final Elements elementUtils, final Types typeUtils, final Options options) {
+    super(elementUtils, typeUtils, options);
   }
 
   @Override
@@ -125,15 +126,13 @@ final class AccessorWriter extends AbstractAccessorWriter {
             if (!SourceVersion.isName(name)) {
               name = element.getSimpleName().toString();
             }
-            final MethodSpec.Builder ret = addCustomTransitiveAnnotations(
-                addSupportRestrictTo(
-                    addAndroidXRestrictTo(
-                        addReceiver(MethodSpec.methodBuilder(name)
-                            .addModifiers(Modifier.PUBLIC, Modifier.STATIC), element),
-                        requiresAccessor.androidXRestrictTo()),
-                    requiresAccessor.supportRestrictTo()),
-                requiresAccessor.customAnnotations());
-            ;
+            final MethodSpec.Builder ret = addSupportRestrictTo(
+                addAndroidXRestrictTo(
+                    addReceiver(MethodSpec.methodBuilder(name)
+                        .addModifiers(Modifier.PUBLIC, Modifier.STATIC), element),
+                    requiresAccessor.androidXRestrictTo()),
+                requiresAccessor.supportRestrictTo());
+            final CharSequence requiredPatternInClasspath = options.requiredPatternInClasspath();
             if (requiredPatternInClasspath != null && requiredPatternInClasspath.length() != 0) {
               ret.addCode(CodeBlock.builder()
                   .beginControlFlow(
@@ -153,22 +152,60 @@ final class AccessorWriter extends AbstractAccessorWriter {
 
           private MethodSpec.Builder addAndroidXRestrictTo(
               final MethodSpec.Builder receiver, final RestrictTo annotation) {
-            // TODO Resolve Android-specific androidX annotation with options default
-            return receiver;
+            final RestrictTo.Scope[] originalScopes = annotation.value();
+            final RestrictTo.Scope[] values = originalScopes.length == 0 ?
+                options.defaultAndroidXRestrictTo() : originalScopes;
+            final String[] valuesAsStrings = new String[values.length];
+            final String prefix = RestrictTo.class.getSimpleName()
+                + "."
+                + RestrictTo.Scope.class.getSimpleName()
+                + ".";
+            for (int i = 0; i < values.length; i++) {
+              valuesAsStrings[i] = prefix + values[i].name();
+            }
+            return addAnnotation(
+                receiver,
+                RestrictTo.class,
+                "value",
+                valuesAsStrings);
           }
 
           private MethodSpec.Builder addSupportRestrictTo(
               final MethodSpec.Builder receiver,
               final android.support.annotation.RestrictTo annotation) {
-            // TODO Resolve Android-specific support annotation with options default
-            return receiver;
+            final android.support.annotation.RestrictTo.Scope[] originalScopes = annotation.value();
+            final android.support.annotation.RestrictTo.Scope[] values = originalScopes.length == 0 ?
+                options.defaultSupportRestrictTo() : originalScopes;
+            final String[] valuesAsStrings = new String[values.length];
+            final String prefix = android.support.annotation.RestrictTo.class.getSimpleName()
+                + "."
+                + android.support.annotation.RestrictTo.Scope.class.getSimpleName()
+                + ".";
+            for (int i = 0; i < values.length; i++) {
+              valuesAsStrings[i] = prefix + values[i].name();
+            }
+            return addAnnotation(
+                receiver,
+                android.support.annotation.RestrictTo.class,
+                "value",
+                valuesAsStrings);
           }
 
-          private MethodSpec.Builder addCustomTransitiveAnnotations(
-              final MethodSpec.Builder receiver, final Class<? extends Annotation>[] annotations) {
-            for (final Class<? extends Annotation> annotation : annotations) {
-              receiver.addAnnotation(annotation);
+          private MethodSpec.Builder addAnnotation(
+              final MethodSpec.Builder receiver,
+              final Class<? extends Annotation> annotationClass,
+              final String key,
+              final String[] values) {
+            if (values == null || values.length == 0) {
+              return receiver;
             }
+            receiver.addAnnotation(AnnotationSpec.builder(annotationClass)
+                .addMember(key, CodeBlock.builder()
+                    .add("{")
+                    .add(String.join(", ", values))
+                    .add("}")
+                    .build())
+                .build());
             return receiver;
           }
 

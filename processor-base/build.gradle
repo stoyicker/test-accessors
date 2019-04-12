@@ -2,6 +2,10 @@ plugins {
   id 'java-library'
 }
 
+repositories {
+  google()
+}
+
 dependencies {
   implementation project(':annotations')
 }

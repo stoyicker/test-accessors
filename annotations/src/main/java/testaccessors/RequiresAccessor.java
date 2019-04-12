@@ -25,13 +25,10 @@ public @interface RequiresAccessor {
    */
   AccessorType[] requires() default {AccessorType.TYPE_GETTER, AccessorType.TYPE_SETTER};
 
-  RestrictTo androidXRestrictTo() default @RestrictTo(RestrictTo.Scope.TESTS);
+  RestrictTo androidXRestrictTo() default @RestrictTo({});
 
   android.support.annotation.RestrictTo supportRestrictTo()
-      default @android.support.annotation.RestrictTo(
-          android.support.annotation.RestrictTo.Scope.TESTS);
-
-  Class<? extends Annotation>[] customAnnotations() default {};
+      default @android.support.annotation.RestrictTo({});
 
   enum AccessorType {
     TYPE_GETTER,
