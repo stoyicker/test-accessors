@@ -11,7 +11,9 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -77,6 +79,11 @@ final class AccessorWriter extends AbstractAccessorWriter {
           private MethodSpec generateGetterMethodSpec(final Element element) {
             final TypeName elementType = TypeName.get(element.asType());
             return generateCommonMethodSpec(element)
+                .addJavadoc(
+                    readAsset("/javadoc-getter.template"),
+                    TypeName.get(element.getEnclosingElement().asType()),
+                    element.getSimpleName().toString(),
+                    PARAMETER_NAME_RECEIVER)
                 .beginControlFlow("try")
                 .addStatement(
                     "final $T field = $T.class.getDeclaredField($S)",
@@ -108,6 +115,12 @@ final class AccessorWriter extends AbstractAccessorWriter {
                     PARAMETER_NAME_NEW_VALUE,
                     Modifier.FINAL)
                     .build())
+                .addJavadoc(
+                    readAsset("/javadoc-setter.template"),
+                    TypeName.get(element.getEnclosingElement().asType()),
+                    element.getSimpleName().toString(),
+                    PARAMETER_NAME_RECEIVER,
+                    PARAMETER_NAME_NEW_VALUE)
                 .beginControlFlow("try")
                 .addStatement(
                     "final $T field = $T.class.getDeclaredField($S)",
@@ -126,6 +139,21 @@ final class AccessorWriter extends AbstractAccessorWriter {
                 .endControlFlow()
                 .returns(void.class)
                 .build();
+          }
+
+          private String readAsset(final String path) {
+            try (final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(
+                AccessorWriter.class.getResourceAsStream(path)))) {
+              final StringBuilder ret = new StringBuilder();
+              String line;
+              while ((line = bufferedReader.readLine()) != null) {
+                ret.append(line);
+                ret.append('\n');
+              }
+              return ret.toString();
+            } catch (final IOException e) {
+              throw new RuntimeException(e);
+            }
           }
 
           private MethodSpec.Builder generateCommonMethodSpec(final Element element) {

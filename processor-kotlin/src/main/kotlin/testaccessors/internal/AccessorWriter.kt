@@ -11,6 +11,7 @@ import com.squareup.kotlinpoet.ParameterizedTypeName
 import com.squareup.kotlinpoet.TypeVariableName
 import com.squareup.kotlinpoet.asTypeName
 import testaccessors.RequiresAccessor
+import java.nio.charset.StandardCharsets
 import java.util.regex.Pattern
 import javax.annotation.processing.Filer
 import javax.lang.model.element.Element
@@ -47,6 +48,10 @@ internal class AccessorWriter(elementUtils: Elements, typeUtils: Types, options:
 
       private fun generateGetterFunSpec(element: Element) = element.asType().asTypeName().kotlinize().run {
         generateCommonFunSpec(element)
+            .addKdoc(
+                javaClass.getResource("/kdoc-getter.template").readText(StandardCharsets.UTF_8),
+                element.enclosingElement.asType().asTypeName().kotlinize(),
+                element.simpleName.toString())
             .beginControlFlow(
                 "%T::class.java.getDeclaredField(%S).apply",
                 typeUtils.erasure(element.enclosingElement.asType()),
@@ -66,6 +71,11 @@ internal class AccessorWriter(elementUtils: Elements, typeUtils: Types, options:
               PARAMETER_NAME_NEW_VALUE,
               element.asType().asTypeName().kotlinize())
               .build())
+          .addKdoc(
+              javaClass.getResource("/kdoc-setter.template").readText(StandardCharsets.UTF_8),
+              element.enclosingElement.asType().asTypeName().kotlinize(),
+              element.simpleName.toString(),
+              PARAMETER_NAME_NEW_VALUE)
           .beginControlFlow(
               "%T::class.java.getDeclaredField(%S).apply",
               typeUtils.erasure(element.enclosingElement.asType()),
