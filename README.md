@@ -41,8 +41,6 @@ public final class MyJavaClass {
 If you are using Kotlin, you can take advantage of the Kotlin artifact instead for a more idiomatic usage via extension
 functions. For example,
 ```kotlin
-package org.my.example
-
 class MyKotlinClass {
     @RequiresAccessor
     private val myField = "hola"
@@ -50,10 +48,10 @@ class MyKotlinClass {
 ```
 will generate an implementation under the following API in the current source set:
 ```kotlin
-@JvmStatic
+@file:JvmName("MyKotlinClassTestAccessors")
+
 fun MyKotlinClass.myField(): String
 
-@JvmStatic
 fun MyKotlinClass.myField(newValue: String): Unit
 ```
 ## Options
