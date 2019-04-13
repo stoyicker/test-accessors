@@ -16,26 +16,45 @@ public final class AndroidApplicationTest {
   }
 
   @Test
-  public void setAField() throws NoSuchFieldException, IllegalAccessException {
+  public void setAField() {
     final String expected = "this is a mock value";
 
     AndroidApplicationTestAccessors.aField(subject, expected);
 
-    final Field field = subject.getClass().getDeclaredField("aField");
+    final Field field;
+    try {
+      field = subject.getClass().getDeclaredField("aField");
+    } catch (final NoSuchFieldException e) {
+      throw new RuntimeException(e);
+    }
     final boolean wasAccessible = field.isAccessible();
     field.setAccessible(true);
-    final String actual = (String) field.get(subject);
+    final String actual;
+    try {
+      actual = (String) field.get(subject);
+    } catch (final IllegalAccessException e) {
+      throw new RuntimeException(e);
+    }
     assertSame(expected, actual);
     field.setAccessible(wasAccessible);
   }
 
   @Test
-  public void getAField() throws NoSuchFieldException, IllegalAccessException {
+  public void getAField() {
     final String expected = "this is a mock value";
-    final Field field = subject.getClass().getDeclaredField("aField");
+    final Field field;
+    try {
+      field = subject.getClass().getDeclaredField("aField");
+    } catch (final NoSuchFieldException e) {
+      throw new RuntimeException(e);
+    }
     final boolean wasAccessible = field.isAccessible();
     field.setAccessible(true);
-    field.set(subject, expected);
+    try {
+      field.set(subject, expected);
+    } catch (final IllegalAccessException e) {
+      throw new RuntimeException(e);
+    }
     field.setAccessible(wasAccessible);
 
     final String actual = AndroidApplicationTestAccessors.aField(subject);

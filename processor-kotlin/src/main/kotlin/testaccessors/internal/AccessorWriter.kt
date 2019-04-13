@@ -11,7 +11,6 @@ import com.squareup.kotlinpoet.ParameterizedTypeName
 import com.squareup.kotlinpoet.TypeVariableName
 import com.squareup.kotlinpoet.asTypeName
 import testaccessors.RequiresAccessor
-import java.lang.RuntimeException
 import java.util.regex.Pattern
 import javax.annotation.processing.Filer
 import javax.lang.model.element.Element

@@ -11,17 +11,6 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
 
-import androidx.annotation.RestrictTo;
-import testaccessors.RequiresAccessor;
-
-import javax.annotation.processing.Filer;
-import javax.lang.model.SourceVersion;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
-
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -33,6 +22,17 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import javax.annotation.processing.Filer;
+import javax.lang.model.SourceVersion;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.Modifier;
+import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
+
+import androidx.annotation.RestrictTo;
+import testaccessors.RequiresAccessor;
 
 final class AccessorWriter extends AbstractAccessorWriter {
   private static final String PARAMETER_NAME_RECEIVER = "receiver";
@@ -77,6 +77,7 @@ final class AccessorWriter extends AbstractAccessorWriter {
           private MethodSpec generateGetterMethodSpec(final Element element) {
             final TypeName elementType = TypeName.get(element.asType());
             return generateCommonMethodSpec(element)
+                .beginControlFlow("try")
                 .addStatement(
                     "final $T field = $T.class.getDeclaredField($S)",
                     Field.class,
@@ -90,9 +91,12 @@ final class AccessorWriter extends AbstractAccessorWriter {
                     PARAMETER_NAME_RECEIVER)
                 .addStatement("field.setAccessible(wasAccessible)")
                 .addStatement("return ret")
-                .addExceptions(Arrays.asList(
-                    ClassName.get(NoSuchFieldException.class),
-                    ClassName.get(IllegalAccessException.class)))
+                .nextControlFlow(
+                    "catch (final $T | $T e)",
+                    NoSuchFieldException.class,
+                    IllegalAccessException.class)
+                .addStatement("throw new $T(e)", RuntimeException.class)
+                .endControlFlow()
                 .returns(TypeName.get(element.asType()))
                 .build();
           }
@@ -104,6 +108,7 @@ final class AccessorWriter extends AbstractAccessorWriter {
                     PARAMETER_NAME_NEW_VALUE,
                     Modifier.FINAL)
                     .build())
+                .beginControlFlow("try")
                 .addStatement(
                     "final $T field = $T.class.getDeclaredField($S)",
                     Field.class,
@@ -113,9 +118,12 @@ final class AccessorWriter extends AbstractAccessorWriter {
                 .addStatement("field.setAccessible(true)")
                 .addStatement("field.set($L, $L)", PARAMETER_NAME_RECEIVER, PARAMETER_NAME_NEW_VALUE)
                 .addStatement("field.setAccessible(wasAccessible)")
-                .addExceptions(Arrays.asList(
-                    ClassName.get(NoSuchFieldException.class),
-                    ClassName.get(IllegalAccessException.class)))
+                .nextControlFlow(
+                    "catch (final $T | $T e)",
+                    NoSuchFieldException.class,
+                    IllegalAccessException.class)
+                .addStatement("throw new $T(e)", RuntimeException.class)
+                .endControlFlow()
                 .returns(void.class)
                 .build();
           }
