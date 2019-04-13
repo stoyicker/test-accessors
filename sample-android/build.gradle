@@ -73,3 +73,9 @@ dependencies {
   kaptKotlin project(':processor-kotlin')
   testKotlinImplementation 'junit:junit:4.12'
 }
+
+kapt {
+    arguments {
+        arg('testaccessors.defaultAndroidXRestrictTo', 'TESTS')
+    }
+}
