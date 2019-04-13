@@ -1,12 +1,12 @@
 package root;
 
 import android.app.Application;
-import android.support.annotation.RestrictTo;
 
+import androidx.annotation.RestrictTo;
 import testaccessors.RequiresAccessor;
 
 public final class AndroidApplication extends Application {
-  @RequiresAccessor(supportRestrictTo = @RestrictTo({RestrictTo.Scope.TESTS, RestrictTo.Scope.LIBRARY}))
+  @RequiresAccessor(androidXRestrictTo = @RestrictTo({RestrictTo.Scope.TESTS, RestrictTo.Scope.LIBRARY}))
   private final String aField = null;
 
   @Override
