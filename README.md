@@ -115,5 +115,9 @@ kapt {
     }
 }
 ```
+## How does my classpath get affected?
+If you don't use the generated methods outside of tests, a simple shrinking ProGuard configuration 
+such as [this one](sample-android/proguard/rules.pro) will make sure that your classpath does not 
+get affected at all.
 ## License
 https://creativecommons.org/licenses/by/4.0/legalcode
