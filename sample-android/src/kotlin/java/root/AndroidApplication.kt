@@ -6,7 +6,7 @@ import androidx.annotation.RestrictTo
 import testaccessors.RequiresAccessor
 
 class AndroidApplication : Application() {
-  @RequiresAccessor(androidXRestrictTo = RestrictTo(RestrictTo.Scope.LIBRARY_GROUP))
+  @RequiresAccessor
   private val aField: String? = null
 
   override fun onCreate() {
