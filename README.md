@@ -31,11 +31,9 @@ Once annotation processing runs, there will be a class called org.my.example.Gen
 directory of your source set with two methods with the following signature:
 ```java
 public final class MyJavaClass {
-    // Getter
-    public static String myField(final MyClass instance);
+    public static String myField(final MyClass receiver);
     
-    // Setter
-    public static void myField(final MyClass instance, final String newValue);
+    public static void myField(final MyClass receiver, final String newValue);
 }
 ```
 If you are using Kotlin, you can take advantage of the Kotlin artifact instead for a more idiomatic usage via extension
