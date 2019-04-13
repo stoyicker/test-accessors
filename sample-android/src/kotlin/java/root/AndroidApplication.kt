@@ -1,7 +1,6 @@
 package root
 
 import android.app.Application
-import androidx.annotation.RestrictTo
 
 import testaccessors.RequiresAccessor
 
