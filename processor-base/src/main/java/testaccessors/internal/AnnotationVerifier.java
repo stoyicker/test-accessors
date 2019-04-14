@@ -1,13 +1,12 @@
 package testaccessors.internal;
 
-import javax.annotation.processing.Messager;
 import javax.lang.model.element.Element;
 
 abstract class AnnotationVerifier<Annotation extends java.lang.annotation.Annotation> {
-  final Logger logger;
+  final Lazy<Logger> logger;
 
-  AnnotationVerifier(final Messager messager) {
-    logger = new Logger(messager);
+  AnnotationVerifier(final Lazy<Logger> logger) {
+    this.logger = logger;
   }
 
   abstract Class<Annotation> annotationClass();

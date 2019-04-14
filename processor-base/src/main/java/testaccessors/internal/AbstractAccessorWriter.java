@@ -1,23 +1,31 @@
 package testaccessors.internal;
 
+import java.util.List;
+import java.util.Set;
+
 import javax.annotation.processing.Filer;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-import java.util.List;
-import java.util.Set;
 
 abstract class AbstractAccessorWriter {
   static final String PARAMETER_NAME_NEW_VALUE = "newValue";
   static final String ERROR_MESSAGE_ILLEGAL_ACCESS = "Accessing this method from this source set is not allowed";
+  static final String ERROR_MESSAGE_UNSUPPORTED_STATIC_FINAL_SETTER = "Generating setters for fields that are both static and final is not supported";
   final Elements elementUtils;
   final Types typeUtils;
+  final Lazy<Logger> logger;
   final Options options;
 
-  AbstractAccessorWriter(final Elements elementUtils, final Types typeUtils, final Options options) {
+  AbstractAccessorWriter(
+      final Elements elementUtils,
+      final Types typeUtils,
+      final Lazy<Logger> logger,
+      final Options options) {
     this.elementUtils = elementUtils;
     this.typeUtils = typeUtils;
+    this.logger = logger;
     this.options = options;
   }
 

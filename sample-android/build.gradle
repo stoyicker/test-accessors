@@ -63,15 +63,16 @@ repositories {
   jcenter()
 }
 dependencies {
+  testImplementation 'junit:junit:4.12'
+  testImplementation 'org.mockito:mockito-core:2.27.0'
+
   javaCompileOnly project(':annotations')
   // Kapt takes over annotationProcessor everywhere, so javaAnnotationProcessor cannot be used here
   kaptJava project(':processor-java')
-  testJavaImplementation 'junit:junit:4.12'
 
   kotlinImplementation 'org.jetbrains.kotlin:kotlin-stdlib:1.3.21'
   kotlinCompileOnly project(':annotations')
   kaptKotlin project(':processor-kotlin')
-  testKotlinImplementation 'junit:junit:4.12'
 }
 
 kapt {

@@ -3,13 +3,15 @@ package testaccessors.internal
 import com.squareup.kotlinpoet.ClassName
 import testaccessors.RequiresAccessor
 import java.util.HashMap
+import java.util.function.Supplier
 import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.element.Element
 import javax.lang.model.element.TypeElement
 
 class RequiresAccessorProcessor : AnnotationProcessor(RequiresAccessor::class.java) {
-	private val verifier by lazy { RequiresAccessorAnnotationVerifier(messager) }
-	private val writer by lazy { AccessorWriter(elementUtils, typeUtils, this) }
+	private val logger = Lazy<Logger>(Supplier<Logger> { Logger(messager) })
+	private val verifier by lazy { RequiresAccessorAnnotationVerifier(logger) }
+	private val writer by lazy { AccessorWriter(elementUtils, typeUtils, logger, this) }
 	private val filesToGenerate = HashMap<ClassName, MutableSet<Element>>()
 
 	override fun process(typeElements: Set<TypeElement>, roundEnvironment: RoundEnvironment): Boolean {

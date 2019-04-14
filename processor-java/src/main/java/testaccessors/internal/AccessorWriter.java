@@ -17,6 +17,7 @@ import java.io.InputStreamReader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -39,8 +40,12 @@ import testaccessors.RequiresAccessor;
 final class AccessorWriter extends AbstractAccessorWriter {
   private static final String PARAMETER_NAME_RECEIVER = "receiver";
 
-  AccessorWriter(final Elements elementUtils, final Types typeUtils, final Options options) {
-    super(elementUtils, typeUtils, options);
+  AccessorWriter(
+      final Elements elementUtils,
+      final Types typeUtils,
+      final Lazy<Logger> logger,
+      final Options options) {
+    super(elementUtils, typeUtils, logger, options);
   }
 
   @Override
@@ -63,27 +68,59 @@ final class AccessorWriter extends AbstractAccessorWriter {
             final RequiresAccessor.AccessorType[] requires = element.getAnnotation(
                 RequiresAccessor.class).requires();
             final MethodSpec[] methodSpecs = new MethodSpec[requires.length];
+            final Collection<Modifier> modifiers = element.getModifiers();
+            final boolean isStatic = modifiers.contains(Modifier.STATIC);
             for (int i = 0; i < requires.length; i++) {
               switch (requires[i]) {
                 case TYPE_GETTER:
-                  methodSpecs[i] = generateGetterMethodSpec(element);
+                  methodSpecs[i] = isStatic ?
+                      generateStaticGetterMethodSpec(element) : generateGetterMethodSpec(element);
                   break;
                 case TYPE_SETTER:
-                  methodSpecs[i] = generateSetterMethodSpec(element);
+                  if (isStatic && modifiers.contains(Modifier.FINAL)) {
+                    logger.getOrCompute().error(ERROR_MESSAGE_UNSUPPORTED_STATIC_FINAL_SETTER, element);
+                    continue;
+                  }
+                  methodSpecs[i] = isStatic ?
+                      generateStaticSetterMethodSpec(element) : generateSetterMethodSpec(element);
                   break;
               }
             }
             return Arrays.stream(methodSpecs);
           }
 
+          private MethodSpec generateStaticGetterMethodSpec(final Element element) {
+            return generateCommonGetterMethodSpec(
+                element,
+                "/javadoc-getter-static.template",
+                new Object[]{
+                    TypeName.get(element.getEnclosingElement().asType()),
+                    element.getSimpleName().toString()},
+                null)
+                .build();
+          }
+
           private MethodSpec generateGetterMethodSpec(final Element element) {
+            return addReceiver(
+                generateCommonGetterMethodSpec(
+                    element,
+                    "/javadoc-getter.template",
+                    new Object[]{
+                        TypeName.get(element.getEnclosingElement().asType()),
+                        element.getSimpleName().toString(),
+                        PARAMETER_NAME_RECEIVER},
+                    PARAMETER_NAME_RECEIVER), element)
+                .build();
+          }
+
+          private MethodSpec.Builder generateCommonGetterMethodSpec(
+              final Element element,
+              final String javadocResource,
+              final Object[] javadocArgs,
+              final Object receiverLiteral) {
             final TypeName elementType = TypeName.get(element.asType());
             return generateCommonMethodSpec(element)
-                .addJavadoc(
-                    readAsset("/javadoc-getter.template"),
-                    TypeName.get(element.getEnclosingElement().asType()),
-                    element.getSimpleName().toString(),
-                    PARAMETER_NAME_RECEIVER)
+                .addJavadoc(readAsset(javadocResource), javadocArgs)
                 .beginControlFlow("try")
                 .addStatement(
                     "final $T field = $T.class.getDeclaredField($S)",
@@ -95,7 +132,7 @@ final class AccessorWriter extends AbstractAccessorWriter {
                 .addStatement("final $T ret = ($T) field.get($L)",
                     elementType,
                     elementType,
-                    PARAMETER_NAME_RECEIVER)
+                    receiverLiteral)
                 .addStatement("field.setAccessible(wasAccessible)")
                 .addStatement("return ret")
                 .nextControlFlow(
@@ -104,23 +141,54 @@ final class AccessorWriter extends AbstractAccessorWriter {
                     IllegalAccessException.class)
                 .addStatement("throw new $T(e)", RuntimeException.class)
                 .endControlFlow()
-                .returns(TypeName.get(element.asType()))
-                .build();
+                .returns(elementType);
           }
 
-          private MethodSpec generateSetterMethodSpec(final Element element) {
-            return generateCommonMethodSpec(element)
+          private MethodSpec generateStaticSetterMethodSpec(final Element element) {
+            return generateCommonSetterMethodSpec(
+                element,
+                "/javadoc-setter-static.template",
+                new Object[]{
+                    TypeName.get(element.getEnclosingElement().asType()),
+                    element.getSimpleName().toString(),
+                    PARAMETER_NAME_NEW_VALUE},
+                null)
                 .addParameter(ParameterSpec.builder(
                     TypeName.get(element.asType()),
                     PARAMETER_NAME_NEW_VALUE,
                     Modifier.FINAL)
                     .build())
-                .addJavadoc(
-                    readAsset("/javadoc-setter.template"),
+                .build();
+          }
+
+          private MethodSpec generateSetterMethodSpec(final Element element) {
+            return addReceiver(generateCommonSetterMethodSpec(
+                element,
+                "/javadoc-setter.template",
+                new Object[]{
                     TypeName.get(element.getEnclosingElement().asType()),
                     element.getSimpleName().toString(),
                     PARAMETER_NAME_RECEIVER,
-                    PARAMETER_NAME_NEW_VALUE)
+                    PARAMETER_NAME_NEW_VALUE},
+                PARAMETER_NAME_RECEIVER
+            ), element)
+                .addParameter(ParameterSpec.builder(
+                    TypeName.get(element.asType()),
+                    PARAMETER_NAME_NEW_VALUE,
+                    Modifier.FINAL)
+                    .build())
+                .build();
+          }
+
+          private MethodSpec.Builder generateCommonSetterMethodSpec(
+              final Element element,
+              final String javadocResource,
+              final Object[] javadocArgs,
+              final Object receiverLiteral) {
+            return generateCommonMethodSpec(element)
+                .addJavadoc(
+                    readAsset(javadocResource),
+                    javadocArgs)
                 .beginControlFlow("try")
                 .addStatement(
                     "final $T field = $T.class.getDeclaredField($S)",
@@ -129,7 +197,7 @@ final class AccessorWriter extends AbstractAccessorWriter {
                     element.getSimpleName())
                 .addStatement("final $T wasAccessible = field.isAccessible()", boolean.class)
                 .addStatement("field.setAccessible(true)")
-                .addStatement("field.set($L, $L)", PARAMETER_NAME_RECEIVER, PARAMETER_NAME_NEW_VALUE)
+                .addStatement("field.set($L, $L)", receiverLiteral, PARAMETER_NAME_NEW_VALUE)
                 .addStatement("field.setAccessible(wasAccessible)")
                 .nextControlFlow(
                     "catch (final $T | $T e)",
@@ -137,8 +205,7 @@ final class AccessorWriter extends AbstractAccessorWriter {
                     IllegalAccessException.class)
                 .addStatement("throw new $T(e)", RuntimeException.class)
                 .endControlFlow()
-                .returns(void.class)
-                .build();
+                .returns(void.class);
           }
 
           private String readAsset(final String path) {
@@ -163,9 +230,9 @@ final class AccessorWriter extends AbstractAccessorWriter {
               name = element.getSimpleName().toString();
             }
             final MethodSpec.Builder ret = addSupportRestrictTo(
-                addAndroidXRestrictTo(
-                    addReceiver(MethodSpec.methodBuilder(name)
-                        .addModifiers(Modifier.PUBLIC, Modifier.STATIC), element),
+                addAndroidXRestrictTo(MethodSpec.methodBuilder(name).addModifiers(
+                    Modifier.PUBLIC,
+                    Modifier.STATIC),
                     requiresAccessor.androidXRestrictTo()),
                 requiresAccessor.supportRestrictTo());
             final CharSequence requiredPatternInClasspath = options.requiredPatternInClasspath();

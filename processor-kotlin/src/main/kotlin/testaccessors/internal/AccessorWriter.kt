@@ -22,8 +22,9 @@ import javax.lang.model.util.Types
 import kotlin.reflect.KClass
 import android.support.annotation.RestrictTo as SupportRestrictTo
 
-internal class AccessorWriter(elementUtils: Elements, typeUtils: Types, options: Options)
-  : AbstractAccessorWriter(elementUtils, typeUtils, options) {
+internal class AccessorWriter(
+    elementUtils: Elements, typeUtils: Types, logger: Lazy<Logger>, options: Options)
+  : AbstractAccessorWriter(elementUtils, typeUtils, logger, options) {
   public override fun writeAccessorClass(annotatedElements: Set<Element>, filer: Filer) {
     val enclosingClassElement = annotatedElements.iterator().next().enclosingElement
     val location = extractLocation(enclosingClassElement.enclosingElement) +
@@ -40,59 +41,110 @@ internal class AccessorWriter(elementUtils: Elements, typeUtils: Types, options:
     annotatedElements.flatMap(object : (Element) -> Iterable<FunSpec> {
       override fun invoke(element: Element) =
           element.getAnnotation(RequiresAccessor::class.java).requires.map {
+            val modifiers = element.modifiers
+            val isStatic = Modifier.STATIC in modifiers
             when (it) {
-              RequiresAccessor.AccessorType.TYPE_GETTER -> generateGetterFunSpec(element)
-              RequiresAccessor.AccessorType.TYPE_SETTER -> generateSetterFunSpec(element)
+              RequiresAccessor.AccessorType.TYPE_GETTER -> if (isStatic)
+                generateStaticGetterFunSpec(element) else generateGetterFunSpec(element)
+              RequiresAccessor.AccessorType.TYPE_SETTER -> {
+                if (isStatic && Modifier.FINAL in modifiers) {
+                  logger.orCompute.error(ERROR_MESSAGE_UNSUPPORTED_STATIC_FINAL_SETTER, element)
+                }
+                if (isStatic)
+                  generateStaticSetterFunSpec(element) else generateSetterFunSpec(element)
+              }
             }
           }
 
+      private fun generateStaticGetterFunSpec(element: Element) = element.asType().asTypeName().kotlinize().run {
+        generateCommonGetterFunSpec(
+            element, "/kdoc-getter-static.template",
+            arrayOf(
+                element.enclosingElement.asType().asTypeName().kotlinize(),
+                element.simpleName.toString()),
+            "null")
+            .build()
+      }
+
       private fun generateGetterFunSpec(element: Element) = element.asType().asTypeName().kotlinize().run {
+        generateCommonGetterFunSpec(
+            element, "/kdoc-getter.template",
+            arrayOf(
+                element.enclosingElement.asType().asTypeName().kotlinize(),
+                element.simpleName.toString()),
+            "this@${funName(element)}")
+            .addReceiver(element)
+            .build()
+      }
+
+      private fun generateCommonGetterFunSpec(
+          element: Element,
+          kdocResource: String,
+          kdocArgs: Array<Any>,
+          receiverLiteral: Any) = element.asType().asTypeName().kotlinize().run {
         generateCommonFunSpec(element)
             .addKdoc(
-                javaClass.getResource("/kdoc-getter.template").readText(StandardCharsets.UTF_8),
-                element.enclosingElement.asType().asTypeName().kotlinize(),
-                element.simpleName.toString())
+                javaClass.getResource(kdocResource).readText(StandardCharsets.UTF_8), *kdocArgs)
             .beginControlFlow(
                 "%T::class.java.getDeclaredField(%S).apply",
                 typeUtils.erasure(element.enclosingElement.asType()),
                 element.simpleName)
             .addStatement("val wasAccessible = isAccessible")
             .addStatement("isAccessible = true")
-            .addStatement("val ret = this[this@%L] as %T", funName(element), this)
+            .addStatement("val ret = this[%L] as %T", receiverLiteral, this)
             .addStatement("isAccessible = wasAccessible")
             .addStatement("return ret")
             .endControlFlow()
             .returns(this)
-            .build()
       }
 
-      private fun generateSetterFunSpec(element: Element) = generateCommonFunSpec(element)
-          .addParameter(ParameterSpec.builder(
-              PARAMETER_NAME_NEW_VALUE,
-              element.asType().asTypeName().kotlinize())
-              .build())
-          .addKdoc(
-              javaClass.getResource("/kdoc-setter.template").readText(StandardCharsets.UTF_8),
-              element.enclosingElement.asType().asTypeName().kotlinize(),
+      private fun generateStaticSetterFunSpec(element: Element) = generateCommonSetterFunSpec(
+          element,
+          "/kdoc-setter-static.template",
+          arrayOf(element.enclosingElement.asType().asTypeName().kotlinize(),
               element.simpleName.toString(),
-              PARAMETER_NAME_NEW_VALUE)
-          .beginControlFlow(
-              "%T::class.java.getDeclaredField(%S).apply",
-              typeUtils.erasure(element.enclosingElement.asType()),
-              element.simpleName)
-          .addStatement("val wasAccessible = isAccessible")
-          .addStatement("isAccessible = true")
-          .addStatement("set(this@%L, %L)", funName(element), PARAMETER_NAME_NEW_VALUE)
-          .addStatement("isAccessible = wasAccessible")
-          .endControlFlow()
+              PARAMETER_NAME_NEW_VALUE),
+          "null")
+          .addReceiver(element)
           .build()
+
+      private fun generateSetterFunSpec(element: Element) = generateCommonSetterFunSpec(
+          element,
+          "/kdoc-setter.template",
+          arrayOf(element.enclosingElement.asType().asTypeName().kotlinize(),
+              element.simpleName.toString(),
+              PARAMETER_NAME_NEW_VALUE),
+          "this@${funName(element)}")
+          .addReceiver(element)
+          .build()
+
+      private fun generateCommonSetterFunSpec(
+          element: Element,
+          kdocResource: String,
+          kdocArgs: Array<Any>,
+          receiverLiteral: Any) =
+          generateCommonFunSpec(element)
+              .addParameter(ParameterSpec.builder(
+                  PARAMETER_NAME_NEW_VALUE,
+                  element.asType().asTypeName().kotlinize().copy(nullable = true))
+                  .build())
+              .addKdoc(
+                  javaClass.getResource(kdocResource).readText(StandardCharsets.UTF_8), *kdocArgs)
+              .beginControlFlow(
+                  "%T::class.java.getDeclaredField(%S).apply",
+                  typeUtils.erasure(element.enclosingElement.asType()),
+                  element.simpleName)
+              .addStatement("val wasAccessible = isAccessible")
+              .addStatement("isAccessible = true")
+              .addStatement("set(%L, %L)", receiverLiteral, PARAMETER_NAME_NEW_VALUE)
+              .addStatement("isAccessible = wasAccessible")
+              .endControlFlow()
 
       private fun generateCommonFunSpec(element: Element) = element.getAnnotation(RequiresAccessor::class.java)
           .run {
             FunSpec.builder(funName(element))
                 .addAndroidXRestrictTo(androidXRestrictTo)
                 .addSupportRestrictTo(supportRestrictTo)
-                .addReceiver(element)
                 .apply {
                   val requiredPatternInClasspath = options.requiredPatternInClasspath()
                   if (!requiredPatternInClasspath.isNullOrEmpty()) {
@@ -187,7 +239,6 @@ internal class AccessorWriter(elementUtils: Elements, typeUtils: Types, options:
                   bounds = it.bounds.map { bound -> bound.kotlinize() })
             })
       }
-
     }).forEach { fileSpecBuilder.addFunction(it) }
     fileSpecBuilder
         .build()
