@@ -33,7 +33,7 @@ directory of your source set with two methods with the following signature:
 public final class MyJavaClass {
     public static String myField(final MyClass receiver);
     
-    public static void myField(final String newValue, final MyClass receiver);
+    public static void myField(final MyClass receiver, final String newValue);
 }
 ```
 If you are using Kotlin, you can take advantage of the Kotlin artifact instead for a more idiomatic usage via extension
