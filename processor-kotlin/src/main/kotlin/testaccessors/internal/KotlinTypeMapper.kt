@@ -13,8 +13,6 @@ import kotlin.reflect.jvm.internal.impl.name.FqName
  */
 fun TypeName.kotlinize(): TypeName =
 		when (this) {
-			is TypeVariableName -> TypeVariableName(extractKotlinTypeFromMapIfExists(this, toString()).toString())
-					.copy(bounds = bounds.map { it.kotlinize() })
 			is ParameterizedTypeName -> (rawType.kotlinize() as ClassName)
 					.parameterizedBy(*typeArguments.map { it.kotlinize() }.toTypedArray())
 			else -> extractKotlinTypeFromMapIfExists(this, toString())
