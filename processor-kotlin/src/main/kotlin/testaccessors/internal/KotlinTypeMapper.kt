@@ -4,7 +4,6 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.ParameterizedTypeName
 import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
 import com.squareup.kotlinpoet.TypeName
-import com.squareup.kotlinpoet.TypeVariableName
 import kotlin.reflect.jvm.internal.impl.builtins.jvm.JavaToKotlinClassMap
 import kotlin.reflect.jvm.internal.impl.name.FqName
 
@@ -13,15 +12,20 @@ import kotlin.reflect.jvm.internal.impl.name.FqName
  */
 fun TypeName.kotlinize(): TypeName =
 		when (this) {
-			is ParameterizedTypeName -> (rawType.kotlinize() as ClassName)
-					.parameterizedBy(*typeArguments.map { it.kotlinize() }.toTypedArray())
-			else -> extractKotlinTypeFromMapIfExists(this, toString())
-		}.copy(nullable = isNullable)
+      is ParameterizedTypeName -> (rawType.kotlinize() as ClassName).run {
+        if (!typeArguments.isEmpty()) {
+          parameterizedBy(*typeArguments.map { it.kotlinize() }.toTypedArray())
+        } else  {
+          this
+        }
+      }
+      else -> extractKotlinTypeFromMapIfExists(this, toString())
+    }.copy(nullable = isNullable)
 
 private fun extractKotlinTypeFromMapIfExists(fallback: TypeName, name: String) =
-		JavaToKotlinClassMap.INSTANCE.mapJavaToKotlin(FqName(name)).run {
-			when (this) {
-				null -> fallback
-				else -> ClassName.bestGuess(asSingleFqName().asString())
-			}
-		}
+    JavaToKotlinClassMap.INSTANCE.mapJavaToKotlin(FqName(name)).run {
+      when (this) {
+        null -> fallback
+        else -> ClassName.bestGuess(asSingleFqName().asString())
+      }
+    }
