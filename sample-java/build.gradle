@@ -4,7 +4,9 @@ plugins {
 
 repositories {
   jcenter()
+  google()
 }
+
 dependencies {
   compileOnly project(':annotations')
   annotationProcessor project(':processor-java')
