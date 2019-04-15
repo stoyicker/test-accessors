@@ -13,7 +13,7 @@ import kotlin.reflect.jvm.internal.impl.name.FqName
 fun TypeName.kotlinize(): TypeName =
 		when (this) {
       is ParameterizedTypeName -> (rawType.kotlinize() as ClassName).run {
-        if (!typeArguments.isEmpty()) {
+        if (typeArguments.isNotEmpty()) {
           parameterizedBy(*typeArguments.map { it.kotlinize() }.toTypedArray())
         } else  {
           this
