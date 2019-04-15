@@ -130,7 +130,7 @@ internal class AccessorWriter(
           generateCommonFunSpec(element)
               .addParameter(ParameterSpec.builder(
                   PARAMETER_NAME_NEW_VALUE,
-                  element.asType().asTypeName().kotlinize().copy(nullable = true))
+                  element.asType().asTypeName().kotlinize())
                   .build())
               .addKdoc(
                   javaClass.getResource(kdocResource).readText(StandardCharsets.UTF_8), *kdocArgs)
