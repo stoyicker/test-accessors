@@ -8,6 +8,7 @@ import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.ParameterizedTypeName
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.plusParameter
 import com.squareup.kotlinpoet.TypeVariableName
 import com.squareup.kotlinpoet.asTypeName
 import testaccessors.RequiresAccessor
@@ -56,13 +57,14 @@ internal class AccessorWriter(
             }
           }
 
-      private fun generateStaticGetterFunSpec(element: Element) = element.asType().asTypeName().kotlinize().run {
+      private fun generateStaticGetterFunSpec(element: Element) = element.enclosingElement.asType().asTypeName().kotlinize().run {
         generateCommonGetterFunSpec(
             element, "/kdoc-getter-static.template",
             arrayOf(
-                element.enclosingElement.asType().asTypeName().kotlinize(),
+                this,
                 element.simpleName.toString()),
             "null")
+            .receiver(ClassName.bestGuess(KClass::class.qualifiedName!!).plusParameter(this))
             .build()
       }
 
@@ -98,15 +100,17 @@ internal class AccessorWriter(
             .returns(this)
       }
 
-      private fun generateStaticSetterFunSpec(element: Element) = generateCommonSetterFunSpec(
-          element,
-          "/kdoc-setter-static.template",
-          arrayOf(element.enclosingElement.asType().asTypeName().kotlinize(),
-              element.simpleName.toString(),
-              PARAMETER_NAME_NEW_VALUE),
-          "null")
-          .addReceiver(element)
-          .build()
+      private fun generateStaticSetterFunSpec(element: Element) = element.enclosingElement.asType().asTypeName().kotlinize().run {
+        generateCommonSetterFunSpec(
+            element,
+            "/kdoc-setter-static.template",
+            arrayOf(this,
+                element.simpleName.toString(),
+                PARAMETER_NAME_NEW_VALUE),
+            "null")
+            .receiver(ClassName.bestGuess(KClass::class.qualifiedName!!).plusParameter(this))
+            .build()
+      }
 
       private fun generateSetterFunSpec(element: Element) = generateCommonSetterFunSpec(
           element,
