@@ -1,7 +1,6 @@
 package root
 
 import android.app.Application
-
 import testaccessors.RequiresAccessor
 
 class AndroidApplication : Application() {
