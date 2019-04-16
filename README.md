@@ -124,10 +124,12 @@ executions.
 * My generated Java code is not visible to Gradle via CMD -> Before Gradle 5.2, Java 
 annotation processing wasn't exactly supported, so you'll either need to upgrade your Gradle version 
 or use some other workaround. For more information and possible solutions, please check 
-gradle/gradle#2300. Note that some plugins that you may be using (such as the Android plugin) take 
-care of this by themselves, so check your setup for issues before trying to fix a problem you may 
-not have!
-* My generated Java code is not visible to my IDE -> Check gradle/gradle#2300 for information and 
-solutions for different IDEs.
+[gradle/gradle#2300][gradle java apt issues]. Note that some plugins that you may be using (such as 
+the Android plugin) take care of this by themselves, so check your setup for issues before trying to 
+fix a problem you may not have!
+* My generated Java code is not visible to my IDE -> Check [gradle/gradle#2300][gradle java apt issues]
+for information and solutions for different IDEs.
 ## License
 https://creativecommons.org/licenses/by/4.0/legalcode
+
+[gradle java apt issues]: https://github.com/gradle/gradle/issues/2300
