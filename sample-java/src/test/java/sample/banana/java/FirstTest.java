@@ -40,6 +40,6 @@ public class FirstTest {
 
     final String actual = FirstTestAccessors.<Object, Object, Object, Object, Object, Object, Object>aField(subject);
 
-//    assertSame(expected, actual);
+    assertSame(expected, actual);
   }
 }
