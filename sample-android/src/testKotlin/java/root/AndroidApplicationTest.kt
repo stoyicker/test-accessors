@@ -15,7 +15,7 @@ class AndroidApplicationTest {
 
   @After
   fun tearDown() {
-    subject::class.java.getDeclaredField("aField").apply {
+    subject::class.java.getDeclaredField("aFieldInAPrivateCompanionObject").apply {
       val wasAccessible = isAccessible
       isAccessible = true
       set(subject, null)
