@@ -1,5 +1,7 @@
 package testaccessors.internal;
 
+import androidx.annotation.RestrictTo;
+
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.Collections;
@@ -17,8 +19,6 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
-import androidx.annotation.RestrictTo;
-
 public abstract class AnnotationProcessor extends AbstractProcessor implements Options {
   private static final String OPTION_KEY_REQUIRED_PATTERN_IN_CLASSPATH = "testaccessors.requiredPatternInClasspath";
   private static final String OPTION_DEFAULT_REQUIRED_PATTERN_IN_CLASSPATH = "junit|testng";
@@ -27,10 +27,10 @@ public abstract class AnnotationProcessor extends AbstractProcessor implements O
   private static final String OPTION_KEY_SUPPORT_RESTRICT_TO = "testaccessors.defaultSupportRestrictTo";
   private static final String OPTION_DEFAULT_SUPPORT_RESTRICT_TO = "";
   private final Class<? extends Annotation> annotation;
-  Filer filer;
-  Elements elementUtils;
-  Types typeUtils;
-  Messager messager;
+  Filer javaFiler;
+  Elements javaElementUtils;
+  Types javaTypeUtils;
+  Messager javaMessager;
   private Map<String, String> options;
 
   AnnotationProcessor(final Class<? extends Annotation> annotation) {
@@ -38,12 +38,12 @@ public abstract class AnnotationProcessor extends AbstractProcessor implements O
   }
 
   @Override
-  public synchronized final void init(final ProcessingEnvironment processingEnvironment) {
+  public synchronized void init(final ProcessingEnvironment processingEnvironment) {
     super.init(processingEnvironment);
-    filer = processingEnvironment.getFiler();
-    elementUtils = processingEnvironment.getElementUtils();
-    typeUtils = processingEnvironment.getTypeUtils();
-    messager = processingEnvironment.getMessager();
+    javaFiler = processingEnvironment.getFiler();
+    javaElementUtils = processingEnvironment.getElementUtils();
+    javaTypeUtils = processingEnvironment.getTypeUtils();
+    javaMessager = processingEnvironment.getMessager();
     options = processingEnvironment.getOptions();
   }
 

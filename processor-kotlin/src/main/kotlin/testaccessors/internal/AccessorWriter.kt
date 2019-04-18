@@ -57,7 +57,7 @@ internal class AccessorWriter(
             }
           }
 
-      private fun generateStaticGetterFunSpec(element: Element) = element.enclosingElement.asType().asTypeName().kotlinize().run {
+      private fun generateStaticGetterFunSpec(element: Element) = element.enclosingElement.kotlinize().run {
         generateCommonGetterFunSpec(
             element, "/kdoc-getter-static.template",
             arrayOf(
@@ -68,11 +68,11 @@ internal class AccessorWriter(
             .build()
       }
 
-      private fun generateGetterFunSpec(element: Element) = element.asType().asTypeName().kotlinize().run {
+      private fun generateGetterFunSpec(element: Element) = element.kotlinize().run {
         generateCommonGetterFunSpec(
             element, "/kdoc-getter.template",
             arrayOf(
-                element.enclosingElement.asType().asTypeName().kotlinize(),
+                element.enclosingElement.kotlinize(),
                 element.simpleName.toString()),
             "this@${funName(element)}")
             .addReceiver(element)
@@ -83,7 +83,7 @@ internal class AccessorWriter(
           element: Element,
           kdocResource: String,
           kdocArgs: Array<Any>,
-          receiverLiteral: Any) = element.asType().asTypeName().kotlinize().run {
+          receiverLiteral: Any) = element.kotlinize().run {
         generateCommonFunSpec(element)
             .addKdoc(
                 javaClass.getResource(kdocResource).readText(StandardCharsets.UTF_8), *kdocArgs)
@@ -100,7 +100,7 @@ internal class AccessorWriter(
             .returns(this)
       }
 
-      private fun generateStaticSetterFunSpec(element: Element) = element.enclosingElement.asType().asTypeName().kotlinize().run {
+      private fun generateStaticSetterFunSpec(element: Element) = element.enclosingElement.kotlinize().run {
         generateCommonSetterFunSpec(
             element,
             "/kdoc-setter-static.template",
@@ -115,7 +115,7 @@ internal class AccessorWriter(
       private fun generateSetterFunSpec(element: Element) = generateCommonSetterFunSpec(
           element,
           "/kdoc-setter.template",
-          arrayOf(element.enclosingElement.asType().asTypeName().kotlinize(),
+          arrayOf(element.enclosingElement.kotlinize(),
               element.simpleName.toString(),
               PARAMETER_NAME_NEW_VALUE),
           "this@${funName(element)}")
@@ -130,7 +130,7 @@ internal class AccessorWriter(
           generateCommonFunSpec(element)
               .addParameter(ParameterSpec.builder(
                   PARAMETER_NAME_NEW_VALUE,
-                  element.asType().asTypeName().kotlinize())
+                  element.kotlinize())
                   .build())
               .addKdoc(
                   javaClass.getResource(kdocResource).readText(StandardCharsets.UTF_8), *kdocArgs)

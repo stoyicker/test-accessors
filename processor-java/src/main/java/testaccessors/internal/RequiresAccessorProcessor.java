@@ -16,11 +16,11 @@ import javax.lang.model.element.TypeElement;
 import testaccessors.RequiresAccessor;
 
 public final class RequiresAccessorProcessor extends AnnotationProcessor {
-  private final Lazy<Logger> logger = new Lazy<>(() -> new Logger(messager));
+  private final Lazy<Logger> logger = new Lazy<>(() -> new Logger(javaMessager));
   private final Lazy<AnnotationVerifier> verifier =
       new Lazy<>(() -> new RequiresAccessorAnnotationVerifier(logger));
   private final Lazy<AbstractAccessorWriter> writer =
-      new Lazy<>(() -> new AccessorWriter(elementUtils, typeUtils, logger, this));
+      new Lazy<>(() -> new AccessorWriter(javaElementUtils, javaTypeUtils, logger, this));
   private final Map<ClassName, Set<Element>> filesToGenerate = new HashMap<>();
 
   public RequiresAccessorProcessor() {
@@ -41,7 +41,7 @@ public final class RequiresAccessorProcessor extends AnnotationProcessor {
     if (roundEnvironment.processingOver()) {
       filesToGenerate.values()
           .parallelStream()
-          .forEach(elements -> writer.getOrCompute().writeAccessorClass(elements, filer));
+          .forEach(elements -> writer.getOrCompute().writeAccessorClass(elements, javaFiler));
     }
     return true;
   }
