@@ -49,7 +49,7 @@ private fun typeArgumentToTypeName(typeArgument: Pair<String, List<String>>) = t
     val typeStack = Stack<TypeName>()
     stringStack.forEach {
       when (it) {
-        "*" -> typeStack.push(ClassName.bestGuess("kotlin.Any"))
+        "*" -> typeStack.push(ClassName.bestGuess("kotlin.Any").copy(nullable = true))
         "<" -> {
           parameterStartStack.push(typeStack.size)
         }
@@ -61,7 +61,7 @@ private fun typeArgumentToTypeName(typeArgument: Pair<String, List<String>>) = t
           }
           typeStack.pop().let { typeStack.push((it as ClassName).parameterizedBy(*parameters.toTypedArray())) }
         }
-        "?" -> typeStack.push(typeStack.pop())
+        "?" -> typeStack.push(typeStack.pop().copy(nullable = true))
         else -> typeStack.push(ClassName.bestGuess(it))
       }
     }
