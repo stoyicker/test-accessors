@@ -15,42 +15,53 @@ dependencies {
     // If on Java
     annotationProcessor "com.github.stoyicker.test-accessors:processor-java:<version>"
     // If on Kotlin (or mixed Java/Kotlin)
-    kapt "com.github.stoyicker.test-accessors:processor-kotlin:<version>"
-    // In the case of mixed projects, you'll be able to use the generated code from both Kotlin and Java just fine,
-    // so choose whichever one you like the most
+    kapt "com.github.stoyicker.test-accessors:processor-java:<version>"
 }
 ```
 Annotate your field:
 ```java
-public final class MyJavaClass {
+public final class MyClass {
     @RequiresAccessor
-    private final String myField;
+    private final String myField = "hola hola";
 }
 ```
 Once annotation processing runs, there will be a class called org.my.example.GeneratedMyClassAccessors in the generated 
 directory of your source set with two methods with the following signature:
 ```java
-public final class MyJavaClass {
+public final class MyClassTestAccessors {
     public static String myField(final MyClass receiver);
     
     public static void myField(final MyClass receiver, final String newValue);
 }
 ```
-If you are using Kotlin, you can take advantage of the Kotlin artifact instead for a more idiomatic usage via extension
-functions. For example,
+It also works with static variables!
 ```kotlin
-class MyKotlinClass {
+class MyClass {
     @RequiresAccessor
-    private val myField = "hola"
+    private static String myStaticField = "static hola hola";
 }
 ```
 will generate an implementation under the following API in the current source set:
-```kotlin
-@file:JvmName("MyKotlinClassTestAccessors")
-
-fun MyKotlinClass.myField(): String
-
-fun MyKotlinClass.myField(newValue: String): Unit
+```java
+public final class MyClassTestAccessors {
+    public static String myStaticField();
+    
+    public static void myStaticField(final String newValue);
+}
+```
+If you like to live on the edge, there is an alternate processor in development which generates 
+Kotlin code instead of Java. This code is a bit more idiomatic as the generated methods are extensions 
+on the type of the subject, which reduces the amount of parameters to 1 in setters for members variables 
+and none in getters for members fields, plus aims to respect compile-time nullability constraints 
+wherever possible. It is otherwise similar to the Java one, and it can be used from both Kotlin and
+Java. However, be aware that it is still in development and will likely break if you use it to parse
+annotation on parameterized and/or nullable fields. To use it, replace the processor dependency in 
+your Gradle file:
+```groovy
+dependencies {
+    // If on Kotlin (or mixed Java/Kotlin)
+    kapt "com.github.stoyicker.test-accessors:processor-java:<version>" -> kapt "com.github.stoyicker.test-accessors:processor-kotlin:<version>"
+}
 ```
 ## Options
 ### Annotation level

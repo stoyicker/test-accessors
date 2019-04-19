@@ -49,7 +49,7 @@ private fun typeArgumentToTypeName(typeArgument: Pair<String, List<String>>) = t
     val typeStack = Stack<TypeName>()
     stringStack.forEach {
       when (it) {
-        "*" -> typeStack.push(ClassName.bestGuess("kotlin.Any").copy(nullable = true))
+        "*" -> typeStack.push(ClassName.bestGuess("kotlin.Any"))
         "<" -> {
           parameterStartStack.push(typeStack.size)
         }
@@ -61,7 +61,7 @@ private fun typeArgumentToTypeName(typeArgument: Pair<String, List<String>>) = t
           }
           typeStack.pop().let { typeStack.push((it as ClassName).parameterizedBy(*parameters.toTypedArray())) }
         }
-        "?" -> typeStack.push(typeStack.pop().copy(nullable = true))
+        "?" -> typeStack.push(typeStack.pop())
         else -> typeStack.push(ClassName.bestGuess(it))
       }
     }
@@ -78,7 +78,7 @@ internal fun TypeName.kotlinize(): TypeName = when (this) {
     }
   }
   else -> extractKotlinTypeFromMapIfExists(this, toString())
-}.copy(nullable = true)
+}
 
 private fun extractKotlinTypeFromMapIfExists(fallback: TypeName, name: String) =
     JavaToKotlinClassMap.INSTANCE.mapJavaToKotlin(FqName(name)).run {
