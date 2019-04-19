@@ -1,5 +1,6 @@
 package root;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -14,6 +15,16 @@ public final class AndroidApplicationTest {
   @Before
   public void setUp() {
     subject = new AndroidApplication();
+  }
+
+  @After
+  public void tearDown() throws NoSuchFieldException, IllegalAccessException {
+    final Field field;
+    field = subject.getClass().getDeclaredField("aStaticField");
+    final boolean wasAccessible = field.isAccessible();
+    field.setAccessible(true);
+    field.set(subject, null);
+    field.setAccessible(wasAccessible);
   }
 
   @Test

@@ -1,10 +1,10 @@
 package sample.banana.java;
 
-import testaccessors.RequiresAccessor;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
+import testaccessors.RequiresAccessor;
 
 public final class First<A, B, C, D, E, F, G> {
   @RequiresAccessor
