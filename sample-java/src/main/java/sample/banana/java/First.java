@@ -28,7 +28,7 @@ public final class First<A, B, C, D, E, F, G> {
     }
 
     class Sixth {
-      class Seventh<T, J extends Set<List<T>>, Q> {
+      class Seventh<T, J extends Set<List<?>>, Q> {
         @RequiresAccessor(name = "middleFieldThatHasBeenRenamed")
         private final Set<J> anotherField = Collections.emptySet();
       }
