@@ -87,10 +87,6 @@ internal class AccessorWriter(
         generateCommonFunSpec(element)
             .addKdoc(
                 javaClass.getResource(kdocResource).readText(StandardCharsets.UTF_8), *kdocArgs)
-            .addAnnotation(
-                AnnotationSpec.builder(Suppress::class)
-                    .addMember("%S", "UNCHECKED_CAST")
-                    .build())
             .beginControlFlow(
                 "%T::class.java.getDeclaredField(%S).apply",
                 typeUtils.erasure(element.enclosingElement.asType()),
@@ -151,6 +147,10 @@ internal class AccessorWriter(
       private fun generateCommonFunSpec(element: Element) = element.getAnnotation(RequiresAccessor::class.java)
           .run {
             FunSpec.builder(funName(element))
+                .addAnnotation(
+                    AnnotationSpec.builder(Suppress::class)
+                        .addMember("%S, %S", "UNCHECKED_CAST", "REDUNDANT_PROJECTION")
+                        .build())
                 .addAndroidXRestrictTo(androidXRestrictTo)
                 .addSupportRestrictTo(supportRestrictTo)
                 .apply {
