@@ -87,6 +87,10 @@ internal class AccessorWriter(
         generateCommonFunSpec(element)
             .addKdoc(
                 javaClass.getResource(kdocResource).readText(StandardCharsets.UTF_8), *kdocArgs)
+            .addAnnotation(
+                AnnotationSpec.builder(Suppress::class)
+                    .addMember("%S", "UNCHECKED_CAST")
+                    .build())
             .beginControlFlow(
                 "%T::class.java.getDeclaredField(%S).apply",
                 typeUtils.erasure(element.enclosingElement.asType()),

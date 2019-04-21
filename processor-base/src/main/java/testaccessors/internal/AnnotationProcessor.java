@@ -27,10 +27,10 @@ public abstract class AnnotationProcessor extends AbstractProcessor implements O
   private static final String OPTION_KEY_SUPPORT_RESTRICT_TO = "testaccessors.defaultSupportRestrictTo";
   private static final String OPTION_DEFAULT_SUPPORT_RESTRICT_TO = "";
   private final Class<? extends Annotation> annotation;
-  Filer javaFiler;
-  Elements javaElementUtils;
-  Types javaTypeUtils;
-  Messager javaMessager;
+  Filer filer;
+  Elements elementUtils;
+  Types typeUtils;
+  Messager messager;
   private Map<String, String> options;
 
   AnnotationProcessor(final Class<? extends Annotation> annotation) {
@@ -38,12 +38,12 @@ public abstract class AnnotationProcessor extends AbstractProcessor implements O
   }
 
   @Override
-  public synchronized void init(final ProcessingEnvironment processingEnvironment) {
+  public synchronized final void init(final ProcessingEnvironment processingEnvironment) {
     super.init(processingEnvironment);
-    javaFiler = processingEnvironment.getFiler();
-    javaElementUtils = processingEnvironment.getElementUtils();
-    javaTypeUtils = processingEnvironment.getTypeUtils();
-    javaMessager = processingEnvironment.getMessager();
+    filer = processingEnvironment.getFiler();
+    elementUtils = processingEnvironment.getElementUtils();
+    typeUtils = processingEnvironment.getTypeUtils();
+    messager = processingEnvironment.getMessager();
     options = processingEnvironment.getOptions();
   }
 
