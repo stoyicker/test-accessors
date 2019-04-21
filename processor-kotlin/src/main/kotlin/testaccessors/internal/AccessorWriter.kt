@@ -13,6 +13,7 @@ import com.squareup.kotlinpoet.TypeVariableName
 import com.squareup.kotlinpoet.asTypeName
 import testaccessors.RequiresAccessor
 import java.nio.charset.StandardCharsets
+import java.nio.file.Path
 import java.util.regex.Pattern
 import javax.annotation.processing.Filer
 import javax.lang.model.element.Element
@@ -24,7 +25,11 @@ import kotlin.reflect.KClass
 import android.support.annotation.RestrictTo as SupportRestrictTo
 
 internal class AccessorWriter(
-    elementUtils: Elements, typeUtils: Types, logger: Lazy<Logger>, options: Options)
+    private val outputDir: Path,
+    elementUtils: Elements,
+    typeUtils: Types,
+    logger: Lazy<Logger>,
+    options: Options)
   : AbstractAccessorWriter(elementUtils, typeUtils, logger, options) {
   public override fun writeAccessorClass(annotatedElements: Set<Element>, filer: Filer) {
     val enclosingClassElement = annotatedElements.iterator().next().enclosingElement
@@ -162,7 +167,7 @@ internal class AccessorWriter(
                             Pattern::class,
                             requiredPatternInClasspath,
                             System::class,
-                            "java.class.path")
+                            "java.class.outputDir")
                         .addStatement(
                             "throw %T(%S)",
                             IllegalAccessError::class,
@@ -237,7 +242,7 @@ internal class AccessorWriter(
               enclosingElementList.first() === it ||
                   (Modifier.STATIC !in it.modifiers && it.enclosingElement.kind != ElementKind.PACKAGE)
             }
-            .map { it.asType().asTypeName() }
+            .map { it.kotlinize() }
             .filter { it is ParameterizedTypeName }
             .flatMap { (it as ParameterizedTypeName).typeArguments }
             .distinct()
@@ -250,7 +255,7 @@ internal class AccessorWriter(
     }).forEach { fileSpecBuilder.addFunction(it) }
     fileSpecBuilder
         .build()
-        .writeTo(filer)
+        .writeTo(outputDir)
   }
 }
 

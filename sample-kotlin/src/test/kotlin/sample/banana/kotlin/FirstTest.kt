@@ -3,7 +3,6 @@ package sample.banana.kotlin
 import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import sample.banana.kotlin.FirstTestAccessors.aField
 
 class FirstTest {
 	private lateinit var subject: First<Any?, Any?, Any?, Any?, Any?, Any?, Any?>

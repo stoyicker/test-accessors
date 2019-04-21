@@ -31,7 +31,7 @@ public abstract class AnnotationProcessor extends AbstractProcessor implements O
   Elements elementUtils;
   Types typeUtils;
   Messager messager;
-  private Map<String, String> options;
+  Map<String, String> options;
 
   AnnotationProcessor(final Class<? extends Annotation> annotation) {
     this.annotation = annotation;
@@ -53,7 +53,7 @@ public abstract class AnnotationProcessor extends AbstractProcessor implements O
   }
 
   @Override
-  public final Set<String> getSupportedOptions() {
+  public Set<String> getSupportedOptions() {
     return new HashSet<>(Arrays.asList(
         OPTION_KEY_REQUIRED_PATTERN_IN_CLASSPATH,
         OPTION_KEY_ANDROIDX_RESTRICT_TO,

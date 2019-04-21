@@ -51,7 +51,7 @@ private fun Metadata?.toKotlinTypeName(fallback: TypeName): TypeName = this?.run
   }
   is ParameterizedTypeName -> (fallback.rawType.run { extractKotlinTypeFromMapIfExists(this, toString()) } as ClassName).parameterizedBy(*fallback.typeArguments.map { it.kotlinize() }.toTypedArray())
   else -> extractKotlinTypeFromMapIfExists(fallback, fallback.toString())
-}.copy(nullable = fallback.isNullable)
+} // FIXME #12
 
 private class ClassVisitor : KmClassVisitor(), Resolver<TypeName> {
   private lateinit var root: ClassName

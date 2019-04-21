@@ -2,6 +2,7 @@ package testaccessors.internal
 
 import com.squareup.kotlinpoet.ClassName
 import testaccessors.RequiresAccessor
+import java.nio.file.Paths
 import java.util.HashMap
 import java.util.function.Supplier
 import javax.annotation.processing.RoundEnvironment
@@ -11,7 +12,7 @@ import javax.lang.model.element.TypeElement
 class RequiresAccessorProcessor : AnnotationProcessor(RequiresAccessor::class.java) {
 	private val logger = Lazy<Logger>(Supplier<Logger> { Logger(messager) })
 	private val verifier by lazy { RequiresAccessorAnnotationVerifier(logger) }
-	private val writer by lazy { AccessorWriter(elementUtils, typeUtils, logger, this) }
+	private val writer by lazy { AccessorWriter(optionKaptKotlinGenerated(), elementUtils, typeUtils, logger, this) }
 	private val filesToGenerate = HashMap<ClassName, MutableSet<Element>>()
 
 	override fun process(typeElements: Set<TypeElement>, roundEnvironment: RoundEnvironment): Boolean {
@@ -30,5 +31,13 @@ class RequiresAccessorProcessor : AnnotationProcessor(RequiresAccessor::class.ja
 					.forEach { elements -> writer.writeAccessorClass(elements, filer) }
 		}
 		return true
+	}
+
+	override fun getSupportedOptions() = super.getSupportedOptions().plus(OPTION_KEY_KAPT_KOTLIN_GENERATED)
+
+	private fun optionKaptKotlinGenerated() = Paths.get(options[OPTION_KEY_KAPT_KOTLIN_GENERATED]!!)
+
+	private companion object {
+		const val OPTION_KEY_KAPT_KOTLIN_GENERATED = "kapt.kotlin.generated"
 	}
 }
