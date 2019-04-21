@@ -133,13 +133,14 @@ Additionally, the accessors are generated in the last round of annotation proces
 they will not be considered by other annotation processors and therefore won't impact their 
 executions.
 ## Caveats
-* Why are setters not supported for static final fields? -> Acceses to these fields are inlined at compile time. Long story short, while the field itself can be updated via reflection, since its direct accessors will still use the original value, there's not much reason why you would want to set it. But if you feel like there's a valid scenario to consider revisiting this decision, please feel free to [open an issue!](https://github.com/stoyicker/test-accessors/issues/new) 
-* My generated Java code is not visible to Gradle via CMD -> Before Gradle 5.2, Java 
-annotation processing wasn't exactly supported, so you'll either need to upgrade your Gradle version 
-or use some other workaround. For more information and possible solutions, please check 
-[gradle/gradle#2300][gradle java apt issues]. Note that some plugins that you may be using (such as 
-the Android plugin) take care of this by themselves, so check your setup for issues before trying to 
-fix a problem you may not have!
+* Why are setters not supported for static final fields? -> Accesses to these fields are inlined at 
+compile time. Long story short, while the field itself can be updated via reflection, since its 
+direct accessors will still use the original value, there's not much reason why you would want to 
+set it. But if you feel like there's a valid scenario to consider revisiting this decision, please 
+feel free to [open an issue!](https://github.com/stoyicker/test-accessors/issues/new) 
+* My generated Java code is not visible to Gradle via CMD -> Upgrade to Gradle 5.2 or use some plugin
+(such as the Android Gradle plugin) that fixes this for you. For more information and possible solutions, 
+please check [gradle/gradle#2300][gradle java apt issues].
 * My generated Java code is not visible to my IDE -> Check [gradle/gradle#2300][gradle java apt issues]
 for information and solutions for different IDEs.
 ## License
