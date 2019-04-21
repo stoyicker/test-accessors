@@ -134,7 +134,7 @@ they will not be considered by other annotation processors and therefore won't i
 executions.
 ## Requirements
 * Gradle 5.2 or above.
-* (Recommended) IntelliJ IDEA 2019.1 (or above) or fork (such as Android Studio) based off such version.
+* (Recommended) IntelliJ IDEA 2019.1/Android Studio 3.5 or above as it fixes some issues with the generated code not being visible to the IDE, although CMD-based compilation works just fine.
 ## Caveats
 * Why are setters not supported for static final fields? -> Accesses to these fields are inlined at 
 compile time. Long story short, while the field itself can be updated via reflection, since its 
