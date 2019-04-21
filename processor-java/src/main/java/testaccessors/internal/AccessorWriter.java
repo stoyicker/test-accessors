@@ -1,5 +1,7 @@
 package testaccessors.internal;
 
+import androidx.annotation.RestrictTo;
+
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
@@ -34,7 +36,6 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
-import androidx.annotation.RestrictTo;
 import testaccessors.RequiresAccessor;
 
 final class AccessorWriter extends AbstractAccessorWriter {
@@ -94,7 +95,7 @@ final class AccessorWriter extends AbstractAccessorWriter {
                 element,
                 "/javadoc-getter-static.template",
                 new Object[]{
-                    TypeName.get(element.getEnclosingElement().asType()),
+                    typeUtils.erasure(element.getEnclosingElement().asType()),
                     element.getSimpleName().toString()},
                 null)
                 .build();
@@ -106,7 +107,7 @@ final class AccessorWriter extends AbstractAccessorWriter {
                     element,
                     "/javadoc-getter.template",
                     new Object[]{
-                        TypeName.get(element.getEnclosingElement().asType()),
+                        typeUtils.erasure(element.getEnclosingElement().asType()),
                         element.getSimpleName().toString(),
                         PARAMETER_NAME_RECEIVER},
                     PARAMETER_NAME_RECEIVER), element)
@@ -149,7 +150,7 @@ final class AccessorWriter extends AbstractAccessorWriter {
                 element,
                 "/javadoc-setter-static.template",
                 new Object[]{
-                    TypeName.get(element.getEnclosingElement().asType()),
+                    typeUtils.erasure(element.getEnclosingElement().asType()),
                     element.getSimpleName().toString(),
                     PARAMETER_NAME_NEW_VALUE},
                 null)
@@ -166,7 +167,7 @@ final class AccessorWriter extends AbstractAccessorWriter {
                 element,
                 "/javadoc-setter.template",
                 new Object[]{
-                    TypeName.get(element.getEnclosingElement().asType()),
+                    typeUtils.erasure(element.getEnclosingElement().asType()),
                     element.getSimpleName().toString(),
                     PARAMETER_NAME_RECEIVER,
                     PARAMETER_NAME_NEW_VALUE},

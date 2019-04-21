@@ -66,7 +66,7 @@ internal class AccessorWriter(
         generateCommonGetterFunSpec(
             element, "/kdoc-getter-static.template",
             arrayOf(
-                this,
+                toString().replace(Regex("<(.*?)>"), "").replace("<>", ""),
                 element.simpleName.toString()),
             "null")
             .receiver(ClassName.bestGuess(KClass::class.qualifiedName!!).plusParameter(this))
@@ -77,7 +77,7 @@ internal class AccessorWriter(
         generateCommonGetterFunSpec(
             element, "/kdoc-getter.template",
             arrayOf(
-                element.enclosingElement.kotlinize(),
+                element.enclosingElement.kotlinize().toString().replace(Regex("<(.*?)>"), "").replace("<>", ""),
                 element.simpleName.toString()),
             "this@${funName(element)}")
             .addReceiver(element)
@@ -109,7 +109,8 @@ internal class AccessorWriter(
         generateCommonSetterFunSpec(
             element,
             "/kdoc-setter-static.template",
-            arrayOf(this,
+            arrayOf(
+                toString().replace(Regex("<(.*?)>"), "").replace("<>", ""),
                 element.simpleName.toString(),
                 PARAMETER_NAME_NEW_VALUE),
             "null")
@@ -120,7 +121,8 @@ internal class AccessorWriter(
       private fun generateSetterFunSpec(element: Element) = generateCommonSetterFunSpec(
           element,
           "/kdoc-setter.template",
-          arrayOf(element.enclosingElement.kotlinize(),
+          arrayOf(
+              element.enclosingElement.kotlinize().toString().replace(Regex("<(.*?)>"), "").replace("<>", ""),
               element.simpleName.toString(),
               PARAMETER_NAME_NEW_VALUE),
           "this@${funName(element)}")
