@@ -18,7 +18,13 @@ class FirstTest {
 
 		subject.aField(expected)
 
-		val actual = subject::class.java.getDeclaredField("aField")[subject]
+		var actual: String?
+		subject::class.java.getDeclaredField("aField").apply {
+			val wasAccessible = isAccessible
+			isAccessible = true
+			actual = this[subject] as String?
+			isAccessible = wasAccessible
+		}
 		assertSame(expected, actual)
 	}
 
