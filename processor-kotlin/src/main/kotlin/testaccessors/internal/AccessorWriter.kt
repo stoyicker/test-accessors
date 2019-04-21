@@ -169,7 +169,7 @@ internal class AccessorWriter(
                             Pattern::class,
                             requiredPatternInClasspath,
                             System::class,
-                            "java.class.outputDir")
+                            "java.class.path")
                         .addStatement(
                             "throw %T(%S)",
                             IllegalAccessError::class,
