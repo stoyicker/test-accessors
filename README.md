@@ -4,6 +4,7 @@
 Add the dependencies to your project:
 ```groovy
 repositories {
+  google()
   maven {
     url "https://jitpack.io"
   }
