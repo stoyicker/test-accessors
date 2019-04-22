@@ -42,6 +42,14 @@ jobs:
       - run: ./gradlew clean :sample-kotlin:test --no-daemon --no-build-cache --refresh-dependencies
       - store_test_results:
           path: sample-kotlin/build/test-results
+  build_processor-java:
+    docker:
+      - image: circleci/android:api-28
+    steps:
+      - checkout
+      - run: ./gradlew clean :processor-java:assemble
+      - store_artifacts:
+          path: processor-java/build/libs/processor-java.jar
 workflows:
   version: 2.1
   test_samples:
@@ -50,3 +58,10 @@ workflows:
       - test_sample-android-kotlin
       - test_sample-java
       - test_sample-kotlin
+  build_processors:
+    jobs:
+      - build_processor-java:
+          filters:
+            branches:
+              only:
+                - master
