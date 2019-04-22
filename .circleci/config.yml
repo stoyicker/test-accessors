@@ -2,25 +2,35 @@ version: 2.1
 jobs:
   test_sample-android-java:
     docker:
-      - image: stoyicker/docker-android:b0ee759983428699935bf7a7e30d98ab690819a9
+      - image: circleci/android:api-28
+    environment:
+      JVM_OPTS: -Xmx3200m
     steps:
       - checkout
+      - run:
+          name: Download Dependencies
+          command: ./gradlew androidDependencies
       - run: ./gradlew clean :sample-android:testJavaDebugUnitTest --no-daemon --no-build-cache --refresh-dependencies
   test_sample-android-kotlin:
     docker:
-      - image: stoyicker/docker-android:b0ee759983428699935bf7a7e30d98ab690819a9
+      - image: circleci/android:api-28
+    environment:
+      JVM_OPTS: -Xmx3200m
     steps:
       - checkout
+      - run:
+          name: Download Dependencies
+          command: ./gradlew androidDependencies
       - run: ./gradlew clean :sample-android:testKotlinDebugUnitTest --no-daemon --no-build-cache --refresh-dependencies
   test_sample-java:
     docker:
-      - image: stoyicker/docker-android:b0ee759983428699935bf7a7e30d98ab690819a9
+      - image: circleci/android:api-28
     steps:
       - checkout
       - run: ./gradlew clean :sample-java:test --no-daemon --no-build-cache --refresh-dependencies
   test_sample-kotlin:
     docker:
-      - image: stoyicker/docker-android:b0ee759983428699935bf7a7e30d98ab690819a9
+      - image: circleci/android:api-28
     steps:
       - checkout
       - run: ./gradlew clean :sample-kotlin:test --no-daemon --no-build-cache --refresh-dependencies
