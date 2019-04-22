@@ -11,6 +11,8 @@ jobs:
           name: Download Dependencies
           command: ./gradlew androidDependencies
       - run: ./gradlew clean :sample-android:testJavaDebugUnitTest --no-daemon --no-build-cache --refresh-dependencies
+      - store_test_results:
+          path: sample-android/build/test-results/testJavaDebugUnitTest
   test_sample-android-kotlin:
     docker:
       - image: circleci/android:api-28
@@ -22,18 +24,24 @@ jobs:
           name: Download Dependencies
           command: ./gradlew androidDependencies
       - run: ./gradlew clean :sample-android:testKotlinDebugUnitTest --no-daemon --no-build-cache --refresh-dependencies
+      - store_test_results:
+          path: sample-android/build/test-results/testKotlinDebugUnitTest
   test_sample-java:
     docker:
       - image: circleci/android:api-28
     steps:
       - checkout
       - run: ./gradlew clean :sample-java:test --no-daemon --no-build-cache --refresh-dependencies
+      - store_test_results:
+          path: sample-java/build/test-results
   test_sample-kotlin:
     docker:
       - image: circleci/android:api-28
     steps:
       - checkout
       - run: ./gradlew clean :sample-kotlin:test --no-daemon --no-build-cache --refresh-dependencies
+      - store_test_results:
+          path: sample-kotlin/build/test-results
 workflows:
   version: 2.1
   test_samples:
