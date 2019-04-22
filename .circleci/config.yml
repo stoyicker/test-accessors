@@ -1,0 +1,34 @@
+version: 2.1
+jobs:
+  build_sample-android-java:
+    docker:
+      - image: stoyicker/docker-android:b0ee759983428699935bf7a7e30d98ab690819a9
+    steps:
+      - checkout
+      - run: ./gradlew clean :sample-android:testJavaDebugUnitTest --no-daemon --no-build-cache --refresh-dependencies
+  build_sample-android-kotlin:
+    docker:
+      - image: stoyicker/docker-android:b0ee759983428699935bf7a7e30d98ab690819a9
+    steps:
+      - checkout
+      - run: ./gradlew clean :sample-android:testKotlinDebugUnitTest --no-daemon --no-build-cache --refresh-dependencies
+  build_sample-java:
+    docker:
+      - image: stoyicker/docker-android:b0ee759983428699935bf7a7e30d98ab690819a9
+    steps:
+      - checkout
+      - run: ./gradlew clean :sample-java:test --no-daemon --no-build-cache --refresh-dependencies
+  build_sample-kotlin:
+    docker:
+      - image: stoyicker/docker-android:b0ee759983428699935bf7a7e30d98ab690819a9
+    steps:
+      - checkout
+      - run: ./gradlew clean :sample-kotlin:test --no-daemon --no-build-cache --refresh-dependencies
+workflows:
+  version: 2.1
+  build:
+    jobs:
+      - build_sample-android-java
+      - build_sample-android-kotlin
+      - build_sample-java
+      - build_sample-kotlin
