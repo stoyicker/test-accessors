@@ -27,7 +27,7 @@ class AndroidApplicationTest {
   fun setAField() {
     val expected = "this is another mock value"
 
-    subject.aField(expected)
+    AndroidApplicationTestAccessors.aField(subject, expected)
 
     var actual: String?
     subject::class.java.getDeclaredField("aField").apply {
@@ -49,7 +49,7 @@ class AndroidApplicationTest {
       isAccessible = wasAccessible
     }
 
-    val actual = subject.aField()
+    val actual = AndroidApplicationTestAccessors.aField(subject)
 
     assertSame(expected, actual)
   }
@@ -58,7 +58,7 @@ class AndroidApplicationTest {
   fun setAFieldInAPrivateCompanionObject() {
     val expected = "this is a mock value"
 
-    AndroidApplication::class.aFieldInAPrivateCompanionObject(expected)
+    AndroidApplicationTestAccessors.aFieldInAPrivateCompanionObject(expected)
 
     var actual: Any?
     AndroidApplication::class.java.getDeclaredField("aFieldInAPrivateCompanionObject").apply {
@@ -80,7 +80,7 @@ class AndroidApplicationTest {
       isAccessible = wasAccessible
     }
 
-    val actual = AndroidApplication::class.aFieldInAPrivateCompanionObject()
+    val actual = AndroidApplicationTestAccessors.aFieldInAPrivateCompanionObject()
 
     assertSame(expected, actual)
   }

@@ -10,11 +10,4 @@ public final class AndroidApplication extends Application {
   private final String aField = "holahola";
   @RequiresAccessor(androidXRestrictTo = @RestrictTo(RestrictTo.Scope.TESTS))
   private static Object aStaticField = null;
-
-  @Override
-  public void onCreate() {
-    super.onCreate();
-    System.out.println(aField);
-    System.out.println(aStaticField);
-  }
 }

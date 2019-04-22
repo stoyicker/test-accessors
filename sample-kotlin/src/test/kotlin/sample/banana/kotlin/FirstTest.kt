@@ -16,7 +16,7 @@ class FirstTest {
 	fun setAField() {
 		val expected = "this is a mock value"
 
-		subject.aField(expected)
+		FirstTestAccessors.aField(subject, expected)
 
 		var actual: String?
 		subject::class.java.getDeclaredField("aField").apply {
@@ -38,7 +38,7 @@ class FirstTest {
 			isAccessible = wasAccessible
 		}
 
-		val actual = subject.aField()
+		val actual = FirstTestAccessors.aField(subject)
 
 		assertSame(expected, actual)
 	}

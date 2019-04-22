@@ -11,7 +11,7 @@ repositories {
 dependencies {
   implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.3.30'
   compileOnly project(':annotations')
-  kapt project(':processor-kotlin')
+  kapt project(':processor-java')
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.0-M1'
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.5.0-M1'
 }
