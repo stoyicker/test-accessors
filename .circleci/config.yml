@@ -50,6 +50,7 @@ jobs:
       - run: ./gradlew clean :processor-java:assemble
       - store_artifacts:
           path: processor-java/build/libs/processor-java.jar
+          destination: processor-java.jar
 workflows:
   version: 2.1
   test_samples:
