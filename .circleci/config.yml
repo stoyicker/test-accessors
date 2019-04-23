@@ -10,7 +10,7 @@ jobs:
       - run:
           name: Download Dependencies
           command: ./gradlew androidDependencies
-      - run: ./gradlew clean :sample-android:testJavaDebugUnitTest --no-daemon --no-build-cache --refresh-dependencies
+      - run: ./gradlew :sample-android:testJavaDebugUnitTest --no-daemon --no-build-cache --refresh-dependencies
       - store_test_results:
           path: sample-android/build/test-results/testJavaDebugUnitTest
   test_sample-android-kotlin:
@@ -23,7 +23,7 @@ jobs:
       - run:
           name: Download Dependencies
           command: ./gradlew androidDependencies
-      - run: ./gradlew clean :sample-android:testKotlinDebugUnitTest --no-daemon --no-build-cache --refresh-dependencies
+      - run: ./gradlew :sample-android:testKotlinDebugUnitTest --no-daemon --no-build-cache --refresh-dependencies
       - store_test_results:
           path: sample-android/build/test-results/testKotlinDebugUnitTest
   test_sample-java:
@@ -31,7 +31,7 @@ jobs:
       - image: circleci/android:api-28
     steps:
       - checkout
-      - run: ./gradlew clean :sample-java:test --no-daemon --no-build-cache --refresh-dependencies
+      - run: ./gradlew :sample-java:test --no-daemon --no-build-cache --refresh-dependencies
       - store_test_results:
           path: sample-java/build/test-results
   test_sample-kotlin:
@@ -39,7 +39,7 @@ jobs:
       - image: circleci/android:api-28
     steps:
       - checkout
-      - run: ./gradlew clean :sample-kotlin:test --no-daemon --no-build-cache --refresh-dependencies
+      - run: ./gradlew :sample-kotlin:test --no-daemon --no-build-cache --refresh-dependencies
       - store_test_results:
           path: sample-kotlin/build/test-results
   build_processor-java:
@@ -55,14 +55,16 @@ workflows:
   version: 2.1
   test_samples:
     jobs:
-      - test_sample-android-java
-      - test_sample-android-kotlin
-      - test_sample-java
-      - test_sample-kotlin
-  build_processors:
-    jobs:
-      - build_processor-java:
-          filters:
-            branches:
-              only:
-                - master
+      - build_processor-java
+      - test_sample-android-java:
+          requires:
+            - build_processor-java
+      - test_sample-android-kotlin:
+          requires:
+            - build_processor-java
+      - test_sample-java:
+          requires:
+            - build_processor-java
+      - test_sample-kotlin:
+          requires:
+            - build_processor-java
