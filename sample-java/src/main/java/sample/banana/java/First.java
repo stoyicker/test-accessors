@@ -15,7 +15,7 @@ public final class First<A, B, C, D, E, F, G> {
   public static class Second {
     class Third<B> {
       @RequiresAccessor(requires = RequiresAccessor.AccessorType.TYPE_SETTER)
-      private final Void yetAnotherField = null;
+      private final String yetAnotherField = null;
 
       class Fourth {
         @RequiresAccessor(requires = RequiresAccessor.AccessorType.TYPE_SETTER)
@@ -30,7 +30,7 @@ public final class First<A, B, C, D, E, F, G> {
 
     class Sixth {
       class Seventh<T, J extends Set<List<?>>, Q extends Collection<? extends T>> {
-        @RequiresAccessor(name = "middleFieldThatHasBeenRenamed")
+        @RequiresAccessor(name = "fieldThatHasBeenRenamed")
         private final Set<J> anotherField = Collections.emptySet();
       }
     }

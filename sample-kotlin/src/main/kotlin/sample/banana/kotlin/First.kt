@@ -10,7 +10,7 @@ class First<A, B, C, D, E, F, G> {
   class Second {
     inner class Third<B> {
       @RequiresAccessor(requires = [RequiresAccessor.AccessorType.TYPE_SETTER])
-      private val yetAnotherField = Unit
+      private val yetAnotherField: String? = null
 
       inner class Fourth {
         @RequiresAccessor(requires = [RequiresAccessor.AccessorType.TYPE_SETTER])
