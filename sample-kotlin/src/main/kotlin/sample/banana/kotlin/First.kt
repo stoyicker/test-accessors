@@ -23,9 +23,9 @@ class First<A, B, C, D, E, F, G> {
       }
     }
 
-    class Sixth {
-      class Seventh<T, J : Set<List<*>?>?, Q : Collection<J>> {
-        @RequiresAccessor(name = "middleFieldThatHasBeenRenamed")
+    inner class Sixth {
+      inner class Seventh<T, J : Set<List<*>?>?, Q : Collection<T>> {
+        @RequiresAccessor(name = "fieldThatHasBeenRenamed")
         private val anotherField: Set<Q?>? = emptySet()
       }
     }

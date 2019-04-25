@@ -38,7 +38,7 @@ class FirstTest {
 			isAccessible = wasAccessible
 		}
 
-		val actual = FirstTestAccessors.aField(subject)
+		val actual: String? = FirstTestAccessors.aField(subject)
 
 		assertSame(expected, actual)
 	}
