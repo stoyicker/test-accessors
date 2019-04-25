@@ -31,9 +31,9 @@ Once annotation processing runs, there will be a class called org.my.example.Gen
 in the generated directory of your source set with two methods with the following signature:
 ```java
 public final class MyClassTestAccessors {
-    public static String myField(final MyClass receiver);
+    public static <TestAccessorsValue> TestAccessorsValue myField(final MyClass receiver);
     
-    public static void myField(final MyClass receiver, final String newValue);
+    public static <TestAccessorsValue> void myField(final MyClass receiver, final TestAccessorsValue newValue);
 }
 ```
 It also works with static variables!
@@ -46,9 +46,9 @@ class MyClass {
 will generate an implementation under the following API in the current source set:
 ```java
 public final class MyClassTestAccessors {
-    public static String myStaticField();
+    public static <TestAccessorsValue> TestAccessorsValue myStaticField();
     
-    public static void myStaticField(final String newValue);
+    public static <TestAccessorsValue> void myStaticField(final TestAccessorsValue newValue);
 }
 ```
 ## Options

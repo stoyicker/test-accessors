@@ -119,7 +119,7 @@ final class AccessorWriter extends AbstractAccessorWriter {
               final String javadocResource,
               final Object[] javadocArgs,
               final Object receiverLiteral) {
-            final TypeName elementType = TypeName.get(element.asType());
+            final TypeVariableName elementType = TypeVariableName.get(TYPE_NAME_VALUE);
             return generateCommonMethodSpec(element)
                 .addJavadoc(readAsset(javadocResource), javadocArgs)
                 .beginControlFlow("try")
@@ -150,12 +150,12 @@ final class AccessorWriter extends AbstractAccessorWriter {
                 element,
                 "/javadoc-setter-static.template",
                 new Object[]{
-                    typeUtils.erasure(element.getEnclosingElement().asType()),
+                    TypeVariableName.get(TYPE_NAME_VALUE),
                     element.getSimpleName().toString(),
                     PARAMETER_NAME_NEW_VALUE},
                 null)
                 .addParameter(ParameterSpec.builder(
-                    TypeName.get(element.asType()),
+                    TypeVariableName.get(TYPE_NAME_VALUE),
                     PARAMETER_NAME_NEW_VALUE,
                     Modifier.FINAL)
                     .build())
@@ -167,14 +167,14 @@ final class AccessorWriter extends AbstractAccessorWriter {
                 element,
                 "/javadoc-setter.template",
                 new Object[]{
-                    typeUtils.erasure(element.getEnclosingElement().asType()),
+                    TypeVariableName.get(TYPE_NAME_VALUE),
                     element.getSimpleName().toString(),
                     PARAMETER_NAME_RECEIVER,
                     PARAMETER_NAME_NEW_VALUE},
                 PARAMETER_NAME_RECEIVER
             ), element)
                 .addParameter(ParameterSpec.builder(
-                    TypeName.get(element.asType()),
+                    TypeVariableName.get(TYPE_NAME_VALUE),
                     PARAMETER_NAME_NEW_VALUE,
                     Modifier.FINAL)
                     .build())
@@ -235,7 +235,8 @@ final class AccessorWriter extends AbstractAccessorWriter {
                     Modifier.PUBLIC,
                     Modifier.STATIC),
                     requiresAccessor.androidXRestrictTo()),
-                requiresAccessor.supportRestrictTo());
+                requiresAccessor.supportRestrictTo())
+                .addTypeVariable(TypeVariableName.get(TYPE_NAME_VALUE));
             final CharSequence requiredPatternInClasspath = options.requiredPatternInClasspath();
             if (requiredPatternInClasspath != null && requiredPatternInClasspath.length() != 0) {
               ret.addCode(CodeBlock.builder()

@@ -11,6 +11,7 @@ import javax.lang.model.util.Types;
 
 abstract class AbstractAccessorWriter {
   static final String PARAMETER_NAME_NEW_VALUE = "newValue";
+  static final String TYPE_NAME_VALUE = "TestAccessorsValue";
   static final String ERROR_MESSAGE_ILLEGAL_ACCESS = "Accessing this method from this source set is not allowed";
   static final String ERROR_MESSAGE_UNSUPPORTED_STATIC_FINAL_SETTER = "Generating setters for fields that are both static and final (or val in Kotlin companion objects) is not supported";
   final Elements elementUtils;
