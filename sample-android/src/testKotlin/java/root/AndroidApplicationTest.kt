@@ -49,7 +49,7 @@ class AndroidApplicationTest {
       isAccessible = wasAccessible
     }
 
-    val actual = AndroidApplicationTestAccessors.aField(subject)
+    val actual: String? = AndroidApplicationTestAccessors.aField(subject)
 
     assertSame(expected, actual)
   }
@@ -80,7 +80,7 @@ class AndroidApplicationTest {
       isAccessible = wasAccessible
     }
 
-    val actual = AndroidApplicationTestAccessors.aFieldInAPrivateCompanionObject()
+    val actual: Any? = AndroidApplicationTestAccessors.aFieldInAPrivateCompanionObject()
 
     assertSame(expected, actual)
   }

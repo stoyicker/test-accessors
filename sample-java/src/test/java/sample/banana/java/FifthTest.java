@@ -42,7 +42,7 @@ final class FifthTest {
     field.set(subject, expected);
     field.setAccessible(wasAccessible);
 
-    final Set<String> actual = FirstSecondThirdFourthFifthTestAccessors.yetAnotherField(subject);
+    final Set<String> actual = (Set<String>) FirstSecondThirdFourthFifthTestAccessors.yetAnotherField(subject);
 
     assertSame(expected, actual);
   }
