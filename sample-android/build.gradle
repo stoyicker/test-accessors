@@ -5,7 +5,7 @@ buildscript {
   }
   dependencies {
     classpath 'com.android.tools.build:gradle:3.4.0'
-    classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.30'
+    classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.31'
   }
 }
 
@@ -70,7 +70,7 @@ dependencies {
   // Kapt takes over annotationProcessor everywhere, so javaAnnotationProcessor cannot be used here
   kaptJava project(':processor-java')
 
-  kotlinImplementation 'org.jetbrains.kotlin:kotlin-stdlib:1.3.30'
+  kotlinImplementation 'org.jetbrains.kotlin:kotlin-stdlib:1.3.31'
   kotlinCompileOnly project(':annotations')
   kaptKotlin project(':processor-java')
 }
