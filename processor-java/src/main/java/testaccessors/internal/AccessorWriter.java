@@ -8,7 +8,6 @@ import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
-import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
@@ -20,18 +19,14 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.processing.Filer;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
@@ -314,37 +309,14 @@ final class AccessorWriter extends AbstractAccessorWriter {
             return receiver;
           }
 
-          private MethodSpec.Builder addReceiver(final MethodSpec.Builder builder, final Element element) {
+          private MethodSpec.Builder addReceiver(
+              final MethodSpec.Builder builder, final Element element) {
             builder.addParameter(ParameterSpec.builder(
-                TypeName.get(element.getEnclosingElement().asType()),
+                TypeName.get(typeUtils.erasure(element.getEnclosingElement().asType())),
                 PARAMETER_NAME_RECEIVER,
                 Modifier.FINAL)
                 .build());
-            final List<Element> enclosingElementList = enclosingElementsOf(element);
-            builder.addTypeVariables(
-                enclosingElementList.stream()
-                    .filter(it -> enclosingElementList.get(0) == it ||
-                        (!it.getModifiers().contains(Modifier.STATIC)
-                            && it.getEnclosingElement().getKind() != ElementKind.PACKAGE))
-                    .map(it -> TypeName.get(it.asType()))
-                    .filter(it -> it instanceof ParameterizedTypeName)
-                    .flatMap(it -> ((ParameterizedTypeName) it).typeArguments.stream())
-                    .distinct()
-                    .map(it -> TypeVariableName.get(
-                        it.toString(),
-                        (((TypeVariableName) it).bounds.toArray(new TypeName[0]))))
-                    .collect(Collectors.toList()));
             return builder;
-          }
-
-          private List<Element> enclosingElementsOf(final Element element) {
-            Element eachEnclosing = element.getEnclosingElement();
-            final List<Element> ret = new LinkedList<>();
-            while (eachEnclosing != null && eachEnclosing.getKind() != ElementKind.PACKAGE) {
-              ret.add(eachEnclosing);
-              eachEnclosing = eachEnclosing.getEnclosingElement();
-            }
-            return ret;
           }
         })
         .forEach(typeSpecBuilder::addMethod);
