@@ -1,11 +1,13 @@
 plugins {
-  id 'java-library'
+  id 'org.jetbrains.kotlin.jvm' version '1.3.31'
 }
 
 repositories {
+  jcenter()
   google()
 }
 
 dependencies {
+  implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.3.31'
   implementation project(':annotations')
 }
