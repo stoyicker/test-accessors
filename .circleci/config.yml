@@ -81,7 +81,7 @@ workflows:
       - release_on_github:
           filters:
             branches:
-              ignore: /.*/
+              only: master
             tags:
               only: /^v.*/
           requires:
@@ -93,7 +93,7 @@ workflows:
       - release_on_jcenter:
           filters:
             branches:
-              ignore: /.*/
+              only: master
             tags:
               only: /^v.*/
           requires:
