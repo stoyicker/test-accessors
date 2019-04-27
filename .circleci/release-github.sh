@@ -35,9 +35,21 @@ uploadReleaseToGitHub() {
     # And the id for later use
     RELEASE_ID=$(echo ${RESPONSE_BODY} | jq -r .id)
 
+    cp annotations/build/libs/annotations.jar .
+
+    # Attach processor-java
+    UPLOAD_URL=$(echo ${UPLOAD_URL} | sed "s/{?name,label}/?name=annotations-${ARTIFACT_VERSION}.jar/")
+    curl -s \
+        -u ${REPO_USER}:${GITHUB_TOKEN} \
+        --header "Accept: application/vnd.github.v3+json" \
+        --header "Content-Type: application/zip" \
+        --data-binary "@annotations.jar" \
+        --request POST \
+        ${UPLOAD_URL}
+
     cp processor-java/build/libs/processor-java.jar .
 
-    # Attach the artifact
+    # Attach processor-java
     UPLOAD_URL=$(echo ${UPLOAD_URL} | sed "s/{?name,label}/?name=processor-java-${ARTIFACT_VERSION}.jar/")
     curl -s \
         -u ${REPO_USER}:${GITHUB_TOKEN} \
