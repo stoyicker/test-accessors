@@ -51,6 +51,16 @@ jobs:
       - store_artifacts:
           path: processor-java/build/libs/processor-java.jar
           destination: processor-java.jar
+  release_on_github:
+    docker:
+      - image: circleci/android:api-28
+    steps:
+      - run: echo "TODO This is the job for releasing to github"
+  release_on_bintray:
+    docker:
+      - image: circleci/android:api-28
+    steps:
+      - run: echo "TODO This is the job for releasing to bintray"
 workflows:
   version: 2.1
   test_samples:
@@ -68,3 +78,27 @@ workflows:
       - test_sample-kotlin:
           requires:
             - build_processor-java
+      - release_on_github:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
+          requires:
+            - build_processor-java
+            - test_sample-android-java
+            - test_sample-android-kotlin
+            - test_sample-java
+            - test_sample-kotlin
+      - release_on_bintray:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
+          requires:
+            - build_processor-java
+            - test_sample-android-java
+            - test_sample-android-kotlin
+            - test_sample-java
+            - test_sample-kotlin
