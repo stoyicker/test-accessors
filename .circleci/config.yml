@@ -55,8 +55,8 @@ jobs:
     docker:
       - image: circleci/android:api-28
     steps:
-      - run: echo "TODO This is the job for releasing to github"
-  release_on_bintray:
+      - run: ./.circleci/release-github.sh
+  release_on_jcenter:
     docker:
       - image: circleci/android:api-28
     steps:
@@ -90,7 +90,7 @@ workflows:
             - test_sample-android-kotlin
             - test_sample-java
             - test_sample-kotlin
-      - release_on_bintray:
+      - release_on_jcenter:
           filters:
             branches:
               ignore: /.*/
