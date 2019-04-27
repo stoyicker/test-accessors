@@ -118,13 +118,13 @@ workflows:
       - build_annotations:
           filters:
             branches:
-              only: master
+              ignore: /.*/
             tags:
               only: /^v.*/
       - build_processor-java:
           filters:
             branches:
-              only: master
+              ignore: /.*/
             tags:
               only: /^v.*/
       - test_sample-android-java:
