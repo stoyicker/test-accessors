@@ -128,28 +128,58 @@ workflows:
             tags:
               only: /^v.*/
       - test_sample-android-java:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
           requires:
             - build_annotations
             - build_processor-java
       - test_sample-android-kotlin:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
           requires:
             - build_annotations
             - build_processor-java
       - test_sample-java:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
           requires:
             - build_annotations
             - build_processor-java
       - test_sample-kotlin:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
           requires:
             - build_annotations
             - build_processor-java
       - release_on_github:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
           requires:
             - test_sample-android-java
             - test_sample-android-kotlin
             - test_sample-java
             - test_sample-kotlin
       - release_on_jcenter:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
           requires:
             - test_sample-android-java
             - test_sample-android-kotlin
