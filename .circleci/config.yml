@@ -1,5 +1,27 @@
 version: 2.1
 jobs:
+  build_annotations:
+    docker:
+      - image: circleci/android:api-28
+    environment:
+      JVM_OPTS: -Xmx3200m
+    steps:
+      - checkout
+      - run: ./gradlew clean :annotations:assemble --no-daemon --no-build-cache --refresh-dependencies
+      - store_artifacts:
+          path: annotations/build/libs/annotations.jar
+          destination: annotations.jar
+  build_processor-java:
+    docker:
+      - image: circleci/android:api-28
+    environment:
+      JVM_OPTS: -Xmx3200m
+    steps:
+      - checkout
+      - run: ./gradlew clean :processor-java:assemble --no-daemon --no-build-cache --refresh-dependencies
+      - store_artifacts:
+          path: processor-java/build/libs/processor-java.jar
+          destination: processor-java.jar
   test_sample-android-java:
     docker:
       - image: circleci/android:api-28
@@ -29,6 +51,8 @@ jobs:
   test_sample-java:
     docker:
       - image: circleci/android:api-28
+    environment:
+      JVM_OPTS: -Xmx3200m
     steps:
       - checkout
       - run: ./gradlew :sample-java:test --no-daemon --no-build-cache --refresh-dependencies
@@ -37,67 +61,96 @@ jobs:
   test_sample-kotlin:
     docker:
       - image: circleci/android:api-28
+    environment:
+      JVM_OPTS: -Xmx3200m
     steps:
       - checkout
       - run: ./gradlew :sample-kotlin:test --no-daemon --no-build-cache --refresh-dependencies
       - store_test_results:
           path: sample-kotlin/build/test-results
-  build_processor-java:
-    docker:
-      - image: circleci/android:api-28
-    steps:
-      - checkout
-      - run: ./gradlew clean :processor-java:assemble --no-daemon --no-build-cache --refresh-dependencies
-      - store_artifacts:
-          path: processor-java/build/libs/processor-java.jar
-          destination: processor-java.jar
   release_on_github:
     docker:
       - image: circleci/android:api-28
+    environment:
+      JVM_OPTS: -Xmx3200m
     steps:
+      - checkout
+      - run: ./gradlew clean :annotations:assemble :processor-java:assemble --no-daemon --no-build-cache --refresh-dependencies
       - run: ./.circleci/release-github.sh
   release_on_jcenter:
     docker:
       - image: circleci/android:api-28
+    environment:
+      JVM_OPTS: -Xmx3200m
     steps:
-      - run: echo "TODO This is the job for releasing to bintray"
+      - checkout
+      - run: echo "TODO This is the job for releasing to jcenter"
 workflows:
   version: 2.1
   test_samples:
     jobs:
-      - build_processor-java
+      - build_annotations:
+          filters:
+            tags:
+              ignore: /.*/
+      - build_processor-java:
+          filters:
+            tags:
+              ignore: /.*/
       - test_sample-android-java:
           requires:
+            - build_annotations
             - build_processor-java
       - test_sample-android-kotlin:
           requires:
+            - build_annotations
             - build_processor-java
       - test_sample-java:
           requires:
+            - build_annotations
             - build_processor-java
       - test_sample-kotlin:
           requires:
+            - build_annotations
             - build_processor-java
-      - release_on_github:
+  release:
+    jobs:
+      - build_annotations:
           filters:
             branches:
               only: master
             tags:
               only: /^v.*/
+      - build_processor-java:
+          filters:
+            branches:
+              only: master
+            tags:
+              only: /^v.*/
+      - test_sample-android-java:
           requires:
+            - build_annotations
             - build_processor-java
+      - test_sample-android-kotlin:
+          requires:
+            - build_annotations
+            - build_processor-java
+      - test_sample-java:
+          requires:
+            - build_annotations
+            - build_processor-java
+      - test_sample-kotlin:
+          requires:
+            - build_annotations
+            - build_processor-java
+      - release_on_github:
+          requires:
             - test_sample-android-java
             - test_sample-android-kotlin
             - test_sample-java
             - test_sample-kotlin
       - release_on_jcenter:
-          filters:
-            branches:
-              only: master
-            tags:
-              only: /^v.*/
           requires:
-            - build_processor-java
             - test_sample-android-java
             - test_sample-android-kotlin
             - test_sample-java
