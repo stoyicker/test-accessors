@@ -47,7 +47,7 @@ jobs:
       - image: circleci/android:api-28
     steps:
       - checkout
-      - run: ./gradlew clean :processor-java:assemble
+      - run: ./gradlew clean :processor-java:assemble --no-daemon --no-build-cache --refresh-dependencies
       - store_artifacts:
           path: processor-java/build/libs/processor-java.jar
           destination: processor-java.jar
