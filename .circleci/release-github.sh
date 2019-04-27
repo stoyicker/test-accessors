@@ -36,27 +36,27 @@ uploadReleaseToGitHub() {
 
     cp annotations/build/libs/annotations.jar .
 
-    # Attach processor-java
-    UPLOAD_URL=$(echo ${UPLOAD_URL} | sed "s/{?name,label}/?name=annotations-${THIS_RELEASE}.jar/")
+    # Attach annotations
+    ANNOTATIONS_UPLOAD_URL=$(echo ${UPLOAD_URL} | sed "s/{?name,label}/?name=annotations-${THIS_RELEASE}.jar/")
     curl -s \
         -u ${REPO_USER}:${GITHUB_TOKEN} \
         --header "Accept: application/vnd.github.v3+json" \
         --header "Content-Type: application/zip" \
         --data-binary "@annotations.jar" \
         --request POST \
-        ${UPLOAD_URL}
+        ${ANNOTATIONS_UPLOAD_URL}
 
     cp processor-java/build/libs/processor-java.jar .
 
     # Attach processor-java
-    UPLOAD_URL=$(echo ${UPLOAD_URL} | sed "s/{?name,label}/?name=processor-java-${THIS_RELEASE}.jar/")
+    PROCESSOR_JAVA_UPLOAD_URL=$(echo ${UPLOAD_URL} | sed "s/{?name,label}/?name=processor-java-${THIS_RELEASE}.jar/")
     curl -s \
         -u ${REPO_USER}:${GITHUB_TOKEN} \
         --header "Accept: application/vnd.github.v3+json" \
         --header "Content-Type: application/zip" \
         --data-binary "@processor-java.jar" \
         --request POST \
-        ${UPLOAD_URL}
+        ${PROCESSOR_JAVA_UPLOAD_URL}
 
     RELEASE_NOTES_BODY="\\n**CHANGELOG**:\\n$RELEASE_NOTES"
 
