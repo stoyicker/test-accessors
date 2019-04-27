@@ -3,7 +3,6 @@ set -e
 
 uploadReleaseToGitHub() {
     git fetch --tags
-    ARTIFACT_VERSION=$(git rev-list --count HEAD)
     LAST_TAG=$(git describe --tags --abbrev=0)
     THIS_RELEASE=$(git rev-parse --short HEAD)
     local IFS=$'\n'
@@ -15,9 +14,9 @@ uploadReleaseToGitHub() {
     }
 
     BODY="{
-        \"tag_name\": \"$ARTIFACT_VERSION\",
+        \"tag_name\": \"$THIS_RELEASE\",
         \"target_commitish\": \"master\",
-        \"name\": \"$ARTIFACT_VERSION\",
+        \"name\": \"$THIS_RELEASE\",
         \"body\": \" \"
     }"
 
@@ -38,7 +37,7 @@ uploadReleaseToGitHub() {
     cp annotations/build/libs/annotations.jar .
 
     # Attach processor-java
-    UPLOAD_URL=$(echo ${UPLOAD_URL} | sed "s/{?name,label}/?name=annotations-${ARTIFACT_VERSION}.jar/")
+    UPLOAD_URL=$(echo ${UPLOAD_URL} | sed "s/{?name,label}/?name=annotations-${THIS_RELEASE}.jar/")
     curl -s \
         -u ${REPO_USER}:${GITHUB_TOKEN} \
         --header "Accept: application/vnd.github.v3+json" \
@@ -50,7 +49,7 @@ uploadReleaseToGitHub() {
     cp processor-java/build/libs/processor-java.jar .
 
     # Attach processor-java
-    UPLOAD_URL=$(echo ${UPLOAD_URL} | sed "s/{?name,label}/?name=processor-java-${ARTIFACT_VERSION}.jar/")
+    UPLOAD_URL=$(echo ${UPLOAD_URL} | sed "s/{?name,label}/?name=processor-java-${THIS_RELEASE}.jar/")
     curl -s \
         -u ${REPO_USER}:${GITHUB_TOKEN} \
         --header "Accept: application/vnd.github.v3+json" \
