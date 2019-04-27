@@ -75,7 +75,9 @@ jobs:
       JVM_OPTS: -Xmx3200m
     steps:
       - checkout
-      - run: ./gradlew clean :annotations:assemble :processor-java:assemble --no-daemon --no-build-cache --refresh-dependencies
+      - run: ./gradlew clean --no-daemon --no-build-cache --refresh-dependencies
+      - run: ./gradlew :annotations:assemble --no-daemon --no-build-cache --refresh-dependencies
+      - run: ./gradlew :processor-java:assemble --no-daemon --no-build-cache --refresh-dependencies
       - run: ./.circleci/release-github.sh
   release_on_jcenter:
     docker:
