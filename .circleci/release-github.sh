@@ -61,10 +61,7 @@ uploadReleaseToGitHub() {
         --request POST \
         ${PROCESSOR_JAVA_UPLOAD_URL}
 
-    RELEASE_NOTES_BODY="\n**CHANGELOG**:\n$RELEASE_NOTES"
-
-    jq -n --arg msg "$(echo ${RELEASE_NOTES_BODY})" \
-      '{body: { $msg }}' > changelog.txt
+    fromjson "\n**CHANGELOG**:\n$RELEASE_NOTES" > changelog.txt
 
     # Attach the release notes
     curl -s \
