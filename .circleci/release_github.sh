@@ -9,7 +9,7 @@ uploadReleaseToGitHub() {
     git fetch --tags
     THIS_TAG=$(git describe --tags --abbrev=0)
     PREVIOUS_TAG=$(git describe --tags --abbrev=0 ${THIS_TAG}^)
-    ${OLD_IFS}=$IFS
+    OLD_IFS=$IFS
     local IFS=$'\n'
     RELEASE_NOTES_ARRAY=($(git log --format=%B ${PREVIOUS_TAG}..${THIS_TAG} | tr -d '\r'))
     { for i in "${RELEASE_NOTES_ARRAY[@]}"
@@ -66,7 +66,7 @@ uploadReleaseToGitHub() {
         --request POST \
         ${PROCESSOR_JAVA_UPLOAD_URL}
 
-    local $IFS=${OLD_IFS}
+    local IFS=$OLD_IFS
     RELEASE_NOTES_BODY="\n**CHANGELOG**:\n$RELEASE_NOTES"
 
     echo -e $RELEASE_NOTES_BODY > changelog.txt
