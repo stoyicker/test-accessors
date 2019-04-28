@@ -22,8 +22,8 @@ uploadReleaseToGitHub() {
 
     # Create the release in GitHub and extract its id from the response
     RESPONSE_BODY=$(curl -s \
-            -v |
-            -u ${REPO_USER}:${GITHUB_TOKEN} \
+            -v \
+            -u ${CIRCLE_USERNAME}:${GITHUB_TOKEN} \
             --header "Accept: application/vnd.github.v3+json" \
             --header "Content-Type: application/json; charset=utf-8" \
             --request POST \
@@ -41,7 +41,7 @@ uploadReleaseToGitHub() {
     ANNOTATIONS_UPLOAD_URL=$(echo ${UPLOAD_URL} | sed "s/{?name,label}/?name=annotations-${THIS_TAG}.jar/")
     curl -s \
         -v \
-        -u ${REPO_USER}:${GITHUB_TOKEN} \
+        -u ${CIRCLE_USERNAME}:${GITHUB_TOKEN} \
         --header "Accept: application/vnd.github.v3+json" \
         --header "Content-Type: application/zip" \
         --data-binary "@annotations.jar" \
@@ -54,7 +54,7 @@ uploadReleaseToGitHub() {
     PROCESSOR_JAVA_UPLOAD_URL=$(echo ${UPLOAD_URL} | sed "s/{?name,label}/?name=processor-java-${THIS_TAG}.jar/")
     curl -s \
         -v \
-        -u ${REPO_USER}:${GITHUB_TOKEN} \
+        -u ${CIRCLE_USERNAME}:${GITHUB_TOKEN} \
         --header "Accept: application/vnd.github.v3+json" \
         --header "Content-Type: application/zip" \
         --data-binary "@processor-java.jar" \
@@ -68,7 +68,7 @@ uploadReleaseToGitHub() {
     # Attach the release notes
     curl -s \
         -v \
-        -u ${REPO_USER}:${GITHUB_TOKEN} \
+        -u ${CIRCLE_USERNAME}:${GITHUB_TOKEN} \
         --header "Accept: application/vnd.github.v3+json" \
         --header "Content-Type: application/json; charset=utf-8" \
         --request PATCH \
