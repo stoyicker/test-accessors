@@ -67,7 +67,9 @@ uploadReleaseToGitHub() {
 
     RELEASE_NOTES_BODY="\n**CHANGELOG**:\n$RELEASE_NOTES"
 
-    json_escape $RELEASE_NOTES_BODY > changelog.txt
+    echo -e $RELEASE_NOTES_BODY > changelog.txt
+
+    json_escape $(cat changelog.txt) > changelog.txt
 
     BODY="{
         \"body\": $(cat changelog.txt)
