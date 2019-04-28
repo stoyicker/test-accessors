@@ -83,7 +83,7 @@ jobs:
       - checkout
       - run: ./gradlew :annotations:assemble --no-daemon --no-build-cache --refresh-dependencies
       - run: ./gradlew :processor-java:assemble --no-daemon --no-build-cache --refresh-dependencies
-      - run: ./.circleci/release-github.sh
+      - run: ./.circleci/release_github.sh
   release_on_jcenter:
     docker:
       - image: circleci/android:api-28
