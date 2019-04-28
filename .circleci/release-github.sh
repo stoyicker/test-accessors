@@ -38,6 +38,7 @@ uploadReleaseToGitHub() {
 
     # Attach annotations
     ANNOTATIONS_UPLOAD_URL=$(echo ${UPLOAD_URL} | sed "s/{?name,label}/?name=annotations-${THIS_TAG}.jar/")
+    echo ${ANNOTATIONS_UPLOAD_URL}
     curl -s \
         -u ${REPO_USER}:${GITHUB_TOKEN} \
         --header "Accept: application/vnd.github.v3+json" \
@@ -45,6 +46,8 @@ uploadReleaseToGitHub() {
         --data-binary "@annotations.jar" \
         --request POST \
         ${ANNOTATIONS_UPLOAD_URL}
+
+    echo "cUrl completed"
 
     cp processor-java/build/libs/processor-java.jar .
 
