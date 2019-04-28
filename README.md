@@ -88,7 +88,7 @@ and "SUBCLASSES".
 ##### How do I pass arguments to the annotation processor?
 Frameworkless Java:
 ```groovy
-compileJava{
+compileJava {
     options.compilerArgs.addAll(['-Atestaccessors.requiredPatternInClasspath=yourRegex'])
 }
 ```
