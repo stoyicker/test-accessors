@@ -9,7 +9,7 @@ uploadReleaseToGitHub() {
     RELEASE_NOTES_ARRAY=($(git log --format=%B ${PREVIOUS_TAG}..${THIS_TAG} | tr -d '\r'))
     { for i in "${RELEASE_NOTES_ARRAY[@]}"
     do
-        RELEASE_NOTES="$RELEASE_NOTES\\n$i"
+        RELEASE_NOTES="$RELEASE_NOTES\n$i"
     done
     }
 
@@ -61,10 +61,10 @@ uploadReleaseToGitHub() {
         --request POST \
         ${PROCESSOR_JAVA_UPLOAD_URL}
 
-    RELEASE_NOTES_BODY="\\n**CHANGELOG**:\\n$RELEASE_NOTES"
+    RELEASE_NOTES_BODY="\n**CHANGELOG**:\n$RELEASE_NOTES"
 
     jq -n --arg msg "$(echo ${RELEASE_NOTES_BODY})" \
-      '{body: { message: $msg }}' > changelog.txt
+      '{body: { $msg }}' > changelog.txt
 
     # Attach the release notes
     curl -s \
