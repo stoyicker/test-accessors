@@ -73,7 +73,7 @@ jobs:
       - image: circleci/node:4.8.2
     steps:
       - checkout
-      - run: ./circleci/ensure_tag_allowed.sh
+      - run: ./.circleci/ensure_tag_allowed.sh
   release_on_github:
     docker:
       - image: circleci/android:api-28
