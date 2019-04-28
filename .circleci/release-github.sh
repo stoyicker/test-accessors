@@ -2,11 +2,12 @@
 set -e
 
 uploadReleaseToGitHub() {
+    echo "Starting"
     git fetch --tags
-    LAST_TAG=$(git describe --tags --abbrev=0)
-    THIS_RELEASE=$(git rev-parse --short HEAD)
+    THIS_TAG=$(git describe --tags --abbrev=0)
+    PREVIOUS_TAG=$(git describe --tags --abbrev=0 ${THIS_TAG}^)
     local IFS=$'\n'
-    RELEASE_NOTES_ARRAY=($(git log --format=%B ${LAST_TAG}..${THIS_RELEASE} | tr -d '\r'))
+    RELEASE_NOTES_ARRAY=($(git log --format=%B ${PREVIOUS_TAG}..${THIS_TAG} | tr -d '\r'))
     { for i in "${RELEASE_NOTES_ARRAY[@]}"
     do
         RELEASE_NOTES="$RELEASE_NOTES\\n$i"
@@ -14,11 +15,13 @@ uploadReleaseToGitHub() {
     }
 
     BODY="{
-        \"tag_name\": \"$THIS_RELEASE\",
+        \"tag_name\": \"$THIS_TAG\",
         \"target_commitish\": \"master\",
-        \"name\": \"$THIS_RELEASE\",
+        \"name\": \"$THIS_TAG\",
         \"body\": \" \"
     }"
+
+    echo "Flag 1"
 
     # Create the release in GitHub and extract its id from the response
     RESPONSE_BODY=$(curl -s \
@@ -36,8 +39,10 @@ uploadReleaseToGitHub() {
 
     cp annotations/build/libs/annotations.jar .
 
+    echo "Flag 2"
+
     # Attach annotations
-    ANNOTATIONS_UPLOAD_URL=$(echo ${UPLOAD_URL} | sed "s/{?name,label}/?name=annotations-${THIS_RELEASE}.jar/")
+    ANNOTATIONS_UPLOAD_URL=$(echo ${UPLOAD_URL} | sed "s/{?name,label}/?name=annotations-${THIS_TAG}.jar/")
     curl -s \
         -u ${REPO_USER}:${GITHUB_TOKEN} \
         --header "Accept: application/vnd.github.v3+json" \
@@ -48,8 +53,10 @@ uploadReleaseToGitHub() {
 
     cp processor-java/build/libs/processor-java.jar .
 
+    echo "Flag 3"
+
     # Attach processor-java
-    PROCESSOR_JAVA_UPLOAD_URL=$(echo ${UPLOAD_URL} | sed "s/{?name,label}/?name=processor-java-${THIS_RELEASE}.jar/")
+    PROCESSOR_JAVA_UPLOAD_URL=$(echo ${UPLOAD_URL} | sed "s/{?name,label}/?name=processor-java-${THIS_TAG}.jar/")
     curl -s \
         -u ${REPO_USER}:${GITHUB_TOKEN} \
         --header "Accept: application/vnd.github.v3+json" \
@@ -74,4 +81,5 @@ uploadReleaseToGitHub() {
     echo "GitHub release complete."
 }
 
+echo "Invoking"
 uploadReleaseToGitHub
