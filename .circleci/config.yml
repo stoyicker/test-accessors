@@ -7,7 +7,7 @@ jobs:
       JVM_OPTS: -Xmx3200m
     steps:
       - checkout
-      - run: ./gradlew clean :annotations:assemble --no-daemon --no-build-cache --refresh-dependencies
+      - run: ./gradlew :annotations:assemble --no-daemon --no-build-cache --refresh-dependencies
       - store_artifacts:
           path: annotations/build/libs/annotations.jar
           destination: annotations.jar
@@ -18,7 +18,7 @@ jobs:
       JVM_OPTS: -Xmx3200m
     steps:
       - checkout
-      - run: ./gradlew clean :processor-java:assemble --no-daemon --no-build-cache --refresh-dependencies
+      - run: ./gradlew :processor-java:assemble --no-daemon --no-build-cache --refresh-dependencies
       - store_artifacts:
           path: processor-java/build/libs/processor-java.jar
           destination: processor-java.jar
@@ -75,7 +75,6 @@ jobs:
       JVM_OPTS: -Xmx3200m
     steps:
       - checkout
-      - run: ./gradlew clean --no-daemon --no-build-cache --refresh-dependencies
       - run: ./gradlew :annotations:assemble --no-daemon --no-build-cache --refresh-dependencies
       - run: ./gradlew :processor-java:assemble --no-daemon --no-build-cache --refresh-dependencies
       - run: ./.circleci/release-github.sh
