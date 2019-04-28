@@ -29,6 +29,8 @@ uploadReleaseToGitHub() {
             --data "${BODY}" \
             https://api.github.com/repos/"${REPO_SLUG}"/releases)
 
+    echo ${RESPONSE_BODY}
+
     # Extract the upload_url value
     UPLOAD_URL=$(echo ${RESPONSE_BODY} | jq -r .upload_url)
     # And the id for later use
