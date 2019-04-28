@@ -165,6 +165,7 @@ workflows:
             - build_annotations
             - build_processor-java
       - release_on_github:
+          context: test-accessors_release_github
           filters:
             branches:
               ignore: /.*/
