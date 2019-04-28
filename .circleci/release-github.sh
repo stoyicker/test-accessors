@@ -20,6 +20,8 @@ uploadReleaseToGitHub() {
         \"body\": \" \"
     }"
 
+    echo "About to cUrl https://api.github.com/repos/${REPO_SLUG}/releases"
+
     # Create the release in GitHub and extract its id from the response
     RESPONSE_BODY=$(curl -s \
             -v \
