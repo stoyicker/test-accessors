@@ -1,6 +1,10 @@
 #!/bin/bash
 set -e
 
+json_escape() {
+    printf '%s' "$1" | python -c 'import json,sys; print(json.dumps(sys.stdin.read()))'
+}
+
 uploadReleaseToGitHub() {
     git fetch --tags
     THIS_TAG=$(git describe --tags --abbrev=0)
@@ -9,7 +13,7 @@ uploadReleaseToGitHub() {
     RELEASE_NOTES_ARRAY=($(git log --format=%B ${PREVIOUS_TAG}..${THIS_TAG} | tr -d '\r'))
     { for i in "${RELEASE_NOTES_ARRAY[@]}"
     do
-        RELEASE_NOTES="$RELEASE_NOTES\n$i"
+        RELEASE_NOTES="$RELEASE_NOTES$i\n"
     done
     }
 
@@ -61,7 +65,15 @@ uploadReleaseToGitHub() {
         --request POST \
         ${PROCESSOR_JAVA_UPLOAD_URL}
 
-    fromjson "\n**CHANGELOG**:\n$RELEASE_NOTES" > changelog.txt
+    RELEASE_NOTES_BODY="\n**CHANGELOG**:\n$RELEASE_NOTES"
+
+    json_escape $RELEASE_NOTES_BODY > changelog.txt
+
+    BODY="{
+        \"body\": $(cat changelog.txt)
+    }"
+
+    echo $BODY > changelog.json
 
     # Attach the release notes
     curl -s \
@@ -70,7 +82,7 @@ uploadReleaseToGitHub() {
         --header "Accept: application/vnd.github.v3+json" \
         --header "Content-Type: application/json; charset=utf-8" \
         --request PATCH \
-        --data @changelog.txt \
+        --data @changelog.json \
         https://api.github.com/repos/"${REPO_SLUG}"/releases/${RELEASE_ID}
 
     echo "GitHub release complete."
