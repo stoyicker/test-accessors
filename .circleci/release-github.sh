@@ -63,7 +63,8 @@ uploadReleaseToGitHub() {
 
     RELEASE_NOTES_BODY="\\n**CHANGELOG**:\\n$RELEASE_NOTES"
 
-    jq -n --arg msg "$(git log -n 1 --format=oneline | grep -o ' .\+')" \   '{body: { message: $msg }}' > changelog.txt
+    jq -n --arg msg "$(echo ${RELEASE_NOTES_BODY})" \
+      '{body: { message: $msg }}' > changelog.txt
 
     # Attach the release notes
     curl -s \
