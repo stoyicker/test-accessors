@@ -25,9 +25,7 @@ class RequiresAccessorProcessor : AnnotationProcessor(RequiresAccessor::class.ja
               }
             }
         if (roundEnvironment.processingOver()) {
-          filesToGenerate.values
-              .parallelStream()
-              .forEach { elements -> writer.writeAccessorClass(elements, filer) }
+          filesToGenerate.values.forEach { writer.writeAccessorClass(it, filer) }
         }
       }
 }
