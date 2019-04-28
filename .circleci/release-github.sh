@@ -22,14 +22,13 @@ uploadReleaseToGitHub() {
 
     # Create the release in GitHub and extract its id from the response
     RESPONSE_BODY=$(curl -s \
+            -v |
             -u ${REPO_USER}:${GITHUB_TOKEN} \
             --header "Accept: application/vnd.github.v3+json" \
             --header "Content-Type: application/json; charset=utf-8" \
             --request POST \
             --data "${BODY}" \
             https://api.github.com/repos/"${REPO_SLUG}"/releases)
-
-    echo ${RESPONSE_BODY}
 
     # Extract the upload_url value
     UPLOAD_URL=$(echo ${RESPONSE_BODY} | jq -r .upload_url)
@@ -40,8 +39,8 @@ uploadReleaseToGitHub() {
 
     # Attach annotations
     ANNOTATIONS_UPLOAD_URL=$(echo ${UPLOAD_URL} | sed "s/{?name,label}/?name=annotations-${THIS_TAG}.jar/")
-    echo ${ANNOTATIONS_UPLOAD_URL}
     curl -s \
+        -v \
         -u ${REPO_USER}:${GITHUB_TOKEN} \
         --header "Accept: application/vnd.github.v3+json" \
         --header "Content-Type: application/zip" \
@@ -49,15 +48,12 @@ uploadReleaseToGitHub() {
         --request POST \
         ${ANNOTATIONS_UPLOAD_URL}
 
-    echo "cUrl completed"
-
     cp processor-java/build/libs/processor-java.jar .
-
-    echo "Flag 3"
 
     # Attach processor-java
     PROCESSOR_JAVA_UPLOAD_URL=$(echo ${UPLOAD_URL} | sed "s/{?name,label}/?name=processor-java-${THIS_TAG}.jar/")
     curl -s \
+        -v \
         -u ${REPO_USER}:${GITHUB_TOKEN} \
         --header "Accept: application/vnd.github.v3+json" \
         --header "Content-Type: application/zip" \
@@ -71,6 +67,7 @@ uploadReleaseToGitHub() {
 
     # Attach the release notes
     curl -s \
+        -v \
         -u ${REPO_USER}:${GITHUB_TOKEN} \
         --header "Accept: application/vnd.github.v3+json" \
         --header "Content-Type: application/json; charset=utf-8" \
