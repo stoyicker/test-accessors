@@ -2,7 +2,6 @@
 set -e
 
 uploadReleaseToGitHub() {
-    echo "Starting"
     git fetch --tags
     THIS_TAG=$(git describe --tags --abbrev=0)
     PREVIOUS_TAG=$(git describe --tags --abbrev=0 ${THIS_TAG}^)
@@ -21,8 +20,6 @@ uploadReleaseToGitHub() {
         \"body\": \" \"
     }"
 
-    echo "Flag 1"
-
     # Create the release in GitHub and extract its id from the response
     RESPONSE_BODY=$(curl -s \
             -u ${REPO_USER}:${GITHUB_TOKEN} \
@@ -38,8 +35,6 @@ uploadReleaseToGitHub() {
     RELEASE_ID=$(echo ${RESPONSE_BODY} | jq -r .id)
 
     cp annotations/build/libs/annotations.jar .
-
-    echo "Flag 2"
 
     # Attach annotations
     ANNOTATIONS_UPLOAD_URL=$(echo ${UPLOAD_URL} | sed "s/{?name,label}/?name=annotations-${THIS_TAG}.jar/")
@@ -81,5 +76,4 @@ uploadReleaseToGitHub() {
     echo "GitHub release complete."
 }
 
-echo "Invoking"
 uploadReleaseToGitHub
