@@ -68,6 +68,12 @@ jobs:
       - run: ./gradlew :sample-kotlin:test --no-daemon --no-build-cache --refresh-dependencies
       - store_test_results:
           path: sample-kotlin/build/test-results
+  ensure_tag_allowed:
+    docker:
+      - image: circleci/node:4.8.2
+    steps:
+      - checkout
+      - run: ./circleci/ensure_tag_allowed.sh
   release_on_github:
     docker:
       - image: circleci/android:api-28
@@ -116,6 +122,12 @@ workflows:
             - build_processor-java
   release:
     jobs:
+      - ensure_tag_allowed:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
       - build_annotations:
           filters:
             branches:
@@ -135,6 +147,7 @@ workflows:
             tags:
               only: /^v.*/
           requires:
+            - ensure_tag_allowed
             - build_annotations
             - build_processor-java
       - test_sample-android-kotlin:
@@ -144,6 +157,7 @@ workflows:
             tags:
               only: /^v.*/
           requires:
+            - ensure_tag_allowed
             - build_annotations
             - build_processor-java
       - test_sample-java:
@@ -153,6 +167,7 @@ workflows:
             tags:
               only: /^v.*/
           requires:
+            - ensure_tag_allowed
             - build_annotations
             - build_processor-java
       - test_sample-kotlin:
@@ -162,6 +177,7 @@ workflows:
             tags:
               only: /^v.*/
           requires:
+            - ensure_tag_allowed
             - build_annotations
             - build_processor-java
       - release_on_github:
