@@ -1,10 +1,6 @@
 #!/bin/bash
 set -e
 
-json_escape() {
-    printf '%s' "$1" | python -c 'import json,sys; print(json.dumps(sys.stdin.read()))'
-}
-
 uploadReleaseToGitHub() {
     git fetch --tags
     THIS_TAG=$(git describe --tags --abbrev=0)
