@@ -27,8 +27,7 @@ import android.support.annotation.RestrictTo as SupportRestrictTo
 internal class AccessorWriter(
     elementUtils: Elements,
     typeUtils: Types,
-    logger: Logger,
-    options: Options) : AbstractAccessorWriter(elementUtils, typeUtils, logger, options) {
+    options: Options) : AbstractAccessorWriter(elementUtils, typeUtils, options) {
   override fun writeAccessorClass(annotatedElements: Set<Element>, filer: Filer) {
     val enclosingClassElement = annotatedElements.iterator().next().enclosingElement
     val extractedLocation = extractLocation(enclosingClassElement.enclosingElement)
@@ -36,7 +35,7 @@ internal class AccessorWriter(
     val subLocation = location.toList().subList(2, location.size).toTypedArray()
     val classAndFileName =
         nameForGeneratedClassFrom(ClassName.get(location[0], location[1], *subLocation)
-        .simpleNames())
+            .simpleNames())
     val typeSpecBuilder = TypeSpec.classBuilder(classAndFileName)
         .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
     annotatedElements
@@ -50,17 +49,11 @@ internal class AccessorWriter(
                   generateStaticGetterMethodSpec(element)
                 else
                   generateGetterMethodSpec(element)
-                RequiresAccessor.AccessorType.TYPE_SETTER -> {
-                  if (isStatic && modifiers.contains(Modifier.FINAL)) {
-                    logger.error(ERROR_MESSAGE_UNSUPPORTED_STATIC_FINAL_SETTER, element)
-                    null
-                  } else {
-                    if (isStatic)
-                      generateStaticSetterMethodSpec(element)
-                    else
-                      generateSetterMethodSpec(element)
-                  }
-                }
+                RequiresAccessor.AccessorType.TYPE_SETTER ->
+                  if (isStatic)
+                    generateStaticSetterMethodSpec(element)
+                  else
+                    generateSetterMethodSpec(element)
               }
             }
           }

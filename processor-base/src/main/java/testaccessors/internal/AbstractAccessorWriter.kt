@@ -9,7 +9,6 @@ import javax.lang.model.util.Types
 abstract class AbstractAccessorWriter(
     val elementUtils: Elements,
     val typeUtils: Types,
-    val logger: Logger,
     val options: Options) {
 
   fun nameForGeneratedClassFrom(enclosingClassSimpleNames: List<String>) =
@@ -26,6 +25,5 @@ abstract class AbstractAccessorWriter(
     const val PARAMETER_NAME_NEW_VALUE = "newValue"
     const val TYPE_NAME_VALUE = "TestAccessorsValue"
     const val ERROR_MESSAGE_ILLEGAL_ACCESS = "Accessing this method from this source set is not allowed"
-    const val ERROR_MESSAGE_UNSUPPORTED_STATIC_FINAL_SETTER = "Generating setters for fields that are both static and final (or val in Kotlin companion objects) is not supported"
   }
 }
