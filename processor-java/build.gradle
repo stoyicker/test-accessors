@@ -50,8 +50,8 @@ publishing {
         url = 'https://github.com/stoyicker/test-accessors'
         licenses {
           license {
-            name = 'Creative Commons Attribution 4.0 International'
-            url = 'https://creativecommons.org/licenses/by/4.0/legalcode'
+            name = 'Apache-2.0'
+            url = 'https://www.apache.org/licenses/LICENSE-2.0'
           }
         }
         developers {
@@ -88,7 +88,7 @@ bintray {
     repo = 'test-accessors'
     name = project.name
     vcsUrl = 'ssh:git@github.com:stoyicker/test-accessors.git'
-    licenses = ['Creative Commons Attribution 4.0 International']
+    licenses = ['Apache-2.0']
     issueTrackerUrl = 'https://github.com/stoyicker/test-accessors/issues'
   }
   version {

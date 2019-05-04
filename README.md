@@ -121,5 +121,3 @@ executions.
 * Gradle 5.2 or above.
 * (Recommended) IntelliJ IDEA 2019.1/Android Studio 3.5 or above as it fixes some issues with the 
 generated code not being visible to the IDE, although CMD-based compilation works just fine.
-## License
-https://creativecommons.org/licenses/by/4.0/legalcode
