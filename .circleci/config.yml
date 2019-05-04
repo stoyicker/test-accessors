@@ -91,7 +91,8 @@ jobs:
       JVM_OPTS: -Xmx3200m
     steps:
       - checkout
-      - run: echo "TODO This is the job for releasing to jcenter"
+      - run: ./gradlew :annotations:bintrayUpload --no-daemon --no-build-cache --refresh-dependencies
+      - run: ./gradlew :processor-java:bintrayUpload --no-daemon --no-build-cache --refresh-dependencies
 workflows:
   version: 2.1
   test_samples:

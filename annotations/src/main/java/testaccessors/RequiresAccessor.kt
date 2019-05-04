@@ -26,8 +26,18 @@ annotation class RequiresAccessor(
      * By default no annotation is copied.
      */
     val supportRestrictTo: android.support.annotation.RestrictTo = android.support.annotation.RestrictTo()) {
+  /**
+   * Describes types of accessors desired.
+   * @see RequiresAccessor.requires
+   */
   enum class AccessorType {
+    /**
+     * Describes a getter accessor.
+     */
     TYPE_GETTER,
+    /**
+     * Describes a setter accessor.
+     */
     TYPE_SETTER
   }
 }
