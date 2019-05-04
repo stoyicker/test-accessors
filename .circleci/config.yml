@@ -84,7 +84,7 @@ jobs:
       - run: ./gradlew :annotations:assemble --no-daemon --no-build-cache --refresh-dependencies
       - run: ./gradlew :processor-java:assemble --no-daemon --no-build-cache --refresh-dependencies
       - run: ./.circleci/release_github.sh
-  release_on_jcenter:
+  release_on_bintray:
     docker:
       - image: circleci/android:api-28
     environment:
@@ -193,7 +193,8 @@ workflows:
             - test_sample-android-kotlin
             - test_sample-java
             - test_sample-kotlin
-      - release_on_jcenter:
+      - release_on_bintray:
+          context: test-accessors_release_bintray
           filters:
             branches:
               ignore: /.*/
