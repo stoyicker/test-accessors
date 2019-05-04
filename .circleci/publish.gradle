@@ -20,20 +20,20 @@ task kdocJar(type: Jar) {
   from dokka
 }
 
-def getVersion = {
+project.version = {
   def stdout = new ByteArrayOutputStream()
   exec {
     commandLine 'git', 'describe', '--abbrev=0'
     standardOutput = stdout
   }
   return stdout.toString().replaceAll("[^\\d|.]", "")
-}
+}()
 
 publishing {
   publications {
     maven(MavenPublication) {
       artifactId project.name
-      version getVersion()
+      version project.version
       artifact sourcesJar
       artifact kdocJar
       groupId 'com.github.stoyicker.test-accessors'
@@ -75,16 +75,22 @@ bintray {
     name = project.name
     vcsUrl = 'ssh:git@github.com:stoyicker/test-accessors.git'
     licenses = ['Apache-2.0']
+    desc = 'An annotation processor that generates code for your tests to be able to access and modify private/final fields so you don\'t have to use approaches such as @VisibleForTesting!'
+    publicDownloadNumbers = true
+    githubRepo = 'stoyicker/test-accessors' //Optional Github repository
+    websiteUrl = 'https://github.com/stoyicker/test-accessors/'
     issueTrackerUrl = 'https://github.com/stoyicker/test-accessors/issues'
-  }
-  version {
-    name = getVersion()
-    gpg {
-      sign = true
-    }
-    mavenCentralSync {
-      user = "$System.env.OSS_USER"
-      password = "$System.env.OSS_PASSWORD"
+    version {
+      name = project.version
+      vcsTag = "v${project.version}"
+      released = new Date()
+      gpg {
+        sign = true
+      }
+      mavenCentralSync {
+        user = "$System.env.OSS_USER"
+        password = "$System.env.OSS_PASSWORD"
+      }
     }
   }
 }
