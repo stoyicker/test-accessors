@@ -20,10 +20,20 @@ task kdocJar(type: Jar) {
   from dokka
 }
 
+def getVersion = {
+  def stdout = new ByteArrayOutputStream()
+  exec {
+    commandLine 'git', 'describe', '--abbrev=0'
+    standardOutput = stdout
+  }
+  return stdout.toString().replaceAll("[^\\d|.]", "")
+}
+
 publishing {
   publications {
     maven(MavenPublication) {
       artifactId project.name
+      version getVersion()
       artifact sourcesJar
       artifact kdocJar
       groupId 'com.github.stoyicker.test-accessors'
@@ -68,14 +78,7 @@ bintray {
     issueTrackerUrl = 'https://github.com/stoyicker/test-accessors/issues'
   }
   version {
-    name = {
-      def stdout = new ByteArrayOutputStream()
-      exec {
-        commandLine 'git', 'describe', '--abbrev=0'
-        standardOutput = stdout
-      }
-      return stdout.toString().replaceAll("[^\\d|.]", "")
-    }
+    name = getVersion()
     gpg {
       sign = true
     }
