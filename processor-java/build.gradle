@@ -66,14 +66,6 @@ publishing {
           developerConnection = 'scm:git:ssh:git@github.com:stoyicker/test-accessors.git'
           url = 'https://github.com/stoyicker/test-accessors'
         }
-        version = {
-          def stdout = new ByteArrayOutputStream()
-          exec {
-            commandLine 'git', 'describe', '--tags'
-            standardOutput = stdout
-          }
-          return stdout.toString().replaceAll("[^\\d|.]", "")
-        }()
       }
       from components.java
     }
@@ -95,11 +87,11 @@ bintray {
     name = {
       def stdout = new ByteArrayOutputStream()
       exec {
-        commandLine 'git', 'describe', '--tags'
+        commandLine 'git', 'describe', '--abbrev=0'
         standardOutput = stdout
       }
       return stdout.toString().replaceAll("[^\\d|.]", "")
-    }()
+    }
     gpg {
       sign = true
     }
