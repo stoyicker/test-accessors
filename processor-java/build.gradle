@@ -80,12 +80,21 @@ bintray {
   publications = ['maven']
   pkg {
     repo = 'test-accessors'
+    name = project.name
     userOrg = 'stoyicker-org'
     vcsUrl = 'ssh:git@github.com:stoyicker/test-accessors.git'
     licenses = ['Creative Commons Attribution 4.0 International']
     issueTrackerUrl = 'https://github.com/stoyicker/test-accessors/issues'
   }
   version {
+    name = {
+      def stdout = new ByteArrayOutputStream()
+      exec {
+        commandLine 'git', 'describe', '--tags'
+        standardOutput = stdout
+      }
+      return stdout.toString().replaceAll("[^\\d|.]", "")
+    }()
     gpg {
       sign = true
     }
