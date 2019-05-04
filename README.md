@@ -6,9 +6,7 @@ Add the dependencies to your project:
 ```groovy
 repositories {
   google()
-  maven {
-    url "https://jitpack.io"
-  }
+  jcenter()
 }
 dependencies {
     // 1. Add the annotation
