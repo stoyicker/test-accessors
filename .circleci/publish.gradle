@@ -77,7 +77,7 @@ bintray {
     licenses = ['Apache-2.0']
     desc = 'An annotation processor that generates code for your tests to be able to access and modify private/final fields so you don\'t have to use approaches such as @VisibleForTesting!'
     publicDownloadNumbers = true
-    githubRepo = 'stoyicker/test-accessors' //Optional Github repository
+    githubRepo = 'stoyicker/test-accessors'
     websiteUrl = 'https://github.com/stoyicker/test-accessors/'
     issueTrackerUrl = 'https://github.com/stoyicker/test-accessors/issues'
     version {
