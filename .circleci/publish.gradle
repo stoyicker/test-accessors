@@ -1,4 +1,13 @@
-// This file requires maven-publish, java-library and com.jfrog.bintray
+// This file requires maven-publish, java-library, signing and com.jfrog.bintray
+
+project.version = {
+  def stdout = new ByteArrayOutputStream()
+  exec {
+    commandLine 'git', 'describe', '--abbrev=0'
+    standardOutput = stdout
+  }
+  return stdout.toString().replaceAll("[^\\d|.]", "")
+}()
 
 jar {
   archiveFileName = "${project.name}.jar"
@@ -20,14 +29,24 @@ task kdocJar(type: Jar) {
   from dokka
 }
 
-project.version = {
-  def stdout = new ByteArrayOutputStream()
-  exec {
-    commandLine 'git', 'describe', '--abbrev=0'
-    standardOutput = stdout
-  }
-  return stdout.toString().replaceAll("[^\\d|.]", "")
-}()
+// No per-release signing, Bintray does the signing before syncing to Central
+//signing {
+//  sign jar
+//  sign sourcesJar
+//  sign kdocJar
+//}
+//ext."signing.keyId" = "$System.env.GPG_KEY_ID"
+//ext."signing.password" ="$System.env.GPG_KEY_PASSWORD"
+//ext."signing.secretKeyRingFile" = "$System.env.GPG_SECRET_KEY_FILE"
+//
+//task signArtifacts {
+//  afterEvaluate {
+//    dependsOn signJar, signSourcesJar, signKdocJar, generatePomFileForMavenPublication
+//  }
+//  doLast {
+//    signing.sign file("${buildDir}/publications/maven/pom-default.xml")
+//  }
+//}
 
 publishing {
   publications {
@@ -61,6 +80,15 @@ publishing {
         }
       }
       from components.java
+    }
+  }
+  repositories {
+    maven {
+      url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+      credentials {
+        username = "$System.env.OSS_USER"
+        password = "$System.env.OSS_PASSWORD"
+      }
     }
   }
 }
