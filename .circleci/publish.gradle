@@ -29,25 +29,6 @@ task kdocJar(type: Jar) {
   from dokka
 }
 
-// No per-release signing, Bintray does the signing before syncing to Central
-//signing {
-//  sign jar
-//  sign sourcesJar
-//  sign kdocJar
-//}
-//ext."signing.keyId" = "$System.env.GPG_KEY_ID"
-//ext."signing.password" ="$System.env.GPG_KEY_PASSWORD"
-//ext."signing.secretKeyRingFile" = "$System.env.GPG_SECRET_KEY_FILE"
-//
-//task signArtifacts {
-//  afterEvaluate {
-//    dependsOn signJar, signSourcesJar, signKdocJar, generatePomFileForMavenPublication
-//  }
-//  doLast {
-//    signing.sign file("${buildDir}/publications/maven/pom-default.xml")
-//  }
-//}
-
 publishing {
   publications {
     maven(MavenPublication) {
@@ -122,3 +103,23 @@ bintray {
     }
   }
 }
+
+// No per-release signing, Bintray does the signing before syncing to Central
+//signing {
+//  sign publishing.publications.maven
+//}
+//ext."signing.keyId" = "$System.env.GPG_KEY_ID"
+//ext."signing.password" ="$System.env.GPG_KEY_PASSWORD"
+//ext."signing.secretKeyRingFile" = "$System.env.GPG_SECRET_KEY_FILE"
+//
+//
+//task signArtifacts {
+//  doLast {
+//    signing.sign file("${buildDir}/publications/maven/pom-default.xml")
+//  }
+//}
+//
+//afterEvaluate {
+//  signArtifacts.dependsOn signMavenPublication
+//  signMavenPublication.dependsOn generatePomFileForMavenPublication
+//}
