@@ -2,6 +2,8 @@
 ### An annotation processor that generates code for your tests to be able to access and modify private/final fields so you don't have to use anti-patterns such as @VisibleForTesting!
 [![CircleCI](https://circleci.com/gh/stoyicker/test-accessors.svg?style=svg)](https://circleci.com/gh/stoyicker/test-accessors)
 ## Usage
+[ ![Download](https://api.bintray.com/packages/stoyicker/test-accessors/annotations/images/download.svg) ](https://search.maven.org/search?q=g:com.github.stoyicker.test-accessors)
+
 Add the dependencies to your project:
 ```groovy
 repositories {
