@@ -82,7 +82,7 @@ bintray {
   pkg {
     repo = 'test-accessors'
     name = project.name
-    vcsUrl = 'ssh:git@github.com:stoyicker/test-accessors.git'
+    vcsUrl = 'https://github.com/stoyicker/test-accessors/'
     licenses = ['Apache-2.0']
     desc = 'An annotation processor that generates code for your tests to be able to access and modify private/final fields so you don\'t have to use approaches such as @VisibleForTesting!'
     publicDownloadNumbers = true
