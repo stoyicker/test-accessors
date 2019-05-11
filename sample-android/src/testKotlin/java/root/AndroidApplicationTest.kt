@@ -4,8 +4,11 @@ import org.junit.After
 import org.junit.Assert.assertSame
 import org.junit.Before
 import org.junit.Test
+import root.AndroidApplicationTestAccessors.aField
+import java.lang.reflect.Field
+import java.lang.reflect.Modifier
 
-class AndroidApplicationTest {
+internal class AndroidApplicationTest {
   private lateinit var subject: AndroidApplication
 
   @Before
@@ -27,7 +30,7 @@ class AndroidApplicationTest {
   fun setAField() {
     val expected = "this is another mock value"
 
-    AndroidApplicationTestAccessors.aField(subject, expected)
+    subject.aField(expected)
 
     var actual: String?
     subject::class.java.getDeclaredField("aField").apply {
@@ -49,7 +52,7 @@ class AndroidApplicationTest {
       isAccessible = wasAccessible
     }
 
-    val actual: String? = AndroidApplicationTestAccessors.aField(subject)
+    val actual: String? = subject.aField()
 
     assertSame(expected, actual)
   }
@@ -81,6 +84,42 @@ class AndroidApplicationTest {
     }
 
     val actual: Any? = AndroidApplicationTestAccessors.aFieldInAPrivateCompanionObject()
+
+    assertSame(expected, actual)
+  }
+
+  @Test
+  fun setATopLevelField() {
+    val expected = "this is a mock value"
+
+    AndroidApplicationKtTestAccessors.aTopLevelField(expected)
+
+    var actual: Any?
+    Class.forName("root.AndroidApplicationKt").getDeclaredField("aTopLevelField").apply {
+      val wasAccessible = isAccessible
+      isAccessible = true
+      actual = this[null]
+      isAccessible = wasAccessible
+    }
+    assertSame(expected, actual)
+  }
+
+  @Test
+  fun getATopLevelField() {
+    val expected = "this is another mock value"
+    Class.forName("root.AndroidApplicationKt").getDeclaredField("aTopLevelField").apply {
+      val wasAccessible = isAccessible
+      isAccessible = true
+      val modifiersField = Field::class.java.getDeclaredField("modifiers")
+      val wasModifiersAccessible = modifiersField.isAccessible
+      modifiersField.isAccessible = true
+      modifiersField.setInt(this, modifiers and Modifier.FINAL.inv())
+      set(null, expected)
+      modifiersField.isAccessible = wasModifiersAccessible
+      isAccessible = wasAccessible
+    }
+
+    val actual: Any? = AndroidApplicationKtTestAccessors.aTopLevelField()
 
     assertSame(expected, actual)
   }

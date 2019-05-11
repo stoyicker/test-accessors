@@ -58,16 +58,15 @@ internal class AccessorWriter(
             }
           }
 
-          private fun generateStaticGetterMethodSpec(element: Element): MethodSpec {
-            return generateCommonGetterMethodSpec(
-                element,
-                "/javadoc-getter-static.template",
-                arrayOf(
-                    typeUtils.erasure(element.enclosingElement.asType()),
-                    element.simpleName.toString()),
-                null)
-                .build()
-          }
+          private fun generateStaticGetterMethodSpec(element: Element) =
+              generateCommonGetterMethodSpec(
+                  element,
+                  "/javadoc-getter-static.template",
+                  arrayOf(
+                      typeUtils.erasure(element.enclosingElement.asType()),
+                      element.simpleName.toString()),
+                  null)
+                  .build()
 
           private fun generateGetterMethodSpec(element: Element) =
               generateCommonGetterMethodSpec(
@@ -85,9 +84,8 @@ internal class AccessorWriter(
               element: Element,
               javadocResource: String,
               javadocArgs: Array<Any>,
-              receiverLiteral: Any?): MethodSpec.Builder {
-            val elementType = TypeVariableName.get(TYPE_NAME_VALUE)
-            return generateCommonMethodSpec(element)
+              receiverLiteral: Any?) = TypeVariableName.get(TYPE_NAME_VALUE).run {
+            generateCommonMethodSpec(element)
                 .addJavadoc(readAsset(javadocResource), *javadocArgs)
                 .beginControlFlow("try")
                 .addStatement(
@@ -100,8 +98,8 @@ internal class AccessorWriter(
                     Boolean::class.javaPrimitiveType)
                 .addStatement("field.setAccessible(true)")
                 .addStatement("final \$T ret = (\$T) field.get(\$L)",
-                    elementType,
-                    elementType,
+                    this,
+                    this,
                     receiverLiteral)
                 .addStatement("field.setAccessible(wasAccessible)")
                 .addStatement("return ret")
@@ -111,25 +109,24 @@ internal class AccessorWriter(
                     IllegalAccessException::class.java)
                 .addStatement("throw new \$T(e)", RuntimeException::class.java)
                 .endControlFlow()
-                .returns(elementType)
+                .returns(this)
           }
 
-          private fun generateStaticSetterMethodSpec(element: Element): MethodSpec {
-            return generateCommonSetterMethodSpec(
-                element,
-                "/javadoc-setter-static.template",
-                arrayOf(
-                    TypeVariableName.get(TYPE_NAME_VALUE),
-                    element.simpleName.toString(),
-                    PARAMETER_NAME_NEW_VALUE),
-                null)
-                .addParameter(ParameterSpec.builder(
-                    TypeVariableName.get(TYPE_NAME_VALUE),
-                    PARAMETER_NAME_NEW_VALUE,
-                    Modifier.FINAL)
-                    .build())
-                .build()
-          }
+          private fun generateStaticSetterMethodSpec(element: Element) =
+              generateCommonSetterMethodSpec(
+                  element,
+                  "/javadoc-setter-static.template",
+                  arrayOf(
+                      TypeVariableName.get(TYPE_NAME_VALUE),
+                      element.simpleName.toString(),
+                      PARAMETER_NAME_NEW_VALUE),
+                  null)
+                  .addParameter(ParameterSpec.builder(
+                      TypeVariableName.get(TYPE_NAME_VALUE),
+                      PARAMETER_NAME_NEW_VALUE,
+                      Modifier.FINAL)
+                      .build())
+                  .build()
 
           private fun generateSetterMethodSpec(element: Element) =
               generateCommonSetterMethodSpec(
@@ -140,8 +137,8 @@ internal class AccessorWriter(
                       element.simpleName.toString(),
                       PARAMETER_NAME_RECEIVER,
                       PARAMETER_NAME_NEW_VALUE),
-                  PARAMETER_NAME_RECEIVER
-              ).addReceiver(element)
+                  PARAMETER_NAME_RECEIVER)
+                  .addReceiver(element)
                   .addParameter(ParameterSpec.builder(
                       TypeVariableName.get(TYPE_NAME_VALUE),
                       PARAMETER_NAME_NEW_VALUE,
@@ -153,63 +150,63 @@ internal class AccessorWriter(
               element: Element,
               javadocResource: String,
               javadocArgs: Array<Any>,
-              receiverLiteral: Any?): MethodSpec.Builder {
-            return generateCommonMethodSpec(element)
-                .addJavadoc(
-                    readAsset(javadocResource),
-                    *javadocArgs)
-                .beginControlFlow("try")
-                .addStatement(
-                    "final \$T field = \$T.class.getDeclaredField(\$S)",
-                    Field::class.java,
-                    typeUtils.erasure(element.enclosingElement.asType()),
-                    element.simpleName)
-                .addStatement(
-                    "final \$T wasAccessible = field.isAccessible()",
-                    Boolean::class.javaPrimitiveType)
-                .addStatement("field.setAccessible(true)")
-                .addStatement("field.set(\$L, \$L)", receiverLiteral, PARAMETER_NAME_NEW_VALUE)
-                .addStatement("field.setAccessible(wasAccessible)")
-                .nextControlFlow(
-                    "catch (final \$T | \$T e)",
-                    NoSuchFieldException::class.java,
-                    IllegalAccessException::class.java)
-                .addStatement("throw new \$T(e)", RuntimeException::class.java)
-                .endControlFlow()
-                .returns(Void.TYPE)
-          }
+              receiverLiteral: Any?) = generateCommonMethodSpec(element)
+              .addJavadoc(
+                  readAsset(javadocResource),
+                  *javadocArgs)
+              .beginControlFlow("try")
+              .addStatement(
+                  "final \$T field = \$T.class.getDeclaredField(\$S)",
+                  Field::class.java,
+                  typeUtils.erasure(element.enclosingElement.asType()),
+                  element.simpleName)
+              .addStatement(
+                  "final \$T wasAccessible = field.isAccessible()",
+                  Boolean::class.javaPrimitiveType)
+              .addStatement("field.setAccessible(true)")
+              .addStatement("field.set(\$L, \$L)", receiverLiteral, PARAMETER_NAME_NEW_VALUE)
+              .addStatement("field.setAccessible(wasAccessible)")
+              .nextControlFlow(
+                  "catch (final \$T | \$T e)",
+                  NoSuchFieldException::class.java,
+                  IllegalAccessException::class.java)
+              .addStatement("throw new \$T(e)", RuntimeException::class.java)
+              .endControlFlow()
+              .returns(Void.TYPE)
 
           private fun readAsset(path: String) = BufferedReader(InputStreamReader(
               AccessorWriter::class.java.getResourceAsStream(path))).use(BufferedReader::readText)
 
-          private fun generateCommonMethodSpec(element: Element): MethodSpec.Builder {
-            val requiresAccessor = element.getAnnotation(RequiresAccessor::class.java)
-            var name = requiresAccessor.name
-            if (!SourceVersion.isName(name)) {
-              name = element.simpleName.toString()
-            }
-            val ret = MethodSpec.methodBuilder(name)
-                .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-                .addAndroidXRestrictTo(requiresAccessor.androidXRestrictTo)
-                .addSupportRestrictTo(requiresAccessor.supportRestrictTo)
-                .addTypeVariable(TypeVariableName.get(TYPE_NAME_VALUE))
-            val requiredPatternInClasspath = options.requiredPatternInClasspath()
-            if (requiredPatternInClasspath.isNotEmpty()) {
-              ret.addCode(CodeBlock.builder()
-                  .beginControlFlow(
-                      "if (!\$T.compile(\$S).matcher(\$T.getProperty(\$S)).find())",
-                      Pattern::class.java, requiredPatternInClasspath,
-                      System::class.java,
-                      "java.class.path")
-                  .addStatement(
-                      "throw new \$T(\$S)",
-                      IllegalAccessError::class.java,
-                      ERROR_MESSAGE_ILLEGAL_ACCESS)
-                  .endControlFlow()
-                  .build())
-            }
-            return ret
-          }
+          private fun generateCommonMethodSpec(element: Element) =
+              element.getAnnotation(RequiresAccessor::class.java).run {
+                val methodName = if (!SourceVersion.isName(name)) {
+                  element.simpleName.toString()
+                } else {
+                  name
+                }
+                val ret = MethodSpec.methodBuilder(methodName)
+                    .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+                    .addAndroidXRestrictTo(androidXRestrictTo)
+                    .addSupportRestrictTo(supportRestrictTo)
+                    .addTypeVariable(TypeVariableName.get(TYPE_NAME_VALUE))
+                options.requiredPatternInClasspath().let {
+                  if (it.isNotEmpty()) {
+                    ret.addCode(CodeBlock.builder()
+                        .beginControlFlow(
+                            "if (!\$T.compile(\$S).matcher(\$T.getProperty(\$S)).find())",
+                            Pattern::class.java, it,
+                            System::class.java,
+                            "java.class.path")
+                        .addStatement(
+                            "throw new \$T(\$S)",
+                            IllegalAccessError::class.java,
+                            ERROR_MESSAGE_ILLEGAL_ACCESS)
+                        .endControlFlow()
+                        .build())
+                  }
+                }
+                ret
+              }
 
           private fun MethodSpec.Builder.addAndroidXRestrictTo(annotation: RestrictTo) = apply {
             val originalScopes = annotation.value.toList()

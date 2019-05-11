@@ -72,7 +72,7 @@ dependencies {
 
   kotlinImplementation 'org.jetbrains.kotlin:kotlin-stdlib:1.3.31'
   kotlinCompileOnly project(':annotations')
-  kaptKotlin project(':processor-java')
+  kaptKotlin project(':processor-kotlin')
 }
 
 kapt {

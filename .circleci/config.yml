@@ -22,6 +22,17 @@ jobs:
       - store_artifacts:
           path: processor-java/build/libs/processor-java.jar
           destination: processor-java.jar
+  build_processor-kotlin:
+    docker:
+        - image: circleci/android:api-28
+    environment:
+      JVM_OPTS: -Xmx3200m
+    steps:
+      - checkout
+      - run: ./gradlew :processor-kotlin:assemble --no-daemon --no-build-cache --refresh-dependencies
+      - store_artifacts:
+          path: processor-kotlin/build/libs/processor-kotlin.jar
+          destination: processor-kotlin.jar
   test_sample-android-java:
     docker:
       - image: circleci/android:api-28
@@ -30,8 +41,8 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Download Dependencies
-          command: ./gradlew androidDependencies
+          name: Download dependencies
+          command: ./gradlew androidDependencies --no-daemon --no-build-cache --refresh-dependencies
       - run: ./gradlew :sample-android:testJavaDebugUnitTest --no-daemon --no-build-cache --refresh-dependencies
       - store_test_results:
           path: sample-android/build/test-results/testJavaDebugUnitTest
@@ -43,8 +54,8 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Download Dependencies
-          command: ./gradlew androidDependencies
+          name: Download dependencies
+          command: ./gradlew androidDependencies --no-daemon --no-build-cache --refresh-dependencies
       - run: ./gradlew :sample-android:testKotlinDebugUnitTest --no-daemon --no-build-cache --refresh-dependencies
       - store_test_results:
           path: sample-android/build/test-results/testKotlinDebugUnitTest
@@ -83,6 +94,7 @@ jobs:
       - checkout
       - run: ./gradlew :annotations:assemble --no-daemon --no-build-cache --refresh-dependencies
       - run: ./gradlew :processor-java:assemble --no-daemon --no-build-cache --refresh-dependencies
+      - run: ./gradlew :processor-kotlin:assemble --no-daemon --no-build-cache --refresh-dependencies
       - run: ./.circleci/release_github.sh
   release_on_bintray:
     docker:
@@ -93,6 +105,7 @@ jobs:
       - checkout
       - run: ./gradlew :annotations:bintrayUpload --no-daemon --no-build-cache --refresh-dependencies
       - run: ./gradlew :processor-java:bintrayUpload --no-daemon --no-build-cache --refresh-dependencies
+      - run: ./gradlew :processor-kotlin:bintrayUpload --no-daemon --no-build-cache --refresh-dependencies
 workflows:
   version: 2.1
   test_samples:
@@ -105,6 +118,10 @@ workflows:
           filters:
             tags:
               ignore: /.*/
+      - build_processor-kotlin:
+          filters:
+            tags:
+              ignore: /.*/
       - test_sample-android-java:
           requires:
             - build_annotations
@@ -112,7 +129,7 @@ workflows:
       - test_sample-android-kotlin:
           requires:
             - build_annotations
-            - build_processor-java
+            - build_processor-kotlin
       - test_sample-java:
           requires:
             - build_annotations
@@ -145,6 +162,14 @@ workflows:
               only: /^v.*/
           requires:
             - ensure_tag_allowed
+      - build_processor-kotlin:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
+          requires:
+            - ensure_tag_allowed
       - test_sample-android-java:
           filters:
             branches:
@@ -162,7 +187,7 @@ workflows:
               only: /^v.*/
           requires:
             - build_annotations
-            - build_processor-java
+            - build_processor-kotlin
       - test_sample-java:
           filters:
             branches:

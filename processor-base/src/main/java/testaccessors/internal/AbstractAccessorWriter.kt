@@ -12,7 +12,10 @@ abstract class AbstractAccessorWriter(
     val options: Options) {
 
   fun nameForGeneratedClassFrom(enclosingClassSimpleNames: List<String>) =
-      "${enclosingClassSimpleNames.joinToString("")}TestAccessors"
+      "${enclosingClassSimpleNames.joinToString("")}$GENERATED_CLASS_SUFFIX"
+
+  fun sourceClassNameFromGenerated(sourceName: String) =
+      sourceName.substringBeforeLast(GENERATED_CLASS_SUFFIX)
 
   fun extractLocation(element: Element): Array<String> =
       (element.enclosingElement?.let { extractLocation(it) } ?: emptyArray()) +
@@ -22,6 +25,7 @@ abstract class AbstractAccessorWriter(
   abstract fun writeAccessorClass(annotatedElements: Set<Element>, filer: Filer)
 
   companion object {
+    const val GENERATED_CLASS_SUFFIX = "TestAccessors"
     const val PARAMETER_NAME_NEW_VALUE = "newValue"
     const val TYPE_NAME_VALUE = "TestAccessorsValue"
     const val ERROR_MESSAGE_ILLEGAL_ACCESS = "Accessing this method from this source set is not allowed"

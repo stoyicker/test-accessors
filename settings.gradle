@@ -1,1 +1,7 @@
-include ':annotations', ':processor-base', ':processor-java', ':sample-java', ':sample-kotlin', ':sample-android'
+include ':annotations',
+    ':processor-base',
+    ':processor-java',
+    ':processor-kotlin',
+    ':sample-java',
+    ':sample-kotlin',
+    ':sample-android'
