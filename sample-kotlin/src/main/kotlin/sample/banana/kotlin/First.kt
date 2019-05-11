@@ -2,6 +2,9 @@ package sample.banana.kotlin
 
 import testaccessors.RequiresAccessor
 
+@RequiresAccessor
+private val aTopLevelField: String? = null
+
 class First<A, B, C, D, E, F, G> {
   @RequiresAccessor
   private val aField: String? = null
