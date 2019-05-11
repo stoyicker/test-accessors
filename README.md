@@ -138,6 +138,5 @@ Additionally, all accessors are generated in the last round of annotation proces
 they will not be considered by other annotation processors and therefore won't slow down their
 executions.
 ## Known issues
-* Kotlin accessors for member properties are not generated: They are, but the IDE cannot resolve the
-import due to [this bug](https://youtrack.jetbrains.com/issue/KT-15286). Star and upvote the issue 
-to help getting it fixed quicker! In the mean time, you will need to write the import manually.
+* Accessors for Kotlin member properties are not generated when using processor-kotlin: They are, but the IDE cannot resolve the import due to [this bug in IntelliJ IDEA](https://youtrack.jetbrains.com/issue/KT-15286). Star and upvote the issue 
+to help getting it fixed quicker! In the mean time, you will need to write the import manually (or use processor-java).
