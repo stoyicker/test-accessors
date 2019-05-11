@@ -85,9 +85,8 @@ internal class AccessorWriter(
             .addKdoc(
                 javaClass.getResource(kDocResource).readText(StandardCharsets.UTF_8), *kDocArgs)
             .beginControlFlow(
-                "Class.forName(\"%L.%L\").getDeclaredField(%S).apply",
-                location.slice(0 until location.lastIndex).joinToString(separator = "."),
-                sourceClassNameFromGenerated(fileAndObjectName),
+                "Class.forName(%S).getDeclaredField(%S).apply",
+                element.enclosingElement.toLoadableClassString(),
                 element.simpleName)
             .addStatement("val wasAccessible = isAccessible")
             .addStatement("isAccessible = true")
@@ -110,9 +109,8 @@ internal class AccessorWriter(
                   element.simpleName.toString(),
                   PARAMETER_NAME_NEW_VALUE)
               .beginControlFlow(
-                  "Class.forName(\"%L.%L\").getDeclaredField(%S).apply",
-                  location.slice(0 until location.lastIndex).joinToString(separator = "."),
-                  sourceClassNameFromGenerated(fileAndObjectName),
+                  "Class.forName(%S).getDeclaredField(%S).apply",
+                  element.enclosingElement.toLoadableClassString(),
                   element.simpleName)
               .addStatement("val wasAccessible = isAccessible")
               .addStatement("isAccessible = true")
@@ -138,9 +136,8 @@ internal class AccessorWriter(
                   element.simpleName.toString(),
                   PARAMETER_NAME_NEW_VALUE)
               .beginControlFlow(
-                  "Class.forName(\"%L.%L\").getDeclaredField(%S).apply",
-                  location.slice(0 until location.lastIndex).joinToString(separator = "."),
-                  sourceClassNameFromGenerated(fileAndObjectName),
+                  "Class.forName(%S).getDeclaredField(%S).apply",
+                  element.enclosingElement.toLoadableClassString(),
                   element.simpleName)
               .addStatement("val wasAccessible = isAccessible")
               .addStatement("isAccessible = true")

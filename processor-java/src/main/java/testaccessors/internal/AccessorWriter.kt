@@ -33,10 +33,10 @@ internal class AccessorWriter(
     val extractedLocation = extractLocation(enclosingClassElement.enclosingElement)
     val location = extractedLocation + enclosingClassElement.simpleName.toString()
     val subLocation = location.toList().subList(2, location.size).toTypedArray()
-    val classAndFileName =
+    val fileAndClassName =
         nameForGeneratedClassFrom(ClassName.get(location[0], location[1], *subLocation)
             .simpleNames())
-    val typeSpecBuilder = TypeSpec.classBuilder(classAndFileName)
+    val typeSpecBuilder = TypeSpec.classBuilder(fileAndClassName)
         .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
     annotatedElements
         .flatMap(object : (Element) -> Iterable<MethodSpec> {
@@ -89,9 +89,9 @@ internal class AccessorWriter(
                 .addJavadoc(readAsset(javadocResource), *javadocArgs)
                 .beginControlFlow("try")
                 .addStatement(
-                    "final \$T field = \$T.class.getDeclaredField(\$S)",
+                    "final \$T field = Class.forName(\$S).getDeclaredField(\$S)",
                     Field::class.java,
-                    typeUtils.erasure(element.enclosingElement.asType()),
+                    element.enclosingElement.toLoadableClassString(),
                     element.simpleName)
                 .addStatement(
                     "final \$T wasAccessible = field.isAccessible()",
@@ -104,9 +104,10 @@ internal class AccessorWriter(
                 .addStatement("field.setAccessible(wasAccessible)")
                 .addStatement("return ret")
                 .nextControlFlow(
-                    "catch (final \$T | \$T e)",
+                    "catch (final \$T | \$T | \$T e)",
                     NoSuchFieldException::class.java,
-                    IllegalAccessException::class.java)
+                    IllegalAccessException::class.java,
+                    ClassNotFoundException::class.java)
                 .addStatement("throw new \$T(e)", RuntimeException::class.java)
                 .endControlFlow()
                 .returns(this)
@@ -156,20 +157,33 @@ internal class AccessorWriter(
                   *javadocArgs)
               .beginControlFlow("try")
               .addStatement(
-                  "final \$T field = \$T.class.getDeclaredField(\$S)",
+                  "final \$T field = Class.forName(\$S).getDeclaredField(\$S)",
                   Field::class.java,
-                  typeUtils.erasure(element.enclosingElement.asType()),
+                  element.enclosingElement.toLoadableClassString(),
                   element.simpleName)
               .addStatement(
                   "final \$T wasAccessible = field.isAccessible()",
                   Boolean::class.javaPrimitiveType)
               .addStatement("field.setAccessible(true)")
+              .addStatement(
+                  "final \$T modifiersField = \$T.class.getDeclaredField(\"modifiers\")",
+                  Field::class.java,
+                  Field::class.java)
+              .addStatement(
+                  "final \$T wasModifiersAccessible = modifiersField.isAccessible()",
+                  Boolean::class.javaPrimitiveType)
+              .addStatement("modifiersField.setAccessible(true)")
+              .addStatement(
+                  "modifiersField.setInt(field, field.getModifiers() & ~\$T.FINAL)",
+                  java.lang.reflect.Modifier::class.java)
               .addStatement("field.set(\$L, \$L)", receiverLiteral, PARAMETER_NAME_NEW_VALUE)
+              .addStatement("modifiersField.setAccessible(wasModifiersAccessible)")
               .addStatement("field.setAccessible(wasAccessible)")
               .nextControlFlow(
-                  "catch (final \$T | \$T e)",
+                  "catch (final \$T | \$T | \$T e)",
                   NoSuchFieldException::class.java,
-                  IllegalAccessException::class.java)
+                  IllegalAccessException::class.java,
+                  ClassNotFoundException::class.java)
               .addStatement("throw new \$T(e)", RuntimeException::class.java)
               .endControlFlow()
               .returns(Void.TYPE)
