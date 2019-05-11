@@ -31,9 +31,9 @@ Once annotation processing runs, there will be a class called org.my.example.Gen
 in the generated directory of your source set with two methods with the following signature:
 ```java
 public final class MyClassTestAccessors {
-    public static <TestAccessorsValue> TestAccessorsValue myField(final MyClass receiver);
+    public static <T> T myField(final MyClass receiver);
     
-    public static <TestAccessorsValue> void myField(final MyClass receiver, final TestAccessorsValue newValue);
+    public static <T> void myField(final MyClass receiver, final T newValue);
 }
 ```
 It also works with static variables!
@@ -46,18 +46,18 @@ class MyClass {
 will generate an implementation under the following API in the current source set:
 ```java
 public final class MyClassTestAccessors {
-    public static <TestAccessorsValue> TestAccessorsValue myStaticField();
+    public static <T> T myStaticField();
     
-    public static <TestAccessorsValue> void myStaticField(final TestAccessorsValue newValue);
+    public static <T> void myStaticField(final T newValue);
 }
 ```
 The processor-kotlin artifact generates Kotlin extension methods for the class that owns the 
 annotated fields for more idiomatic accessor usage.
 ```kotlin
 object MyClassTestAccessors {
-    fun <TestAccessorsValue> MyClass.myField(): TestAccessorsValue
+    fun <T> MyClass.myField(): T
     
-    fun <TestAccessorsValue> MyClass.myField(newValue: TestAccessorsValue)
+    fun <T> MyClass.myField(newValue: T)
 }
 ```
 These methods will have Kotlin compatibility annotations to ensure that the way to access them from 
