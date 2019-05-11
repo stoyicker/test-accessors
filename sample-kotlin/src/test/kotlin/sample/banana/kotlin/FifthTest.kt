@@ -5,7 +5,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
 
-class FifthTest {
+internal class FifthTest {
 	private lateinit var subject: First.Second.Third<Any>.Fourth.Fifth<String>
 
 	@BeforeEach
@@ -15,7 +15,7 @@ class FifthTest {
 
 	@Test
 	fun setAField() {
-		val expected = mock(Set::class.java) as Set<String>
+		@Suppress("UNCHECKED_CAST") val expected = mock(Set::class.java) as Set<String>
 
 		FirstSecondThirdFourthFifthTestAccessors.yetAnotherField(subject, expected)
 
@@ -23,6 +23,7 @@ class FifthTest {
 		subject::class.java.getDeclaredField("yetAnotherField").apply {
 			val wasAccessible = isAccessible
 			isAccessible = true
+			@Suppress("UNCHECKED_CAST")
 			actual = this[subject] as Set<String>
 			isAccessible = wasAccessible
 		}
@@ -31,7 +32,7 @@ class FifthTest {
 
 	@Test
 	fun getAField() {
-		val expected = mock(Set::class.java) as Set<String>
+		@Suppress("UNCHECKED_CAST") val expected = mock(Set::class.java) as Set<String>
 		subject.javaClass.getDeclaredField("yetAnotherField").apply {
 			val wasAccessible = isAccessible
 			isAccessible = true

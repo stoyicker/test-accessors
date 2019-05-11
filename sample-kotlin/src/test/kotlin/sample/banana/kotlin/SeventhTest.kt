@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
 import java.util.HashSet
 
-class SeventhTest {
+internal class SeventhTest {
 	private lateinit var subject: First.Second.Sixth.Seventh<Any, HashSet<List<Any?>>, List<Any>>
 
 	@BeforeEach
@@ -16,7 +16,7 @@ class SeventhTest {
 
 	@Test
 	fun setAField() {
-		val expected = mock(Set::class.java) as Set<HashSet<List<Any>>>
+		@Suppress("UNCHECKED_CAST") val expected = mock(Set::class.java) as Set<HashSet<List<Any>>>
 
     FirstSecondSixthSeventhTestAccessors.fieldThatHasBeenRenamed(subject, expected)
 
@@ -24,6 +24,7 @@ class SeventhTest {
 		subject::class.java.getDeclaredField("anotherField").apply {
 			val wasAccessible = isAccessible
 			isAccessible = true
+			@Suppress("UNCHECKED_CAST")
 			actual = this[subject] as Set<HashSet<List<Any>>>
 			isAccessible = wasAccessible
 		}
@@ -32,7 +33,7 @@ class SeventhTest {
 
 	@Test
 	fun getAField() {
-		val expected = mock(Set::class.java) as Set<HashSet<List<Any>>>
+		@Suppress("UNCHECKED_CAST") val expected = mock(Set::class.java) as Set<HashSet<List<Any>>>
 		subject.javaClass.getDeclaredField("anotherField").apply {
 			val wasAccessible = isAccessible
 			isAccessible = true

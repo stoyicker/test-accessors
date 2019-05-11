@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-class FirstTest {
+internal class FirstTest {
 	private lateinit var subject: First<Any?, Any?, Any?, Any?, Any?, Any?, Any?>
 
 	@BeforeEach

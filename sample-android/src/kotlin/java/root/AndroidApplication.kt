@@ -3,6 +3,9 @@ package root
 import android.app.Application
 import testaccessors.RequiresAccessor
 
+@RequiresAccessor
+private val aTopLevelField: String? = null
+
 class AndroidApplication : Application() {
   @RequiresAccessor
   private val aField: String? = null

@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-class FourthTest {
+internal class FourthTest {
 	private lateinit var subject: First.Second.Third<String>.Fourth
 
 	@BeforeEach
