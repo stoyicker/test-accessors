@@ -42,7 +42,7 @@ abstract class AbstractAccessorWriter(
   companion object {
     const val GENERATED_CLASS_SUFFIX = "TestAccessors"
     const val PARAMETER_NAME_NEW_VALUE = "newValue"
-    const val TYPE_NAME_VALUE = "TestAccessorsValue"
+    const val TYPE_NAME_VALUE = "T"
     const val ERROR_MESSAGE_ILLEGAL_ACCESS = "Accessing this method from this source set is not allowed"
   }
 }
