@@ -103,9 +103,18 @@ jobs:
       JVM_OPTS: -Xmx3200m
     steps:
       - checkout
-      - run: ./gradlew :annotations:bintrayUpload --no-daemon --no-build-cache --refresh-dependencies
-      - run: ./gradlew :processor-java:bintrayUpload --no-daemon --no-build-cache --refresh-dependencies
-      - run: ./gradlew :processor-kotlin:bintrayUpload --no-daemon --no-build-cache --refresh-dependencies
+      - run: 
+          name: Upload annotations to Bintray
+          command: ./gradlew :annotations:bintrayUpload --no-daemon --no-build-cache --refresh-dependencies
+          when: always
+      - run:
+          name: Upload processor-java to Bintray
+          command: ./gradlew :processor-java:bintrayUpload --no-daemon --no-build-cache --refresh-dependencies
+          when: always
+      - run:
+          name: Upload processor-kotlin to Bintray
+          command: ./gradlew :processor-kotlin:bintrayUpload --no-daemon --no-build-cache --refresh-dependencies
+          when: always
 workflows:
   version: 2.1
   test_samples:
