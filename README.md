@@ -54,7 +54,7 @@ public final class MyClassTestAccessors {
 The processor-kotlin artifact generates Kotlin extension methods for the class that owns the 
 annotated fields for more idiomatic accessor usage.
 ```kotlin
-object MyClassTestAccessors {
+internal object MyClassTestAccessors {
     fun <T> MyClass.myField(): T
     
     fun <T> MyClass.myField(newValue: T)
