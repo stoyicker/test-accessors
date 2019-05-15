@@ -11,6 +11,8 @@ import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.TypeVariableName
 import com.squareup.kotlinpoet.asTypeName
 import testaccessors.RequiresAccessor
+import testaccessors.internal.base.AbstractAccessorWriter
+import testaccessors.internal.base.Options
 import java.lang.reflect.Field
 import java.nio.charset.StandardCharsets
 import java.nio.file.Path

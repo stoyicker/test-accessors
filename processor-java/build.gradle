@@ -14,7 +14,7 @@ repositories {
   google()
 }
 dependencies {
-  implementation project(':processor-base')
+  implementation project(':annotations')
   api 'com.squareup:javapoet:1.11.1'
 }
 

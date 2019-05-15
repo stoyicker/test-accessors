@@ -2,6 +2,9 @@ package testaccessors.internal
 
 import com.squareup.javapoet.ClassName
 import testaccessors.RequiresAccessor
+import testaccessors.internal.base.AnnotationProcessor
+import testaccessors.internal.base.Logger
+import testaccessors.internal.base.RequiresAccessorAnnotationVerifier
 import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.element.Element
 import javax.lang.model.element.TypeElement

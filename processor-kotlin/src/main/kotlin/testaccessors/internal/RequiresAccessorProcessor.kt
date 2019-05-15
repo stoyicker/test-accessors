@@ -2,6 +2,9 @@ package testaccessors.internal
 
 import com.squareup.kotlinpoet.ClassName
 import testaccessors.RequiresAccessor
+import testaccessors.internal.base.AnnotationProcessor
+import testaccessors.internal.base.Logger
+import testaccessors.internal.base.RequiresAccessorAnnotationVerifier
 import java.nio.file.Paths
 import java.util.HashMap
 import javax.annotation.processing.RoundEnvironment

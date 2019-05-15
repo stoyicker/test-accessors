@@ -1,4 +1,4 @@
-package testaccessors.internal
+package testaccessors.internal.base
 
 import androidx.annotation.RestrictTo
 

@@ -11,6 +11,8 @@ import com.squareup.javapoet.TypeName
 import com.squareup.javapoet.TypeSpec
 import com.squareup.javapoet.TypeVariableName
 import testaccessors.RequiresAccessor
+import testaccessors.internal.base.AbstractAccessorWriter
+import testaccessors.internal.base.Options
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
