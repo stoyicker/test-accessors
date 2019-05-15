@@ -1,4 +1,4 @@
-package testaccessors.internal
+package testaccessors.internal.base
 
 import javax.annotation.processing.Filer
 import javax.lang.model.element.Element
