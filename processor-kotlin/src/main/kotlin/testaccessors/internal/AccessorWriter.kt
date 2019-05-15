@@ -6,6 +6,7 @@ import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.TypeVariableName
@@ -41,6 +42,7 @@ internal class AccessorWriter(
         elementUtils.getPackageOf(enclosingClassElement).qualifiedName.toString(), fileAndObjectName)
         .indent("  ")
     val objectSpecBuilder = TypeSpec.objectBuilder(fileAndObjectName)
+        .addModifiers(KModifier.INTERNAL)
     annotatedElements.flatMap(object : (Element) -> Iterable<FunSpec> {
       override fun invoke(element: Element) =
           element.getAnnotation(RequiresAccessor::class.java).requires.map {
