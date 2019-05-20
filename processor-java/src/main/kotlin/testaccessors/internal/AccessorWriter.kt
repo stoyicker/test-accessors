@@ -120,7 +120,7 @@ internal class AccessorWriter(
                   element,
                   "/javadoc-setter-static.template",
                   arrayOf(
-                      TypeVariableName.get(TYPE_NAME_VALUE),
+                      typeUtils.erasure(element.enclosingElement.asType()),
                       element.simpleName.toString(),
                       PARAMETER_NAME_NEW_VALUE),
                   null)
@@ -136,7 +136,7 @@ internal class AccessorWriter(
                   element,
                   "/javadoc-setter.template",
                   arrayOf(
-                      TypeVariableName.get(TYPE_NAME_VALUE),
+                      typeUtils.erasure(element.enclosingElement.asType()),
                       element.simpleName.toString(),
                       PARAMETER_NAME_RECEIVER,
                       PARAMETER_NAME_NEW_VALUE),
