@@ -2,25 +2,25 @@ package sample.banana.kotlin
 
 import testaccessors.RequiresAccessor
 
-@RequiresAccessor
+@RequiresAccessor(requires = [RequiresAccessor.AccessorType.TYPE_GETTER, RequiresAccessor.AccessorType.TYPE_SETTER])
 private val aTopLevelField: String? = null
 
 class First<A, B, C, D, E, F, G> {
-  @RequiresAccessor
+  @RequiresAccessor(requires = [RequiresAccessor.AccessorType.TYPE_GETTER, RequiresAccessor.AccessorType.TYPE_SETTER])
   private val aField: String? = null
   private val anotherTopLevelField: String? = null
 
   class Second {
     inner class Third<B> {
-      @RequiresAccessor(requires = [RequiresAccessor.AccessorType.TYPE_SETTER])
+      @RequiresAccessor
       private val yetAnotherField: String? = null
 
       inner class Fourth {
-        @RequiresAccessor(requires = [RequiresAccessor.AccessorType.TYPE_SETTER])
+        @RequiresAccessor
         private val yetAnotherField: B? = null
 
         inner class Fifth<A> {
-          @RequiresAccessor
+          @RequiresAccessor(requires = [RequiresAccessor.AccessorType.TYPE_GETTER, RequiresAccessor.AccessorType.TYPE_SETTER])
           private val yetAnotherField = emptySet<A>()
         }
       }
@@ -28,7 +28,7 @@ class First<A, B, C, D, E, F, G> {
 
     inner class Sixth {
       inner class Seventh<T, J : Set<List<*>?>?, Q : Collection<T>> {
-        @RequiresAccessor(name = "fieldThatHasBeenRenamed")
+        @RequiresAccessor(name = "fieldThatHasBeenRenamed", requires = [RequiresAccessor.AccessorType.TYPE_GETTER, RequiresAccessor.AccessorType.TYPE_SETTER])
         private val anotherField: Set<Q?>? = emptySet()
       }
     }

@@ -14,9 +14,9 @@ annotation class RequiresAccessor(
      */
     val name: String = "",
     /**
-     * Optional array of accessors type that need to be generated. By default both getter and setter will be generated.
+     * Optional array of accessors type that need to be generated. By default only a setter will be generated.
      */
-    val requires: Array<AccessorType> = [AccessorType.TYPE_GETTER, AccessorType.TYPE_SETTER],
+    val requires: Array<AccessorType> = [AccessorType.TYPE_SETTER],
     /**
      * Optional instance of [RestrictTo] that will be copied to the generated accessors. By default no annotation is copied.
      */

@@ -3,6 +3,6 @@ package sample.banana.kotlin
 import testaccessors.RequiresAccessor
 
 object MyObject {
-  @RequiresAccessor
+  @RequiresAccessor(requires = [RequiresAccessor.AccessorType.TYPE_GETTER, RequiresAccessor.AccessorType.TYPE_SETTER])
   private const val myField = "holahola"
 }

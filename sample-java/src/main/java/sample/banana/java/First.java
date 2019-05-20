@@ -8,7 +8,7 @@ import java.util.Set;
 import testaccessors.RequiresAccessor;
 
 public final class First<A, B, C, D, E, F, G> {
-  @RequiresAccessor
+  @RequiresAccessor(requires = {RequiresAccessor.AccessorType.TYPE_GETTER, RequiresAccessor.AccessorType.TYPE_SETTER})
   private final String aField = null;
   private final String anotherTopLevelField = null;
 
@@ -22,7 +22,7 @@ public final class First<A, B, C, D, E, F, G> {
         private final B yetAnotherField = null;
 
         class Fifth<A> {
-          @RequiresAccessor
+          @RequiresAccessor(requires = {RequiresAccessor.AccessorType.TYPE_GETTER, RequiresAccessor.AccessorType.TYPE_SETTER})
           private final Set<A> yetAnotherField = Collections.emptySet();
         }
       }
@@ -30,7 +30,7 @@ public final class First<A, B, C, D, E, F, G> {
 
     class Sixth {
       class Seventh<T, J extends Set<List<?>>, Q extends Collection<? extends T>> {
-        @RequiresAccessor(name = "fieldThatHasBeenRenamed")
+        @RequiresAccessor(name = "fieldThatHasBeenRenamed", requires = {RequiresAccessor.AccessorType.TYPE_GETTER, RequiresAccessor.AccessorType.TYPE_SETTER})
         private final Set<J> anotherField = Collections.emptySet();
       }
     }
