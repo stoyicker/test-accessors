@@ -76,7 +76,7 @@ The annotation has some parameters you can use to alter its behavior:
 annotating. If unspecified, the name of the field will be used.
 * requires -> Allows you to specify which type of accessor you want (use AccessorType.TYPE_GETTER 
 for getter and/ orAccessorType.TYPE_SETTER for setter) for your annotated field. If unspecified, 
-both getter and setter will be generated.
+only a setter will be generated.
 * androidXRestrictTo -> Allows you to declare an instance of androidx.annotation.RestrictTo that 
 will be added to the method(s) generated due to this annotation. If unspecified or the scope array 
 that describes the restrictions is empty, no androidX RestrictTo annotation will be added to methods 

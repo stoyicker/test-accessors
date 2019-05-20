@@ -6,8 +6,12 @@ import androidx.annotation.RestrictTo;
 import testaccessors.RequiresAccessor;
 
 public final class AndroidApplication extends Application {
-  @RequiresAccessor(androidXRestrictTo = @RestrictTo({RestrictTo.Scope.TESTS, RestrictTo.Scope.LIBRARY}))
+  @RequiresAccessor(
+      requires = {RequiresAccessor.AccessorType.TYPE_GETTER, RequiresAccessor.AccessorType.TYPE_SETTER},
+      androidXRestrictTo = @RestrictTo({RestrictTo.Scope.TESTS, RestrictTo.Scope.LIBRARY}))
   private final String aField = "holahola";
-  @RequiresAccessor(androidXRestrictTo = @RestrictTo(RestrictTo.Scope.TESTS))
+  @RequiresAccessor(
+      requires = {RequiresAccessor.AccessorType.TYPE_GETTER, RequiresAccessor.AccessorType.TYPE_SETTER},
+      androidXRestrictTo = @RestrictTo(RestrictTo.Scope.TESTS))
   private static Object aStaticField = null;
 }
