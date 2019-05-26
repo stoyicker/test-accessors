@@ -90,7 +90,7 @@ public final class AndroidApplicationTest {
     field.setAccessible(true);
     final Object actual;
     try {
-      actual = field.get(subject);
+      actual = field.get(null);
     } catch (final IllegalAccessException e) {
       throw new RuntimeException(e);
     }
