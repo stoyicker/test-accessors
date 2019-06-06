@@ -167,10 +167,14 @@ internal class AccessorWriter(
                   "final \$T wasAccessible = field.isAccessible()",
                   Boolean::class.javaPrimitiveType)
               .addStatement("field.setAccessible(true)")
+              .addStatement("\$T modifiersField", Field::class.java)
+              .beginControlFlow("try")
               .addStatement(
-                  "final \$T modifiersField = \$T.class.getDeclaredField(\"modifiers\")",
-                  Field::class.java,
-                  Field::class.java)
+                  "modifiersField = \$T.class.getDeclaredField(\"modifiers\")", Field::class.java)
+              .nextControlFlow("catch (final \$T e)", NoSuchFieldException::class.java)
+              .addStatement(
+                  "modifiersField = \$T.class.getDeclaredField(\"accessFlags\")", Field::class.java)
+              .endControlFlow()
               .addStatement(
                   "final \$T wasModifiersAccessible = modifiersField.isAccessible()",
                   Boolean::class.javaPrimitiveType)
