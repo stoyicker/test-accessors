@@ -3,7 +3,7 @@ package testaccessors.internal.base
 import androidx.annotation.RestrictTo
 
 interface Options {
-  fun requiredPatternInClasspath(): CharSequence
+  fun requiredClasses(): List<String>
 
   fun defaultAndroidXRestrictTo(): Iterable<RestrictTo.Scope>
 

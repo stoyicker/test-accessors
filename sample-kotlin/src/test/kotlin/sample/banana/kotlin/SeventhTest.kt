@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
 import java.util.HashSet
+import sample.banana.kotlin.FirstSecondSixthSeventhTestAccessors.fieldThatHasBeenRenamed
 
 internal class SeventhTest {
 	private lateinit var subject: First.Second.Sixth.Seventh<Any, HashSet<List<Any?>>, List<Any>>
@@ -18,7 +19,7 @@ internal class SeventhTest {
 	fun setAField() {
 		@Suppress("UNCHECKED_CAST") val expected = mock(Set::class.java) as Set<HashSet<List<Any>>>
 
-    FirstSecondSixthSeventhTestAccessors.fieldThatHasBeenRenamed(subject, expected)
+		subject.fieldThatHasBeenRenamed(expected)
 
 		var actual: Set<HashSet<List<Any>>>
 		subject::class.java.getDeclaredField("anotherField").apply {
@@ -41,7 +42,7 @@ internal class SeventhTest {
 			isAccessible = wasAccessible
 		}
 
-		val actual: Set<String> = FirstSecondSixthSeventhTestAccessors.fieldThatHasBeenRenamed(subject)
+		val actual: Set<String> = subject.fieldThatHasBeenRenamed()
 
 		assertSame(expected, actual)
 	}

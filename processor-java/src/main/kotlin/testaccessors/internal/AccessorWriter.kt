@@ -17,7 +17,7 @@ import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
 import java.lang.reflect.Field
-import java.util.regex.Pattern
+import java.util.Arrays
 import javax.annotation.processing.Filer
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.Element
@@ -209,22 +209,29 @@ internal class AccessorWriter(
                     .addAndroidXRestrictTo(androidXRestrictTo)
                     .addSupportRestrictTo(supportRestrictTo)
                     .addTypeVariable(TypeVariableName.get(TYPE_NAME_VALUE))
-                options.requiredPatternInClasspath().let {
-                  if (it.isNotEmpty()) {
-                    ret.addCode(CodeBlock.builder()
-                        .beginControlFlow(
-                            "if (!\$T.compile(\$S).matcher(\$T.getProperty(\$S)).find())",
-                            Pattern::class.java, it,
-                            System::class.java,
-                            "java.class.path")
-                        .addStatement(
-                            "throw new \$T(\$S)",
-                            IllegalAccessError::class.java,
-                            ERROR_MESSAGE_ILLEGAL_ACCESS)
-                        .endControlFlow()
-                        .build())
-                  }
-                }
+                    .apply {
+                      options.requiredClasses().takeIf { it.isNotEmpty() }?.let {
+                        addStatement("boolean anyRequiredClassFound = false")
+                            .beginControlFlow(
+                                "for (final String it : \$T.asList(\$L))",
+                                Arrays::class.java,
+                                it.joinToString(separator = ", ") { "\"$it\"" })
+                            .beginControlFlow("try")
+                            .addStatement("Class.forName(it)")
+                            .addStatement("anyRequiredClassFound = true")
+                            .addStatement("break")
+                            .nextControlFlow(
+                                "catch (final \$T ignored)", ClassNotFoundException::class.java)
+                            .endControlFlow()
+                            .endControlFlow()
+                            .beginControlFlow("if (!anyRequiredClassFound)")
+                            .addStatement(
+                                "throw new \$T(\$S)",
+                                IllegalAccessError::class.java,
+                                ERROR_MESSAGE_ILLEGAL_ACCESS)
+                            .endControlFlow()
+                      }
+                    }
                 ret
               }
 

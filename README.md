@@ -88,11 +88,12 @@ array that describes the restrictions is empty, no support RestrictTo annotation
 methods generated due to this annotation occurrence (unless overriden by
 testaccessors.defaultSupportRestrictTo, see below).
 ### Processor level
-* testaccessors.requiredPatternInClasspath -> Allows you to specify a regex that artifact names in 
-the corresponding classpath will be checked against every time a generated method runs. This allows 
-you to ensure that generated methods are not used where they should not (such as outside of tests) 
-by causing an unchecked exception to be thrown at runtime if the regex does not match at all. If 
-unspecified or invalid, it becomes a regex that matches both TestNG and JUnit.
+* testaccessors.requiredClasses -> Allows you to specify a list of comma-separated class names that
+will be 'pinged' every time a generated method runs, triggering an exception if none of them are
+found. This allows you to ensure that generated methods are not used where they should not (such as 
+outside of tests) by passing in classes that are specific to test artifacts. If unspecified, it 
+becomes a list of junit.runner.BaseTestRunner (for JUnit 4), org.junit.jupiter.api.Test (for JUnit 5)
+and org.testng.TestNG (for TestNG).
 * testaccessors.defaultAndroidXRestrictTo -> Allows you to specify a default 
 androidx.annotation.RestrictTo scope that will cause all occurrences of RequiresAccessors to change 
 their default value for androidXRestrictTo to an instance of RestrictTo with that scope. Must be a
@@ -107,7 +108,7 @@ and "SUBCLASSES".
 Frameworkless Java:
 ```groovy
 compileJava {
-    options.compilerArgs.addAll(['-Atestaccessors.requiredPatternInClasspath=yourRegex'])
+    options.compilerArgs.addAll(['-Atestaccessors.requiredClasses=yourFirstClass,yourSecondClass'])
 }
 ```
 Android with Java:
@@ -116,7 +117,7 @@ android {
   defaultConfig {
     javaCompileOptions {
       annotationProcessorOptions {
-        arguments = ['testaccessors.requiredPatternInClasspath': 'yourRegex']
+        arguments = ['testaccessors.requiredClasses': 'yourFirstClass,yourSecondClass']
       }
     }
   }
@@ -126,7 +127,7 @@ Kotlin:
 ```groovy
 kapt {
     arguments {
-        arg('testaccessors.requiredPatternInClasspath', 'yourRegex')
+        arg('testaccessors.requiredClasses', 'yourFirstClass,yourSecondClass')
     }
 }
 ```

@@ -3,6 +3,7 @@ package sample.banana.kotlin
 import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import sample.banana.kotlin.FirstSecondThirdFourthTestAccessors.yetAnotherField
 
 internal class FourthTest {
 	private lateinit var subject: First.Second.Third<String>.Fourth
@@ -16,7 +17,7 @@ internal class FourthTest {
 	fun setAField() {
 		val expected = "this is a mock value"
 
-    FirstSecondThirdFourthTestAccessors.yetAnotherField(subject, expected)
+		subject.yetAnotherField(expected)
 
 		var actual: String?
 		subject::class.java.getDeclaredField("yetAnotherField").apply {

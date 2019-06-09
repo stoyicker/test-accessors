@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier
+import sample.banana.kotlin.FirstTestAccessors.aField
 
 internal class FirstTest {
 	private lateinit var subject: First<Any?, Any?, Any?, Any?, Any?, Any?, Any?>
@@ -18,7 +19,7 @@ internal class FirstTest {
 	fun setAField() {
 		val expected = "this is a mock value"
 
-		FirstTestAccessors.aField(subject, expected)
+		subject.aField(expected)
 
 		var actual: String?
 		subject::class.java.getDeclaredField("aField").apply {
@@ -40,7 +41,7 @@ internal class FirstTest {
 			isAccessible = wasAccessible
 		}
 
-		val actual: String? = FirstTestAccessors.aField(subject)
+		val actual: String? = subject.aField()
 
 		assertSame(expected, actual)
 	}
