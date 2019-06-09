@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
+import sample.banana.kotlin.FirstSecondThirdFourthFifthTestAccessors.yetAnotherField
 
 internal class FifthTest {
 	private lateinit var subject: First.Second.Third<Any>.Fourth.Fifth<String>
@@ -17,7 +18,7 @@ internal class FifthTest {
 	fun setAField() {
 		@Suppress("UNCHECKED_CAST") val expected = mock(Set::class.java) as Set<String>
 
-		FirstSecondThirdFourthFifthTestAccessors.yetAnotherField(subject, expected)
+		subject.yetAnotherField(expected)
 
 		var actual: Set<String>
 		subject::class.java.getDeclaredField("yetAnotherField").apply {
@@ -40,7 +41,7 @@ internal class FifthTest {
 			isAccessible = wasAccessible
 		}
 
-		val actual: Set<String> = FirstSecondThirdFourthFifthTestAccessors.yetAnotherField(subject)
+		val actual: Set<String> = subject.yetAnotherField()
 
 		assertSame(expected, actual)
 	}

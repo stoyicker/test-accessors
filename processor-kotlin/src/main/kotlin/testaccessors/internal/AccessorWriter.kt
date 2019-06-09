@@ -8,6 +8,7 @@ import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterSpec
+import com.squareup.kotlinpoet.ParameterizedTypeName
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.TypeVariableName
 import com.squareup.kotlinpoet.asTypeName
@@ -17,7 +18,6 @@ import testaccessors.internal.base.Options
 import java.lang.reflect.Field
 import java.nio.charset.StandardCharsets
 import java.nio.file.Path
-import java.util.regex.Pattern
 import javax.annotation.processing.Filer
 import javax.lang.model.element.Element
 import javax.lang.model.element.Modifier
@@ -89,14 +89,14 @@ internal class AccessorWriter(
             .addKdoc(
                 javaClass.getResource(kDocResource).readText(StandardCharsets.UTF_8), *kDocArgs)
             .beginControlFlow(
-                "Class.forName(%S).getDeclaredField(%S).apply",
+                "return·Class.forName(%S).getDeclaredField(%S).run",
                 element.enclosingElement.toLoadableClassString(),
                 element.simpleName)
             .addStatement("val wasAccessible = isAccessible")
             .addStatement("isAccessible = true")
             .addStatement("val ret = this[%L] as %T", receiverLiteral, this)
             .addStatement("isAccessible = wasAccessible")
-            .addStatement("return ret")
+            .addStatement("ret")
             .endControlFlow()
             .returns(this)
       }
@@ -160,22 +160,25 @@ internal class AccessorWriter(
                 .addSupportRestrictTo(supportRestrictTo)
                 .addTypeVariable(TypeVariableName(TYPE_NAME_VALUE))
                 .apply {
-                  options.requiredPatternInClasspath().let {
-                    if (it.isNotEmpty()) {
-                      addCode(CodeBlock.builder()
-                          .beginControlFlow(
-                              "if (!%T.compile(%S).matcher(%T.getProperty(%S)).find())",
-                              Pattern::class,
-                              it,
-                              System::class,
-                              "java.class.path")
-                          .addStatement(
-                              "throw %T(%S)",
-                              IllegalAccessError::class,
-                              ERROR_MESSAGE_ILLEGAL_ACCESS)
-                          .endControlFlow()
-                          .build())
-                    }
+                  options.requiredClasses().takeIf { it.isNotEmpty() }?.let {
+                    addStatement("var anyRequiredClassFound = false")
+                        .beginControlFlow(
+                            "listOf(%L).forEach",
+                            it.joinToString(separator = ", ") { "\"$it\"" })
+                        .beginControlFlow("try")
+                        .addStatement("Class.forName(it)")
+                        .addStatement("anyRequiredClassFound = true")
+//                      https://youtrack.jetbrains.com/issue/KT-1436
+//                        .addStatement("break")
+                        .nextControlFlow("catch (ignored: %T)", ClassNotFoundException::class)
+                        .endControlFlow()
+                        .endControlFlow()
+                        .beginControlFlow("if (!anyRequiredClassFound)")
+                        .addStatement(
+                            "throw %T(%S)",
+                            IllegalAccessError::class,
+                            ERROR_MESSAGE_ILLEGAL_ACCESS)
+                        .endControlFlow()
                   }
                 }
           }
@@ -220,9 +223,16 @@ internal class AccessorWriter(
         }
       }
 
-      private fun FunSpec.Builder.addReceiver(element: Element) = apply {
-        receiver(typeUtils.erasure(element.enclosingElement.asType()).asTypeName())
-      }
+      private fun FunSpec.Builder.addReceiver(element: Element) =
+        apply {
+          val typeName = element.enclosingElement.asType().asTypeName()
+          receiver(when (typeName) {
+            is ParameterizedTypeName -> ClassName.bestGuess("kotlin.Any")
+            else -> typeName
+          })
+          Unit
+        }
+
     }).forEach { objectSpecBuilder.addFunction(it) }
     fileSpecBuilder
         .addType(objectSpecBuilder.build())

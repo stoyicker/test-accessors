@@ -76,7 +76,7 @@ dependencies {
 }
 
 kapt {
-    arguments {
-        arg('testaccessors.defaultAndroidXRestrictTo', 'TESTS')
-    }
+  arguments {
+    arg('testaccessors.defaultAndroidXRestrictTo', 'TESTS')
+  }
 }
