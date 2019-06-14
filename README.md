@@ -23,12 +23,12 @@ dependencies {
 Annotate your field:
 ```java
 public final class MyClass {
-    @RequiresAccessor
+    @RequiresAccessor(requires = {RequiresAccessor.AccessorType.TYPE_GETTER, RequiresAccessor.AccessorType.TYPE_SETTER})
     private final String myField = "hola hola";
 }
 ```
-Once annotation processing runs, there will be a class called org.my.example.GeneratedMyClassAccessors 
-in the generated directory of your source set with two methods with the following signature:
+Once annotation processing runs, there will be a class in the generated directory of your source set
+with two methods like this:
 ```java
 public final class MyClassTestAccessors {
     public static <T> T myField(final MyClass receiver);
@@ -36,8 +36,8 @@ public final class MyClassTestAccessors {
     public static <T> void myField(final MyClass receiver, final T newValue);
 }
 ```
-The processor-kotlin artifact achieves the same goal through Kotlin extension methods for the class that owns the annotated 
-fields for more idiomatic accessor usage.
+The processor-kotlin artifact achieves the same goal through Kotlin extension methods for the class 
+that owns the annotated fields for more idiomatic accessor usage.
 ```kotlin
 internal object MyClassTestAccessors {
     fun <T> MyClass.myField(): T
@@ -45,7 +45,7 @@ internal object MyClassTestAccessors {
     fun <T> MyClass.myField(newValue: T)
 }
 ```
-It also works with static variables!
+As you can see, things work perfectly fine even with finals/vals. Moreover, it also works with static variables!
 ```java
 class MyClass {
     @RequiresAccessor(requires = {RequiresAccessor.AccessorType.TYPE_GETTER, RequiresAccessor.AccessorType.TYPE_SETTER})
