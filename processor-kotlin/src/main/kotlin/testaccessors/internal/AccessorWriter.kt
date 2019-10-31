@@ -37,7 +37,9 @@ internal class AccessorWriter(
     val location = extractLocation(enclosingClassElement.enclosingElement) +
         enclosingClassElement.simpleName.toString()
     val fileAndObjectName = nameForGeneratedClassFrom(
-        ClassName(location[0], location[1], *location.sliceArray(2..location.lastIndex)).simpleNames)
+        ClassName(location[0], location[1], *location.sliceArray(2..location.lastIndex)).simpleNames).let {
+      it.substringAfterLast('.', it)
+    }
     val fileSpecBuilder = FileSpec.builder(
         elementUtils.getPackageOf(enclosingClassElement).qualifiedName.toString(), fileAndObjectName)
         .indent("  ")
