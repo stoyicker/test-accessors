@@ -44,7 +44,6 @@ internal class AccessorWriter(
         elementUtils.getPackageOf(enclosingClassElement).qualifiedName.toString(), fileAndObjectName)
         .indent("  ")
     val objectSpecBuilder = TypeSpec.objectBuilder(fileAndObjectName)
-        .addModifiers(KModifier.INTERNAL)
     annotatedElements.flatMap(object : (Element) -> Iterable<FunSpec> {
       override fun invoke(element: Element) =
           element.getAnnotation(RequiresAccessor::class.java).requires.map {
