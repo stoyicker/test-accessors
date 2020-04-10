@@ -24,8 +24,6 @@ uploadReleaseToGitHub() {
 
     # Extract the upload_url value
     UPLOAD_URL=$(echo ${RESPONSE_BODY} | jq -r .upload_url)
-    # And the id for later use
-    RELEASE_ID=$(echo ${RESPONSE_BODY} | jq -r .id)
 
     cp annotations/build/libs/annotations.jar .
 
