@@ -55,7 +55,7 @@ uploadReleaseToGitHub() {
 
     cp processor-kotlin/build/libs/processor-kotlin.jar .
 
-    # Attach processor-java
+    # Attach processor-kotlin
     PROCESSOR_KOTLIN_UPLOAD_URL=$(echo ${UPLOAD_URL} | sed "s/{?name,label}/?name=processor-kotlin-${THIS_TAG}.jar/")
     curl -s \
         -v \
