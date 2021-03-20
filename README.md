@@ -8,7 +8,7 @@ Add the dependencies to your project:
 ```groovy
 repositories {
   google()
-  jcenter()
+  mavenCentral()
 }
 dependencies {
     // 1. Add the annotation
