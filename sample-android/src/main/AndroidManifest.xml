@@ -2,5 +2,7 @@
 <manifest
   xmlns:android="http://schemas.android.com/apk/res/android"
   package="com.github.stoyicker.testaccessors.sampleandroid">
-  <application android:name="root.AndroidApplication" />
+  <application android:name="root.AndroidApplication"
+               android:fullBackupContent="false"
+               android:icon="@android:drawable/ic_menu_view" />
 </manifest>
