@@ -107,6 +107,3 @@ android {
 Classpath bloat: If you don't use the generated methods outside of tests, a simple shrinking ProGuard configuration 
 such as [this one](sample-android/proguard/rules.pro) will make sure that your classpath does not 
 get affected at all.
-Additionally, all accessors are generated in the last round of annotation processing, which means 
-they will not be considered by other annotation processors and therefore won't slow down their
-executions.
