@@ -27,9 +27,9 @@ Once annotation processing runs, there will be a class in the generated director
 with two methods like this:
 ```java
 public final class MyClassTestAccessors {
-    public static String myField(final MyClass receiver);
+    public static String getMyField(final MyClass receiver);
     
-    public static void myField(final MyClass receiver, final String newValue);
+    public static void setMyField(final MyClass receiver, final String newValue);
 }
 ```
 As you can see, things work perfectly fine even with final fields. Moreover, it also works with static fields!
@@ -42,9 +42,9 @@ class MyClass {
 will generate an implementation under the following API in the current source set:
 ```java
 public final class MyClassTestAccessors {
-    public static String myStaticField();
+    public static String getMyStaticField();
     
-    public static void myStaticField(final String newValue);
+    public static void setMyStaticField(final String newValue);
 }
 ```
 The different sample projects within the repo showcase how to use all the possibilities that the
@@ -53,7 +53,8 @@ processor offers, so check them out if you're feeling lost!
 ### Annotation level
 The annotation has some parameters you can use to alter its behavior:
 * name -> Allows you to change the name of the methods that will be generated for the field you are 
-annotating. If unspecified, the name of the field will be used.
+annotating. If unspecified, the name of the generated accessor will be get/set plus the field name 
+  with the first character uppercase.
 * requires -> Allows you to specify which type of accessor you want (use AccessorType.TYPE_GETTER 
 for getter and/ or AccessorType.TYPE_SETTER for setter) for your annotated field. If unspecified, 
 only a setter will be generated.

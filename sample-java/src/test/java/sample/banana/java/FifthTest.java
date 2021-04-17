@@ -21,7 +21,7 @@ final class FifthTest {
   void setAField() throws NoSuchFieldException, IllegalAccessException {
     @SuppressWarnings("unchecked") final Set<String> expected = mock(Set.class);
 
-    FirstSecondThirdFourthFifthTestAccessors.yetAnotherField(subject, expected);
+    FirstSecondThirdFourthFifthTestAccessors.setYetAnotherField(subject, expected);
 
     final Field field = subject.getClass().getDeclaredField("yetAnotherField");
     final boolean wasAccessible = field.isAccessible();
@@ -40,7 +40,7 @@ final class FifthTest {
     field.set(subject, expected);
     field.setAccessible(wasAccessible);
 
-    final Set<String> actual = FirstSecondThirdFourthFifthTestAccessors.yetAnotherField(subject);
+    final Set<String> actual = FirstSecondThirdFourthFifthTestAccessors.getYetAnotherField(subject);
 
     assertSame(expected, actual);
   }

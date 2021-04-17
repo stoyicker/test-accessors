@@ -19,7 +19,7 @@ final class ThirdTest {
   void setAField() throws NoSuchFieldException, IllegalAccessException {
     final String expected = "this is a mock value";
 
-    FirstSecondThirdTestAccessors.yetAnotherField(subject, expected);
+    FirstSecondThirdTestAccessors.setYetAnotherField(subject, expected);
 
     final Field field = subject.getClass().getDeclaredField("yetAnotherField");
     final boolean wasAccessible = field.isAccessible();

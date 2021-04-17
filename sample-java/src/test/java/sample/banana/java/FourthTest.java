@@ -22,7 +22,7 @@ final class FourthTest {
   void setAField() throws NoSuchFieldException, IllegalAccessException {
     final String expected = "this is a mock value";
 
-    FirstSecondThirdFourthTestAccessors.yetAnotherField(subject, expected);
+    FirstSecondThirdFourthTestAccessors.setYetAnotherField(subject, expected);
 
     final Field field = subject.getClass().getDeclaredField("yetAnotherField");
     final boolean wasAccessible = field.isAccessible();
@@ -36,7 +36,7 @@ final class FourthTest {
   void setNestedTypeField() throws NoSuchFieldException, IllegalAccessException {
     @SuppressWarnings("unchecked") final Map<String, Set<String>> expected = mock(Map.class);
 
-    FirstSecondThirdFourthTestAccessors.nestedTypeField(subject, expected);
+    FirstSecondThirdFourthTestAccessors.setNestedTypeField(subject, expected);
 
     final Field field = subject.getClass().getDeclaredField("nestedTypeField");
     final boolean wasAccessible = field.isAccessible();
