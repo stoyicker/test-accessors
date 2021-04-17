@@ -1,7 +1,7 @@
 buildscript {
   repositories {
     google()
-    jcenter()
+    mavenCentral()
   }
   dependencies {
     classpath 'com.android.tools.build:gradle:4.1.3'
@@ -51,11 +51,11 @@ tasks.findByName('lint').enabled = false
 
 repositories {
   google()
-  jcenter()
+  mavenCentral()
 }
 dependencies {
   testImplementation 'junit:junit:4.12'
-  testImplementation 'org.mockito:mockito-core:3.4.4'
+  testImplementation 'org.mockito:mockito-core:3.9.0'
 
   javaImplementation project(':annotations')
   javaAnnotationProcessor project(':processor-java')
