@@ -3,6 +3,7 @@ package sample.banana.java;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import testaccessors.RequiresAccessor;
@@ -20,6 +21,8 @@ public final class First<A, B, C, D, E, F, G> {
       class Fourth {
         @RequiresAccessor(requires = RequiresAccessor.AccessorType.TYPE_SETTER)
         private final B yetAnotherField = null;
+        @RequiresAccessor(requires = RequiresAccessor.AccessorType.TYPE_SETTER)
+        private final Map<B, Set<B>> nestedTypeField = null;
 
         class Fifth<A> {
           @RequiresAccessor(requires = {RequiresAccessor.AccessorType.TYPE_GETTER, RequiresAccessor.AccessorType.TYPE_SETTER})
