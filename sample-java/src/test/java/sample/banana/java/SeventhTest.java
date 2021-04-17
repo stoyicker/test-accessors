@@ -21,23 +21,21 @@ final class SeventhTest {
 
   @Test
   void setAField() throws NoSuchFieldException, IllegalAccessException {
-    //noinspection unchecked
-    final Set<HashSet<List<?>>> expected = mock(Set.class);
+    @SuppressWarnings("unchecked") final Set<HashSet<List<?>>> expected = mock(Set.class);
 
     FirstSecondSixthSeventhTestAccessors.fieldThatHasBeenRenamed(subject, expected);
 
     final Field field = subject.getClass().getDeclaredField("anotherField");
     final boolean wasAccessible = field.isAccessible();
     field.setAccessible(true);
-    final Set<HashSet<List<?>>> actual = (Set<HashSet<List<?>>>) field.get(subject);
+    @SuppressWarnings("unchecked") final Set<HashSet<List<?>>> actual = (Set<HashSet<List<?>>>) field.get(subject);
     assertSame(expected, actual);
     field.setAccessible(wasAccessible);
   }
 
   @Test
   void getAField() throws NoSuchFieldException, IllegalAccessException {
-    //noinspection unchecked
-    final Set<HashSet<List<?>>> expected = mock(Set.class);
+    @SuppressWarnings("unchecked") final Set<HashSet<List<?>>> expected = mock(Set.class);
     final Field field = subject.getClass().getDeclaredField("anotherField");
     final boolean wasAccessible = field.isAccessible();
     field.setAccessible(true);
