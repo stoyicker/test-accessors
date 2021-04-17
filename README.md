@@ -27,9 +27,9 @@ Once annotation processing runs, there will be a class in the generated director
 with two methods like this:
 ```java
 public final class MyClassTestAccessors {
-    public static <T> T myField(final MyClass receiver);
+    public static String myField(final MyClass receiver);
     
-    public static <T> void myField(final MyClass receiver, final T newValue);
+    public static void myField(final MyClass receiver, final String newValue);
 }
 ```
 As you can see, things work perfectly fine even with final fields. Moreover, it also works with static fields!
@@ -42,9 +42,9 @@ class MyClass {
 will generate an implementation under the following API in the current source set:
 ```java
 public final class MyClassTestAccessors {
-    public static <T> T myStaticField();
+    public static String myStaticField();
     
-    public static <T> void myStaticField(final T newValue);
+    public static void myStaticField(final String newValue);
 }
 ```
 The different sample projects within the repo showcase how to use all of the possibilities that the

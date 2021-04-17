@@ -7,9 +7,11 @@ import com.squareup.javapoet.CodeBlock
 import com.squareup.javapoet.JavaFile
 import com.squareup.javapoet.MethodSpec
 import com.squareup.javapoet.ParameterSpec
+import com.squareup.javapoet.ParameterizedTypeName
 import com.squareup.javapoet.TypeName
 import com.squareup.javapoet.TypeSpec
 import com.squareup.javapoet.TypeVariableName
+import com.squareup.javapoet.WildcardTypeName
 import testaccessors.RequiresAccessor
 import testaccessors.internal.base.AbstractAccessorWriter
 import testaccessors.internal.base.Options
@@ -17,7 +19,9 @@ import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
 import java.lang.reflect.Field
+import java.lang.reflect.WildcardType
 import java.util.Arrays
+import java.util.Stack
 import javax.annotation.processing.Filer
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.Element
@@ -87,7 +91,7 @@ internal class AccessorWriter(
               element: Element,
               javadocResource: String,
               javadocArgs: Array<Any>,
-              receiverLiteral: Any?) = TypeVariableName.get(TYPE_NAME_VALUE).run {
+              receiverLiteral: Any?) = TypeVariableName.get(element.asType()).run {
             generateCommonMethodSpec(element)
                 .addJavadoc(readAsset(javadocResource), *javadocArgs)
                 .beginControlFlow("try")
@@ -126,7 +130,7 @@ internal class AccessorWriter(
                       PARAMETER_NAME_NEW_VALUE),
                   null)
                   .addParameter(ParameterSpec.builder(
-                      TypeVariableName.get(TYPE_NAME_VALUE),
+                      TypeName.get(element.asType()),
                       PARAMETER_NAME_NEW_VALUE,
                       Modifier.FINAL)
                       .build())
@@ -144,7 +148,7 @@ internal class AccessorWriter(
                   PARAMETER_NAME_RECEIVER)
                   .addReceiver(element)
                   .addParameter(ParameterSpec.builder(
-                      TypeVariableName.get(TYPE_NAME_VALUE),
+                      TypeName.get(element.asType()),
                       PARAMETER_NAME_NEW_VALUE,
                       Modifier.FINAL)
                       .build())
@@ -214,7 +218,33 @@ internal class AccessorWriter(
                     )
                     .addAndroidXRestrictTo(androidXRestrictTo)
                     .addSupportRestrictTo(supportRestrictTo)
-                    .addTypeVariable(TypeVariableName.get(TYPE_NAME_VALUE))
+                    .apply {
+                      val typeName = TypeName.get(element.asType())
+                      val possiblyParameterizedTypes = Stack<TypeName>()
+                      val processedParameterizedTypes = mutableSetOf<TypeName>()
+                      possiblyParameterizedTypes.push(typeName)
+                      while (!possiblyParameterizedTypes.isEmpty()) {
+                        when (val next = possiblyParameterizedTypes.pop()) {
+                          in processedParameterizedTypes -> Unit
+                          is ParameterizedTypeName -> {
+                            next.typeArguments.forEach {
+                              processedParameterizedTypes.add(next)
+                              possiblyParameterizedTypes.push(it)
+                            }
+                          }
+                          is WildcardTypeName -> {
+                            next.lowerBounds.plus(next.upperBounds).forEach {
+                              processedParameterizedTypes.add(next)
+                              possiblyParameterizedTypes.push(it)
+                            }
+                          }
+                          is TypeVariableName -> {
+                            processedParameterizedTypes.add(next)
+                            addTypeVariable(next)
+                          }
+                        }
+                      }
+                    }
                     .apply {
                       options.requiredClasses().takeIf { it.isNotEmpty() }?.let {
                         addStatement("boolean anyRequiredClassFound = false")
