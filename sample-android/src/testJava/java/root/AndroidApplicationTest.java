@@ -31,7 +31,7 @@ public final class AndroidApplicationTest {
   public void setAField() {
     final String expected = "this is a mock value";
 
-    AndroidApplicationTestAccessors.aField(subject, expected);
+    AndroidApplicationTestAccessors.setAField(subject, expected);
 
     final Field field;
     try {
@@ -69,7 +69,7 @@ public final class AndroidApplicationTest {
     }
     field.setAccessible(wasAccessible);
 
-    final String actual = AndroidApplicationTestAccessors.aField(subject);
+    final String actual = AndroidApplicationTestAccessors.getAField(subject);
 
     assertSame(expected, actual);
   }
@@ -78,7 +78,7 @@ public final class AndroidApplicationTest {
   public void setAStaticField() {
     final Object expected = mock(Object.class);
 
-    AndroidApplicationTestAccessors.aStaticField(expected);
+    AndroidApplicationTestAccessors.setAStaticField(expected);
 
     final Field field;
     try {
@@ -116,7 +116,7 @@ public final class AndroidApplicationTest {
     }
     field.setAccessible(wasAccessible);
 
-    final Object actual = AndroidApplicationTestAccessors.aStaticField();
+    final Object actual = AndroidApplicationTestAccessors.getAStaticField();
 
     assertSame(expected, actual);
   }

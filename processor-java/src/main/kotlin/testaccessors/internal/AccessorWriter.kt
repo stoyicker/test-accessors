@@ -19,7 +19,6 @@ import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
 import java.lang.reflect.Field
-import java.lang.reflect.WildcardType
 import java.util.Arrays
 import java.util.Stack
 import javax.annotation.processing.Filer
@@ -92,7 +91,7 @@ internal class AccessorWriter(
               javadocResource: String,
               javadocArgs: Array<Any>,
               receiverLiteral: Any?) = TypeVariableName.get(element.asType()).run {
-            generateCommonMethodSpec(element)
+            generateCommonMethodSpec(element) { "get${it.toCharArray()[0].toUpperCase()}${it.substring(1)}" }
                 .addJavadoc(readAsset(javadocResource), *javadocArgs)
                 .beginControlFlow("try")
                 .addStatement(
@@ -158,7 +157,7 @@ internal class AccessorWriter(
               element: Element,
               javadocResource: String,
               javadocArgs: Array<Any>,
-              receiverLiteral: Any?) = generateCommonMethodSpec(element)
+              receiverLiteral: Any?) = generateCommonMethodSpec(element) { "set${it.toCharArray()[0].toUpperCase()}${it.substring(1)}" }
               .addJavadoc(
                   readAsset(javadocResource),
                   *javadocArgs)
@@ -202,10 +201,10 @@ internal class AccessorWriter(
           private fun readAsset(path: String) = BufferedReader(InputStreamReader(
               AccessorWriter::class.java.getResourceAsStream(path))).use(BufferedReader::readText)
 
-          private fun generateCommonMethodSpec(element: Element) =
+          private fun generateCommonMethodSpec(element: Element, nameDefiner: (String) -> String) =
               element.getAnnotation(RequiresAccessor::class.java).run {
                 val methodName = if (!SourceVersion.isName(name)) {
-                  element.simpleName.toString()
+                  element.simpleName.toString().run(nameDefiner)
                 } else {
                   name
                 }

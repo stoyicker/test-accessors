@@ -19,7 +19,7 @@ final class FirstTest {
   void setAField() throws NoSuchFieldException, IllegalAccessException {
     final String expected = "this is a mock value";
 
-    FirstTestAccessors.aField(subject, expected);
+    FirstTestAccessors.setAField(subject, expected);
 
     final Field field = subject.getClass().getDeclaredField("aField");
     final boolean wasAccessible = field.isAccessible();
@@ -38,7 +38,7 @@ final class FirstTest {
     field.set(subject, expected);
     field.setAccessible(wasAccessible);
 
-    final String actual = FirstTestAccessors.aField(subject);
+    final String actual = FirstTestAccessors.getAField(subject);
 
     assertSame(expected, actual);
   }

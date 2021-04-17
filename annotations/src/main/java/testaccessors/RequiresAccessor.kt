@@ -9,8 +9,8 @@ import androidx.annotation.RestrictTo
 @Target(AnnotationTarget.FIELD, AnnotationTarget.PROPERTY)
 annotation class RequiresAccessor(
     /**
-     * Optionally specify a name for the accessors generated for this field. Generated accessors will both have the same
-     * name as the field, if this field is not set, or the value of the field if set.
+     * Optionally specify a name for the accessors generated for this field. It not set, generated accessors will both
+     * have the same name as the field plus a get/set prefix as relevant.
      */
     val name: String = "",
     /**
