@@ -6,7 +6,7 @@ import androidx.annotation.RestrictTo
  * Signal that this field should have accessors generated for it.
  */
 @Retention(AnnotationRetention.SOURCE)
-@Target(AnnotationTarget.FIELD)
+@Target(AnnotationTarget.FIELD, AnnotationTarget.PROPERTY)
 annotation class RequiresAccessor(
     /**
      * Optionally specify a name for the accessors generated for this field. Generated accessors will both have the same

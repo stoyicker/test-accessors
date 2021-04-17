@@ -206,6 +206,11 @@ internal class AccessorWriter(
                 }
                 val ret = MethodSpec.methodBuilder(methodName)
                     .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+                    .addAnnotation(
+                        AnnotationSpec.builder(SuppressWarnings::class.java)
+                            .addMember("value", "\"unchecked\"")
+                            .build()
+                    )
                     .addAndroidXRestrictTo(androidXRestrictTo)
                     .addSupportRestrictTo(supportRestrictTo)
                     .addTypeVariable(TypeVariableName.get(TYPE_NAME_VALUE))
