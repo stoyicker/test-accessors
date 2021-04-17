@@ -10,12 +10,12 @@ plugins {
 }
 
 repositories {
-  jcenter()
+  mavenCentral()
   google()
 }
 dependencies {
   implementation project(':annotations')
-  api 'com.squareup:javapoet:1.11.1'
+  api 'com.squareup:javapoet:1.13.0'
 }
 
 apply from: Paths.get(rootDir.absolutePath, '.circleci', 'publish.gradle')
