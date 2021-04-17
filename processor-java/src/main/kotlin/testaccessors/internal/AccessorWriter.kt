@@ -34,9 +34,10 @@ internal class AccessorWriter(
     val enclosingClassElement = annotatedElements.iterator().next().enclosingElement
     val extractedLocation = extractLocation(enclosingClassElement.enclosingElement)
     val location = extractedLocation + enclosingClassElement.simpleName.toString()
-    val subLocation = location.toList().subList(2, location.size).toTypedArray()
+    val filteredLocation = location.filterNot { it.isBlank() }
+    val subLocation = filteredLocation.toList().subList(2, filteredLocation.size).toTypedArray()
     val fileAndClassName =
-        nameForGeneratedClassFrom(ClassName.get(location[0], location[1], *subLocation)
+        nameForGeneratedClassFrom(ClassName.get(filteredLocation[0], filteredLocation[1], *subLocation)
             .simpleNames())
     val typeSpecBuilder = TypeSpec.classBuilder(fileAndClassName)
         .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
