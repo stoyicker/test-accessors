@@ -19,30 +19,28 @@ final class FifthTest {
 
   @Test
   void setAField() throws NoSuchFieldException, IllegalAccessException {
-    //noinspection unchecked
-    final Set<String> expected = mock(Set.class);
+    @SuppressWarnings("unchecked") final Set<String> expected = mock(Set.class);
 
     FirstSecondThirdFourthFifthTestAccessors.yetAnotherField(subject, expected);
 
     final Field field = subject.getClass().getDeclaredField("yetAnotherField");
     final boolean wasAccessible = field.isAccessible();
     field.setAccessible(true);
-    final Set<String> actual = (Set<String>) field.get(subject);
+    @SuppressWarnings("unchecked") final Set<String> actual = (Set<String>) field.get(subject);
     assertSame(expected, actual);
     field.setAccessible(wasAccessible);
   }
 
   @Test
   void getAField() throws NoSuchFieldException, IllegalAccessException {
-    //noinspection unchecked
-    final Set<String> expected = mock(Set.class);
+    @SuppressWarnings("unchecked") final Set<String> expected = mock(Set.class);
     final Field field = subject.getClass().getDeclaredField("yetAnotherField");
     final boolean wasAccessible = field.isAccessible();
     field.setAccessible(true);
     field.set(subject, expected);
     field.setAccessible(wasAccessible);
 
-    final Set<String> actual = (Set<String>) FirstSecondThirdFourthFifthTestAccessors.yetAnotherField(subject);
+    final Set<String> actual = FirstSecondThirdFourthFifthTestAccessors.yetAnotherField(subject);
 
     assertSame(expected, actual);
   }
