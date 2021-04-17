@@ -1,7 +1,5 @@
 include ':annotations',
     ':processor-base',
     ':processor-java',
-    ':processor-kotlin',
     ':sample-java',
-    ':sample-kotlin',
     ':sample-android'
