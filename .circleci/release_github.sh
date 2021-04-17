@@ -51,19 +51,6 @@ uploadReleaseToGitHub() {
         --request POST \
         ${PROCESSOR_JAVA_UPLOAD_URL}
 
-    cp processor-kotlin/build/libs/processor-kotlin.jar .
-
-    # Attach processor-kotlin
-    PROCESSOR_KOTLIN_UPLOAD_URL=$(echo ${UPLOAD_URL} | sed "s/{?name,label}/?name=processor-kotlin-${THIS_TAG}.jar/")
-    curl -s \
-        -v \
-        -u ${CIRCLE_USERNAME}:${GITHUB_TOKEN} \
-        --header "Accept: application/vnd.github.v3+json" \
-        --header "Content-Type: application/zip" \
-        --data-binary "@processor-kotlin.jar" \
-        --request POST \
-        ${PROCESSOR_KOTLIN_UPLOAD_URL}
-
     echo "GitHub release complete."
 }
 

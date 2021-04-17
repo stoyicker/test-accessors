@@ -22,17 +22,6 @@ jobs:
       - store_artifacts:
           path: processor-java/build/libs/processor-java.jar
           destination: processor-java.jar
-  build_processor-kotlin:
-    docker:
-        - image: circleci/android:api-28
-    environment:
-      JVM_OPTS: -Xmx3200m
-    steps:
-      - checkout
-      - run: ./gradlew :processor-kotlin:assemble --no-daemon --no-build-cache --refresh-dependencies
-      - store_artifacts:
-          path: processor-kotlin/build/libs/processor-kotlin.jar
-          destination: processor-kotlin.jar
   test_sample-android-java:
     docker:
       - image: circleci/android:api-28
@@ -46,19 +35,6 @@ jobs:
       - run: ./gradlew :sample-android:testJavaDebugUnitTest --no-daemon --no-build-cache --refresh-dependencies
       - store_test_results:
           path: sample-android/build/test-results/testJavaDebugUnitTest
-  test_sample-android-kotlin:
-    docker:
-      - image: circleci/android:api-28
-    environment:
-      JVM_OPTS: -Xmx3200m
-    steps:
-      - checkout
-      - run:
-          name: Download dependencies
-          command: ./gradlew androidDependencies --no-daemon --no-build-cache --refresh-dependencies
-      - run: ./gradlew :sample-android:testKotlinDebugUnitTest --no-daemon --no-build-cache --refresh-dependencies
-      - store_test_results:
-          path: sample-android/build/test-results/testKotlinDebugUnitTest
   test_sample-java:
     docker:
       - image: circleci/android:api-28
@@ -69,16 +45,6 @@ jobs:
       - run: ./gradlew :sample-java:test --no-daemon --no-build-cache --refresh-dependencies
       - store_test_results:
           path: sample-java/build/test-results
-  test_sample-kotlin:
-    docker:
-      - image: circleci/android:api-28
-    environment:
-      JVM_OPTS: -Xmx3200m
-    steps:
-      - checkout
-      - run: ./gradlew :sample-kotlin:test --no-daemon --no-build-cache --refresh-dependencies
-      - store_test_results:
-          path: sample-kotlin/build/test-results
   ensure_tag_allowed:
     docker:
       - image: circleci/node:4.8.2
@@ -94,7 +60,6 @@ jobs:
       - checkout
       - run: ./gradlew :annotations:assemble --no-daemon --no-build-cache --refresh-dependencies
       - run: ./gradlew :processor-java:assemble --no-daemon --no-build-cache --refresh-dependencies
-      - run: ./gradlew :processor-kotlin:assemble --no-daemon --no-build-cache --refresh-dependencies
       - run: ./.circleci/release_github.sh
   release_on_bintray:
     docker:
@@ -111,10 +76,6 @@ jobs:
           name: Upload processor-java to Bintray
           command: ./gradlew :processor-java:bintrayUpload --no-daemon --no-build-cache --refresh-dependencies
           when: always
-      - run:
-          name: Upload processor-kotlin to Bintray
-          command: ./gradlew :processor-kotlin:bintrayUpload --no-daemon --no-build-cache --refresh-dependencies
-          when: always
 workflows:
   version: 2.1
   test_samples:
@@ -127,23 +88,11 @@ workflows:
           filters:
             tags:
               ignore: /.*/
-      - build_processor-kotlin:
-          filters:
-            tags:
-              ignore: /.*/
       - test_sample-android-java:
           requires:
             - build_annotations
             - build_processor-java
-      - test_sample-android-kotlin:
-          requires:
-            - build_annotations
-            - build_processor-kotlin
       - test_sample-java:
-          requires:
-            - build_annotations
-            - build_processor-java
-      - test_sample-kotlin:
           requires:
             - build_annotations
             - build_processor-java
@@ -171,14 +120,6 @@ workflows:
               only: /^v.*/
           requires:
             - ensure_tag_allowed
-      - build_processor-kotlin:
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v.*/
-          requires:
-            - ensure_tag_allowed
       - test_sample-android-java:
           filters:
             branches:
@@ -188,25 +129,7 @@ workflows:
           requires:
             - build_annotations
             - build_processor-java
-      - test_sample-android-kotlin:
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v.*/
-          requires:
-            - build_annotations
-            - build_processor-kotlin
       - test_sample-java:
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v.*/
-          requires:
-            - build_annotations
-            - build_processor-java
-      - test_sample-kotlin:
           filters:
             branches:
               ignore: /.*/
@@ -224,9 +147,7 @@ workflows:
               only: /^v.*/
           requires:
             - test_sample-android-java
-            - test_sample-android-kotlin
             - test_sample-java
-            - test_sample-kotlin
       - release_on_bintray:
           context: test-accessors_release_bintray
           filters:
@@ -236,6 +157,4 @@ workflows:
               only: /^v.*/
           requires:
             - test_sample-android-java
-            - test_sample-android-kotlin
             - test_sample-java
-            - test_sample-kotlin

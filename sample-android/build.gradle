@@ -4,14 +4,11 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath 'com.android.tools.build:gradle:3.4.1'
-    classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.31'
+    classpath 'com.android.tools.build:gradle:4.1.3'
   }
 }
 
 apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
 
 android {
   buildToolsVersion '28.0.3'
@@ -48,11 +45,6 @@ android {
       applicationIdSuffix '.java'
       versionNameSuffix '-java'
     }
-    kotlin {
-      dimension 'language'
-      applicationIdSuffix '.kotlin'
-      versionNameSuffix '-kotlin'
-    }
   }
 }
 
@@ -66,17 +58,16 @@ dependencies {
   testImplementation 'junit:junit:4.12'
   testImplementation 'org.mockito:mockito-core:2.27.0'
 
-  javaCompileOnly project(':annotations')
-  // Kapt takes over annotationProcessor everywhere, so javaAnnotationProcessor cannot be used here
-  kaptJava project(':processor-java')
-
-  kotlinImplementation 'org.jetbrains.kotlin:kotlin-stdlib:1.3.31'
-  kotlinCompileOnly project(':annotations')
-  kaptKotlin project(':processor-kotlin')
+  javaImplementation project(':annotations')
+  javaAnnotationProcessor project(':processor-java')
 }
 
-kapt {
-  arguments {
-    arg('testaccessors.defaultAndroidXRestrictTo', 'TESTS')
+android {
+  defaultConfig {
+    javaCompileOptions {
+      annotationProcessorOptions {
+        arguments = ['testaccessors.defaultAndroidXRestrictTo': 'TESTS']
+      }
+    }
   }
 }
