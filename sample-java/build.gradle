@@ -8,9 +8,9 @@ repositories {
 }
 
 dependencies {
-  compileOnly project(':annotations')
+  implementation project(':annotations')
   annotationProcessor project(':processor-java')
-  testImplementation 'org.mockito:mockito-core:2.27.0'
+  testImplementation 'org.mockito:mockito-core:3.4.4'
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.0-M1'
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.5.0-M1'
 }

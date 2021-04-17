@@ -21,12 +21,12 @@ task sourcesJar(type: Jar) {
   from sourceSets.main.allSource
 }
 
-task kdocJar(type: Jar) {
+task javadocJar(type: Jar) {
   group = JavaBasePlugin.DOCUMENTATION_GROUP
-  description = 'Assembles a kdoc JAR'
+  description = 'Assembles a javadoc JAR'
   archiveClassifier.set('javadoc')
   archiveFileName = "${project.name}-javadoc.jar"
-  from dokka
+  from dokkaJavadoc
 }
 
 publishing {
@@ -35,7 +35,7 @@ publishing {
       artifactId project.name
       version project.version
       artifact sourcesJar
-      artifact kdocJar
+      artifact javadocJar
       groupId 'com.github.stoyicker.test-accessors'
       pom {
         name = project.name
@@ -103,23 +103,3 @@ bintray {
     }
   }
 }
-
-// No per-release signing, Bintray does the signing before syncing to Central
-//signing {
-//  sign publishing.publications.maven
-//}
-//ext."signing.keyId" = "$System.env.GPG_KEY_ID"
-//ext."signing.password" ="$System.env.GPG_KEY_PASSWORD"
-//ext."signing.secretKeyRingFile" = "$System.env.GPG_SECRET_KEY_FILE"
-//
-//
-//task signArtifacts {
-//  doLast {
-//    signing.sign file("${buildDir}/publications/maven/pom-default.xml")
-//  }
-//}
-//
-//afterEvaluate {
-//  signArtifacts.dependsOn signMavenPublication
-//  signMavenPublication.dependsOn generatePomFileForMavenPublication
-//}
