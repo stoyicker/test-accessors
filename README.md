@@ -47,7 +47,7 @@ public final class MyClassTestAccessors {
     public static void myStaticField(final String newValue);
 }
 ```
-The different sample projects within the repo showcase how to use all of the possibilities that the
+The different sample projects within the repo showcase how to use all the possibilities that the
 processor offers, so check them out if you're feeling lost!
 ## Options
 ### Annotation level
