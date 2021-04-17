@@ -44,6 +44,5 @@ abstract class AbstractAccessorWriter(
     const val PARAMETER_NAME_NEW_VALUE = "newValue"
     const val TYPE_NAME_VALUE = "T"
     const val ERROR_MESSAGE_ILLEGAL_ACCESS = "Accessing this method from this source set is not allowed"
-    const val COMMENT_ACCESS_FLAGS = "Android's implementation of Field replaces the 'modifiers' field with one called 'accessFlags'"
   }
 }
