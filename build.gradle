@@ -1,3 +1,7 @@
+plugins {
+  id 'org.jetbrains.kotlin.jvm' version '1.4.31' apply false
+}
+
 // Needed by JitPack
 task install {
   dependsOn ':annotations:build', ':annotations:publishToMavenLocal', ':processor-java:build', ':processor-java:publishToMavenLocal'

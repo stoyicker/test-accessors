@@ -2,7 +2,7 @@ version: 2.1
 jobs:
   build_annotations:
     docker:
-      - image: circleci/android:api-28
+      - image: circleci/android:api-30
     environment:
       JVM_OPTS: -Xmx3200m
     steps:
@@ -13,7 +13,7 @@ jobs:
           destination: annotations.jar
   build_processor-java:
     docker:
-      - image: circleci/android:api-28
+      - image: circleci/android:api-30
     environment:
       JVM_OPTS: -Xmx3200m
     steps:
@@ -24,7 +24,7 @@ jobs:
           destination: processor-java.jar
   test_sample-android-java:
     docker:
-      - image: circleci/android:api-28
+      - image: circleci/android:api-30
     environment:
       JVM_OPTS: -Xmx3200m
     steps:
@@ -37,7 +37,7 @@ jobs:
           path: sample-android/build/test-results/testJavaDebugUnitTest
   test_sample-java:
     docker:
-      - image: circleci/android:api-28
+      - image: circleci/android:api-30
     environment:
       JVM_OPTS: -Xmx3200m
     steps:
@@ -53,7 +53,7 @@ jobs:
       - run: ./.circleci/ensure_tag_allowed.sh
   release_on_github:
     docker:
-      - image: circleci/android:api-28
+      - image: circleci/android:api-30
     environment:
       JVM_OPTS: -Xmx3200m
     steps:
@@ -63,7 +63,7 @@ jobs:
       - run: ./.circleci/release_github.sh
   release_on_bintray:
     docker:
-      - image: circleci/android:api-28
+      - image: circleci/android:api-30
     environment:
       JVM_OPTS: -Xmx3200m
     steps:
