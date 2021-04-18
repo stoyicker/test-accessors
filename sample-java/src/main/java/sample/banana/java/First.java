@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import testaccessors.RequiresAccessor;
+import testaccessors.RequiresAccessor.AccessorType;
 
 public final class First<A, B, C, D, E, F, G> {
   @RequiresAccessor(requires = {RequiresAccessor.AccessorType.TYPE_GETTER, RequiresAccessor.AccessorType.TYPE_SETTER})
@@ -35,6 +36,8 @@ public final class First<A, B, C, D, E, F, G> {
       class Seventh<T, J extends Set<List<?>>, Q extends Collection<? extends T>> {
         @RequiresAccessor(name = "fieldThatHasBeenRenamed", requires = {RequiresAccessor.AccessorType.TYPE_GETTER, RequiresAccessor.AccessorType.TYPE_SETTER})
         private final Set<J> anotherField = Collections.emptySet();
+        @RequiresAccessor(requires = {AccessorType.TYPE_GETTER, AccessorType.TYPE_SETTER})
+        private final Map<? super T, Map<? extends J, ? super Q>> fieldWithWildcardTypes = Collections.emptyMap();
       }
     }
   }
