@@ -4,8 +4,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -43,6 +45,39 @@ final class SeventhTest {
     field.setAccessible(wasAccessible);
 
     final Set< HashSet<List<?>>> actual = FirstSecondSixthSeventhTestAccessors.fieldThatHasBeenRenamed(subject);
+
+    assertSame(expected, actual);
+  }
+
+  @Test
+  void setAFieldWithWildcardTypes() throws NoSuchFieldException, IllegalAccessException {
+    @SuppressWarnings("unchecked")
+    final Map<? super Object, Map<? extends Set<List<?>>, ? super Collection<?>>> expected = mock(Map.class);
+
+    FirstSecondSixthSeventhTestAccessors.setFieldWithWildcardTypes(subject, expected);
+
+    final Field field = subject.getClass().getDeclaredField("fieldWithWildcardTypes");
+    final boolean wasAccessible = field.isAccessible();
+    field.setAccessible(true);
+    @SuppressWarnings("unchecked")
+    final Map<? super Object, Map<? extends Set<List<?>>, ? super Collection<?>>> actual =
+            (Map<? super Object, Map<? extends Set<List<?>>, ? super Collection<?>>>) field.get(subject);
+    assertSame(expected, actual);
+    field.setAccessible(wasAccessible);
+  }
+
+  @Test
+  void getAFieldWithWildcardTypes() throws NoSuchFieldException, IllegalAccessException {
+    @SuppressWarnings("unchecked")
+    final Map<? super Object, Map<? extends Set<List<?>>, ? super Collection<?>>> expected = mock(Map.class);
+    final Field field = subject.getClass().getDeclaredField("fieldWithWildcardTypes");
+    final boolean wasAccessible = field.isAccessible();
+    field.setAccessible(true);
+    field.set(subject, expected);
+    field.setAccessible(wasAccessible);
+
+    final Map<? super Object, Map<? extends Set<List<?>>, ? super Collection<?>>> actual =
+            FirstSecondSixthSeventhTestAccessors.getFieldWithWildcardTypes(subject);
 
     assertSame(expected, actual);
   }
