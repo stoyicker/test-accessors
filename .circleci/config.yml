@@ -77,7 +77,6 @@ jobs:
           command: ./gradlew :processor-java:bintrayUpload --no-daemon --no-build-cache --refresh-dependencies
           when: always
 workflows:
-  version: 2.1
   test_samples:
     jobs:
       - build_annotations:
