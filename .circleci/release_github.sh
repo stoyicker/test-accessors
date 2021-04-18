@@ -1,5 +1,5 @@
 #!/bin/bash
-set -xe
+set -xEuo pipefail
 
 uploadReleaseToGitHub() {
     git fetch --tags
