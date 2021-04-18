@@ -82,7 +82,7 @@ jobs:
           when: always
       - run:
           name: Close and release staging repository in Nexus
-          command: ./gradlew closeAndReleaseStagingRepository
+          command: ./gradlew closeAndReleaseRepository
           when: always
 workflows:
   test_samples:
