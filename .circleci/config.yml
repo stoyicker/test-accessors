@@ -85,7 +85,7 @@ jobs:
           command: ./gradlew closeAndReleaseRepository
           when: always
 workflows:
-  version: 2
+  version: 2.1
   test_samples:
     jobs:
       - build_annotations:
