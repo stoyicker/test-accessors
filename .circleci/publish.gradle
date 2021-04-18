@@ -1,4 +1,4 @@
-// This file requires maven-publish, java-library, signing and com.jfrog.bintray
+// This file requires the maven-publish, java-library and signing plugins
 
 project.version = {
   def stdout = new ByteArrayOutputStream()
@@ -31,7 +31,7 @@ task javadocJar(type: Jar) {
 
 publishing {
   publications {
-    maven(MavenPublication) {
+    release(MavenPublication) {
       artifactId project.name
       version project.version
       artifact sourcesJar
@@ -65,6 +65,7 @@ publishing {
   }
   repositories {
     maven {
+      name "sonatype"
       url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
       credentials {
         username = "$System.env.OSS_USER"
@@ -74,32 +75,10 @@ publishing {
   }
 }
 
-bintray {
-  user = "$System.env.BINTRAY_USER"
-  key = "$System.env.BINTRAY_API_KEY"
-  publications = ['maven']
-  publish = true
-  pkg {
-    repo = 'test-accessors'
-    name = project.name
-    vcsUrl = 'https://github.com/stoyicker/test-accessors/'
-    licenses = ['Apache-2.0']
-    desc = 'An annotation processor that generates code for your tests to be able to access and modify private/final fields so you don\'t have to use approaches such as @VisibleForTesting!'
-    publicDownloadNumbers = true
-    githubRepo = 'stoyicker/test-accessors'
-    websiteUrl = 'https://github.com/stoyicker/test-accessors/'
-    issueTrackerUrl = 'https://github.com/stoyicker/test-accessors/issues'
-    version {
-      name = project.version
-      vcsTag = "v${project.version}"
-      released = new Date()
-      gpg {
-        sign = true
-      }
-      mavenCentralSync {
-        user = "$System.env.OSS_USER"
-        password = "$System.env.OSS_PASSWORD"
-      }
-    }
-  }
+signing {
+  sign publishing.publications
 }
+
+ext["signing.keyId"] = "$System.env.GPG_KEYID"
+ext["signing.password"] = "$System.env.GPG_PASSWORD"
+ext["signing.secretKeyRingFile"] = "$rootProject.rootDir/secring.gpg"
