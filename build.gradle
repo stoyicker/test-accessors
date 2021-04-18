@@ -1,8 +1,16 @@
 plugins {
   id 'org.jetbrains.kotlin.jvm' version '1.4.31' apply false
+  id 'io.codearte.nexus-staging' version '0.30.0'
 }
 
 // Needed by JitPack
 task install {
   dependsOn ':annotations:build', ':annotations:publishToMavenLocal', ':processor-java:build', ':processor-java:publishToMavenLocal'
+}
+
+nexusStaging {
+  packageGroup = 'com.github.stoyicker.test-accessors'
+  stagingProfileId = "$System.env.OSS_STAGING_PROFILE_ID"
+  username = "$System.env.OSS_USER"
+  password = "$System.env.OSS_PASSWORD"
 }
